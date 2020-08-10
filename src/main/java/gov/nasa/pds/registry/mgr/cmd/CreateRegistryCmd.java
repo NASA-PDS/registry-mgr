@@ -1,11 +1,18 @@
 package gov.nasa.pds.registry.mgr.cmd;
 
 import java.io.File;
-import java.net.URL;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.EsUtils;
 
 
 public class CreateRegistryCmd implements CliCommand
@@ -27,27 +34,42 @@ public class CreateRegistryCmd implements CliCommand
         String esUrl = cmdLine.getOptionValue("url", "http://localhost:9200");
         File schemaFile = getSchemaFile(cmdLine.getOptionValue("path"));
         
-        String collectionName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
+        String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         int shards = parseShards(cmdLine.getOptionValue("shards", "1"));
         int replicas = parseReplicas(cmdLine.getOptionValue("replicas", "0"));
         
         System.out.println("Elasticsearch URL: " + esUrl);
         System.out.println("           Schema: " + schemaFile.getAbsolutePath());
-        System.out.println("            Index: " + collectionName);
+        System.out.println("            Index: " + indexName);
         System.out.println("           Shards: " + shards);
         System.out.println("         Replicas: " + replicas);
         System.out.println();
 
+        RestClient client = null;
+        
         try
         {
-            System.out.println("Creating collection...");
+            System.out.println("Creating index...");
+
+            // Create Elasticsearch client
+            client = EsUtils.createClient(esUrl);
             
-            
+            // Create request
+            Request req = new Request("PUT", "/" + indexName);
+            req.setEntity(new FileEntity(schemaFile, ContentType.APPLICATION_JSON));
+
+            // Execute request
+            Response resp = client.performRequest(req);
+            EsUtils.printWarnings(resp);
             System.out.println("Done");
+        }
+        catch(ResponseException ex)
+        {
+            throw new Exception(EsUtils.extractErrorMessage(ex));
         }
         finally
         {
-
+            CloseUtils.close(client);
         }
     }
 
@@ -116,7 +138,7 @@ public class CreateRegistryCmd implements CliCommand
         System.out.println("Usage: registry-manager create-registry <options>");
 
         System.out.println();
-        System.out.println("Create registry collection");
+        System.out.println("Create registry index");
         System.out.println();
         System.out.println("Optional parameters:");
         System.out.println("  -url <url>           Elasticsearch URL. Default is http://localhost:9200");

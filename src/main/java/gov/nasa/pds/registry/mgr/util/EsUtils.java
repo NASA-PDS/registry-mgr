@@ -1,17 +1,56 @@
 package gov.nasa.pds.registry.mgr.util;
 
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+
+import com.google.gson.Gson;
 
 
 public class EsUtils
 {
+    private static class ConfigCB implements RestClientBuilder.RequestConfigCallback
+    {
+        private int connectTimeoutSec = 5;
+        private int socketTimeoutSec = 10;
+        
+        
+        public ConfigCB()
+        {
+        }
+
+        
+        public ConfigCB(int connectTimeoutSec, int socketTimeoutSec)
+        {
+            this.connectTimeoutSec = connectTimeoutSec;
+            this.socketTimeoutSec = socketTimeoutSec;
+        }
+
+        
+        @Override
+        public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder bld)
+        {
+            bld.setConnectTimeout(connectTimeoutSec * 1000);
+            bld.setSocketTimeout(socketTimeoutSec * 1000);
+            return bld;
+        }
+    }
+    
+    
     public static RestClient createClient(String url) throws Exception
     {
         HttpHost host = parseUrl(url);
-        RestClient client = RestClient.builder(host).build();
-        return client;
+        RestClientBuilder bld = RestClient.builder(host);
+        // Set timeouts
+        bld.setRequestConfigCallback(new ConfigCB());
+        return bld.build();
     }
     
     
@@ -74,5 +113,53 @@ public class EsUtils
         
         HttpHost httpHost = new HttpHost(host, port, proto);
         return httpHost;
+    }
+    
+    
+    public static String extractErrorMessage(ResponseException ex)
+    {
+        String msg = ex.getMessage();
+        if(msg == null) return "Unknown error";
+        
+        String lines[] = msg.split("\n");
+        if(lines.length < 2) return msg;
+        
+        String reason = extractReasonFromJson(lines[1]);
+        if(reason == null) return msg;
+        
+        return reason;
+    }
+    
+    
+    @SuppressWarnings("rawtypes")
+    private static String extractReasonFromJson(String json)
+    {
+        try
+        {
+            Gson gson = new Gson();
+            Object obj = gson.fromJson(json, Object.class);
+            
+            obj = ((Map)obj).get("error");
+            obj = ((Map)obj).get("reason");
+            
+            return obj.toString();
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
+    }
+
+    
+    public static void printWarnings(Response resp)
+    {
+        List<String> warnings = resp.getWarnings();
+        if(warnings != null)
+        {
+            for(String warn: warnings)
+            {
+                System.out.println("[WARN] " + warn);
+            }
+        }
     }
 }

@@ -1,9 +1,12 @@
 package tt;
 
 import org.apache.http.HttpHost;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.util.EsUtils;
+
 
 public class TestRestClient
 {
@@ -14,6 +17,8 @@ public class TestRestClient
         System.out.println(host);
         
         RestClient client = EsUtils.createClient("localhost");
+
+        
         client.close();
     }
 
