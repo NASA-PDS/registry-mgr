@@ -8,15 +8,17 @@
       "lid": { "type": "keyword" },
       "vid": { "type": "keyword" },
       "lidvid": { "type": "keyword" },
+
       "title": { "type": "text" },
       "product_class": { "type": "keyword" },
+      "archive_status": { "type": "keyword" }, 
+
       "_package_id": { "type": "keyword" },
 
       "_file_ref": { "type": "keyword" },
       "_file_name": { "type": "keyword" },
       "_file_type": { "type": "keyword" },
       "_file_size": { "type": "long" },
-      "_file_blob": { "type": "binary" },
       "_file_md5": { "type": "keyword" },
 
       "ref_lid_document": { "type": "keyword" },

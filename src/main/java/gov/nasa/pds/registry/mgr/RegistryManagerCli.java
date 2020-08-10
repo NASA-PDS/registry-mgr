@@ -13,6 +13,7 @@ import org.apache.commons.cli.ParseException;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.cmd.CreateRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
+import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
 
@@ -159,17 +160,15 @@ public class RegistryManagerCli
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
 
-/*        
-        commands.put("generate-solr-schema", new GenerateSolrSchemaCmd());
-        commands.put("update-solr-schema", new UpdateSolrSchemaCmd());
+        // commands.put("generate-solr-schema", new GenerateSolrSchemaCmd());
+        // commands.put("update-solr-schema", new UpdateSolrSchemaCmd());
 
         // Data load / delete / edit
         commands.put("load-data", new LoadDataCmd());
-        commands.put("delete-data", new DeleteDataCmd());
-        commands.put("export-data", new ExportDataCmd());
-        commands.put("export-file", new ExportFileCmd());
-        commands.put("set-archive-status", new SetArchiveStatusCmd());
-                */
+        //commands.put("delete-data", new DeleteDataCmd());
+        //commands.put("export-data", new ExportDataCmd());
+        //commands.put("export-file", new ExportFileCmd());
+        //commands.put("set-archive-status", new SetArchiveStatusCmd());
     }
     
     

@@ -142,7 +142,7 @@ public class CreateRegistryCmd implements CliCommand
         System.out.println();
         System.out.println("Optional parameters:");
         System.out.println("  -url <url>           Elasticsearch URL. Default is http://localhost:9200");
-        System.out.println("  -index <name>        Elasticsearch index name. Default value is 'registry'");
+        System.out.println("  -index <name>        Elasticsearch index name. Default is 'registry'");
         System.out.println("  -schema <path>       Elasticsearch index schema (JSON file)"); 
         System.out.println("                       Default value is $REGISTRY_MANAGER_HOME/elastic/registry.json");
         System.out.println("  -shards <number>     Number of shards (partitions) for registry index. Default is 1");

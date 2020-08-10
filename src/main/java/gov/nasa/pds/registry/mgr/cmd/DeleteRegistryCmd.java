@@ -71,7 +71,7 @@ public class DeleteRegistryCmd implements CliCommand
         System.out.println();
         System.out.println("Optional parameters:");
         System.out.println("  -url <url>      Elasticsearch URL. Default is http://localhost:9200");
-        System.out.println("  -index <name>   Elasticsearch index name. Default value is 'registry'");
+        System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
     }
 
 }
