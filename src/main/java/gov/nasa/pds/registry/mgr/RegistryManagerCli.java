@@ -13,6 +13,7 @@ import org.apache.commons.cli.ParseException;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.cmd.CreateRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
+import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
@@ -40,18 +41,18 @@ public class RegistryManagerCli
         System.out.println("Commands:");
         System.out.println();
         System.out.println("Registry:");
-        System.out.println("  create-registry       Create registry index");
-        System.out.println("  delete-registry       Delete registry index and all its data");
-        System.out.println("  load-data             Load data into registry index");
-        System.out.println("  delete-data           Delete data from registry index");
-        System.out.println("  export-data           Export data from registry index");
-        System.out.println("  export-file           Export a file from blob storage");
-        System.out.println("  set-archive-status    Set product archive status");
+        System.out.println("  create-registry      Create registry index");
+        System.out.println("  delete-registry      Delete registry index and all its data");
+        System.out.println("  load-data            Load data into registry index");
+        System.out.println("  delete-data          Delete data from registry index");
+        System.out.println("  export-data          Export data from registry index");
+        System.out.println("  export-file          Export a file from blob storage");
+        System.out.println("  set-archive-status   Set product archive status");
         
         System.out.println();
         System.out.println("Search:");
-        System.out.println("  generate-solr-schema  Generate Elasticsearch schema from one or more PDS data dictionaries");        
-        System.out.println("  update-solr-schema    Update Elasticsearch schema from one or more PDS data dictionaries");
+        System.out.println("  generate-schema      Generate Elasticsearch schema from one or more PDS data dictionaries");        
+        System.out.println("  update-schema        Update Elasticsearch schema from one or more PDS data dictionaries");
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -help  Print help for a command");
@@ -160,7 +161,7 @@ public class RegistryManagerCli
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
 
-        // commands.put("generate-solr-schema", new GenerateSolrSchemaCmd());
+        commands.put("generate-schema", new GenerateSchemaCmd());
         // commands.put("update-solr-schema", new UpdateSolrSchemaCmd());
 
         // Data load / delete / edit

@@ -43,6 +43,7 @@
   </formats>
 
   <fileSets>
+
     <fileSet>
       <directory>target</directory>
       <outputDirectory>dist</outputDirectory>
@@ -59,14 +60,6 @@
     </fileSet>
 
     <fileSet>
-      <directory>src/main/resources/solr</directory>
-      <outputDirectory>/solr/</outputDirectory>
-      <fileMode>664</fileMode>
-      <directoryMode>664</directoryMode>
-      <lineEnding>keep</lineEnding>
-    </fileSet>
-
-    <fileSet>
       <directory>src/main/resources/bin</directory>
       <outputDirectory>/bin/</outputDirectory>
       <includes>
@@ -78,11 +71,19 @@
     </fileSet>
 
     <fileSet>
-      <directory>target/site</directory>
-      <outputDirectory>doc</outputDirectory>
+      <directory>src/main/resources/elastic</directory>
+      <outputDirectory>/elastic/</outputDirectory>
       <fileMode>664</fileMode>
       <lineEnding>keep</lineEnding>
     </fileSet>
+
+    <fileSet>
+      <directory>src/main/resources/schema-gen</directory>
+      <outputDirectory>/schema-gen/</outputDirectory>
+      <fileMode>664</fileMode>
+      <lineEnding>keep</lineEnding>
+    </fileSet>
+
   </fileSets>
 
   <files>

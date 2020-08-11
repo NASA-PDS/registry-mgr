@@ -32,7 +32,7 @@ public class CreateRegistryCmd implements CliCommand
         }
 
         String esUrl = cmdLine.getOptionValue("url", "http://localhost:9200");
-        File schemaFile = getSchemaFile(cmdLine.getOptionValue("path"));
+        File schemaFile = getSchemaFile(cmdLine.getOptionValue("schema"));
         
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         int shards = parseShards(cmdLine.getOptionValue("shards", "1"));
