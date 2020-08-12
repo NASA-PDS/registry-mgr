@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.cmd.CreateRegistryCmd;
+import gov.nasa.pds.registry.mgr.cmd.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
@@ -166,7 +167,7 @@ public class RegistryManagerCli
 
         // Data load / delete / edit
         commands.put("load-data", new LoadDataCmd());
-        //commands.put("delete-data", new DeleteDataCmd());
+        commands.put("delete-data", new DeleteDataCmd());
         //commands.put("export-data", new ExportDataCmd());
         //commands.put("export-file", new ExportFileCmd());
         //commands.put("set-archive-status", new SetArchiveStatusCmd());
@@ -182,7 +183,7 @@ public class RegistryManagerCli
         bld = Option.builder("help");
         options.addOption(bld.build());
         
-        bld = Option.builder("url").hasArg().argName("url");
+        bld = Option.builder("es").hasArg().argName("es");
         options.addOption(bld.build());
 
         bld = Option.builder("file").hasArg().argName("path");

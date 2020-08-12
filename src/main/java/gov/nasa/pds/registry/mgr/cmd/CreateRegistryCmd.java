@@ -31,7 +31,7 @@ public class CreateRegistryCmd implements CliCommand
             return;
         }
 
-        String esUrl = cmdLine.getOptionValue("url", "http://localhost:9200");
+        String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         File schemaFile = getSchemaFile(cmdLine.getOptionValue("schema"));
         
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
@@ -141,7 +141,7 @@ public class CreateRegistryCmd implements CliCommand
         System.out.println("Create registry index");
         System.out.println();
         System.out.println("Optional parameters:");
-        System.out.println("  -url <url>           Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -es <url>            Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>        Elasticsearch index name. Default is 'registry'");
         System.out.println("  -schema <path>       Elasticsearch index schema (JSON file)"); 
         System.out.println("                       Default value is $REGISTRY_MANAGER_HOME/elastic/registry.json");

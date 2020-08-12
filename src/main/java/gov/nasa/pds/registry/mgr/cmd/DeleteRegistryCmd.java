@@ -27,7 +27,7 @@ public class DeleteRegistryCmd implements CliCommand
             return;
         }
         
-        String esUrl = cmdLine.getOptionValue("url", "http://localhost:9200");
+        String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
 
         System.out.println("Elasticsearch URL: " + esUrl);
@@ -70,7 +70,7 @@ public class DeleteRegistryCmd implements CliCommand
         System.out.println("Delete registry index and all its data");
         System.out.println();
         System.out.println("Optional parameters:");
-        System.out.println("  -url <url>      Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
     }
 
