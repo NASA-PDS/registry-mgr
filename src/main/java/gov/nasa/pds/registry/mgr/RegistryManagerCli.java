@@ -16,6 +16,7 @@ import gov.nasa.pds.registry.mgr.cmd.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
+import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
 
@@ -170,7 +171,7 @@ public class RegistryManagerCli
         commands.put("delete-data", new DeleteDataCmd());
         //commands.put("export-data", new ExportDataCmd());
         //commands.put("export-file", new ExportFileCmd());
-        //commands.put("set-archive-status", new SetArchiveStatusCmd());
+        commands.put("set-archive-status", new SetArchiveStatusCmd());
     }
     
     

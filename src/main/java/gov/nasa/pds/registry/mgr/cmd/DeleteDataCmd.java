@@ -15,11 +15,14 @@ import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.EsQueryBuilder;
 import gov.nasa.pds.registry.mgr.util.EsUtils;
 
 
 public class DeleteDataCmd implements CliCommand
 {
+    private String filterMessage;
+
     public DeleteDataCmd()
     {
     }
@@ -45,6 +48,11 @@ public class DeleteDataCmd implements CliCommand
             printHelp();
             return;
         }
+
+        System.out.println("Elasticsearch URL: " + esUrl);
+        System.out.println("            Index: " + indexName);
+        System.out.println(filterMessage);
+        System.out.println();
         
         RestClient client = null;
         
@@ -96,44 +104,38 @@ public class DeleteDataCmd implements CliCommand
     }
     
     
-    private String buildEsQuery(CommandLine cmdLine)
+    private String buildEsQuery(CommandLine cmdLine) throws Exception
     {
+        EsQueryBuilder bld = new EsQueryBuilder();
+        
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)
         {
-            return createMatchQuery("lidvid", id);
+            filterMessage = "           LIDVID: " + id;
+            return bld.createFilterQuery("lidvid", id);
         }
         
         id = cmdLine.getOptionValue("lid");
         if(id != null)
         {
-            return createMatchQuery("lid", id);
+            filterMessage = "              LID: " + id;
+            return bld.createFilterQuery("lid", id);
         }
 
         id = cmdLine.getOptionValue("packageId");
         if(id != null)
         {
-            return createMatchQuery("_package_id", id);
+            filterMessage = "       Package ID: " + id;            
+            return bld.createFilterQuery("_package_id", id);
         }
 
         if(cmdLine.hasOption("all"))
         {
-            return createMatchAllQuery();
+            filterMessage = "Delete all documents ";
+            return bld.createMatchAllQuery();
         }
-        
+
         return null;
-    }
-    
-    
-    private static String createMatchQuery(String field, String value)
-    {
-        return "{\"query\": {\"match\": {\"" + field + "\": \"" + value + "\"}}}";        
-    }
-    
-    
-    private static String createMatchAllQuery()
-    {
-        return "{\"query\": {\"match_all\": {}}}";
     }
     
     

@@ -2,6 +2,7 @@ package gov.nasa.pds.registry.mgr.util;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import com.google.gson.stream.JsonWriter;
 
@@ -22,66 +23,65 @@ public class EsQueryBuilder
     }
 
     
-    public String createUpdateStatusJson(String status, String field, String value) throws IOException
+    private JsonWriter createJsonWriter(Writer writer)
     {
-        StringWriter out = new StringWriter();
-        JsonWriter writer = new JsonWriter(out);
+        JsonWriter jw = new JsonWriter(writer);
         if(pretty)
         {
-            writer.setIndent("  ");
+            jw.setIndent("  ");
         }
         
+        return jw;
+    }
+    
+
+    public String createFilterQuery(String field, String value) throws IOException
+    {
+        StringWriter out = new StringWriter();
+        JsonWriter writer = createJsonWriter(out);
+
         writer.beginObject();
-        // Script
-        writer.name("script").value("ctx._source.archive_status = '" + status + "'");
-        // Query
-        appendFilterQuery(writer, field, value);
-        writer.endObject();        
+        EsQueryUtils.appendFilterQuery(writer, field, value);
+        writer.endObject();
+        
+        writer.close();
+        return out.toString();
+    }
+
+    
+    public String createMatchAllQuery() throws IOException
+    {
+        StringWriter out = new StringWriter();
+        JsonWriter writer = createJsonWriter(out);
+
+        writer.beginObject();
+        
+        writer.name("query");
+        writer.beginObject();
+        EsQueryUtils.appendMatchAll(writer);
+        writer.endObject();
+
+        writer.endObject();
         
         writer.close();
         return out.toString();
     }
     
-
-    private static void appendFilterQuery(JsonWriter writer, String field, String value) throws IOException
-    {
-        writer.name("query");
-        writer.beginObject();
-
-        writer.name("bool");
-        writer.beginObject();
-        appendMustMatchAll(writer);
-        appendTermFilter(writer, field, value);
-        writer.endObject();
-
-        writer.endObject();
-    }
     
-    
-    private static void appendMustMatchAll(JsonWriter writer) throws IOException
+    public String createUpdateStatusJson(String status, String field, String value) throws IOException
     {
-        writer.name("must");
+        StringWriter out = new StringWriter();
+        JsonWriter writer = createJsonWriter(out);
+        
         writer.beginObject();
-
-        writer.name("match_all");
-        writer.beginObject();
+        // Script
+        writer.name("script").value("ctx._source.archive_status = '" + status + "'");
+        // Query
+        EsQueryUtils.appendFilterQuery(writer, field, value);
         writer.endObject();
-
-        writer.endObject();
-    }
-
-
-    private static void appendTermFilter(JsonWriter writer, String field, String value) throws IOException
-    {
-        writer.name("filter");
-        writer.beginObject();
-
-        writer.name("term");
-        writer.beginObject();
-        writer.name(field).value(value);
-        writer.endObject();
-
-        writer.endObject();
+        
+        writer.close();
+        return out.toString();
     }
 
 }

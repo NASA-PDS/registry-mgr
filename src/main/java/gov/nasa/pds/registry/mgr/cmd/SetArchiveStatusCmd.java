@@ -25,6 +25,7 @@ public class SetArchiveStatusCmd implements CliCommand
 {
     private Set<String> statusNames; 
 
+    private String filterMessage;
 
     public SetArchiveStatusCmd()
     {
@@ -64,12 +65,15 @@ public class SetArchiveStatusCmd implements CliCommand
         String query = buildEsQuery(cmdLine, status);
         if(query == null)
         {
-            System.out.println("[ERROR] One of the following options is required: -lidvid, -lid, -packageId, -all");
-            System.out.println();
-            printHelp();
-            return;
+            throw new Exception("One of the following options is required: -lidvid, -packageId");
         }
-        
+
+        System.out.println("Elasticsearch URL: " + esUrl);
+        System.out.println("            Index: " + indexName);
+        System.out.println("       New status: " + status);
+        System.out.println(filterMessage);
+        System.out.println();
+
         RestClient client = null;
         
         try
@@ -125,6 +129,7 @@ public class SetArchiveStatusCmd implements CliCommand
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)
         {
+            filterMessage = "           LIDVID: " + id;
             EsQueryBuilder bld = new EsQueryBuilder();
             return bld.createUpdateStatusJson(status, "lidvid", id);
         }
@@ -132,6 +137,7 @@ public class SetArchiveStatusCmd implements CliCommand
         id = cmdLine.getOptionValue("packageId");
         if(id != null)
         {
+            filterMessage = "       Package ID: " + id;
             EsQueryBuilder bld = new EsQueryBuilder();
             return bld.createUpdateStatusJson(status, "_package_id", id);
         }
