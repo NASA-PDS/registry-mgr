@@ -37,10 +37,10 @@ public class DeleteDataCmd implements CliCommand
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
 
-        String query = buildSolrQuery(cmdLine);
+        String query = buildEsQuery(cmdLine);
         if(query == null)
         {
-            System.out.println("ERROR: One of the following options is required: -lidvid, -lid, -packageId, -all");
+            System.out.println("[ERROR] One of the following options is required: -lidvid, -lid, -packageId, -all");
             System.out.println();
             printHelp();
             return;
@@ -96,7 +96,7 @@ public class DeleteDataCmd implements CliCommand
     }
     
     
-    private String buildSolrQuery(CommandLine cmdLine)
+    private String buildEsQuery(CommandLine cmdLine)
     {
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)
