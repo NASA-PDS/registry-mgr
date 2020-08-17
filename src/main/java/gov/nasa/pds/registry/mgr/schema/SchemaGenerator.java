@@ -148,6 +148,8 @@ public class SchemaGenerator
     
     private void addEsField(String name, String type) throws Exception
     {
+        name = name.replaceAll("\\.", "\\$");
+        
         if(existingFieldNames.contains(name)) return;        
         existingFieldNames.add(name);
         

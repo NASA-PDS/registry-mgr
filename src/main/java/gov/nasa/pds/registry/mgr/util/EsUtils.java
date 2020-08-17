@@ -71,7 +71,9 @@ public class EsUtils
     
     public static void updateMappings(RestClient client, String indexName, String json) throws Exception
     {
-        
+        Request req = new Request("PUT", "/" + indexName + "/_mapping");
+        req.setJsonEntity(json);
+        Response resp = client.performRequest(req);
     }
     
     

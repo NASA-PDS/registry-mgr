@@ -21,7 +21,6 @@ public class UpdateSchemaCmd implements CliCommand
 {
     public UpdateSchemaCmd()
     {
-        // NOTE: Do not get logger here. It is not initialized yet!
     }
     
     

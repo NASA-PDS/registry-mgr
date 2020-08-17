@@ -37,7 +37,7 @@ public class Pds2EsDataTypeMap
     {
         str = str.toLowerCase();
         if(str.contains("_real")) return "double";
-        if(str.contains("_integer")) return "int";
+        if(str.contains("_integer")) return "integer";
         if(str.contains("_string")) return "keyword";
         if(str.contains("_text")) return "text";
         if(str.contains("_date")) return "date";

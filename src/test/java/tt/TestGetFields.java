@@ -14,7 +14,7 @@ public class TestGetFields
     {
         RestClient client = EsClientBuilder.createClient("localhost");
         
-        Set<String> names = EsUtils.getFieldNames(client, "registry");
+        Set<String> names = EsUtils.getFieldNames(client, "t1");
         for(String name: names)
         {
             System.out.println(name);

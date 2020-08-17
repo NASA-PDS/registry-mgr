@@ -155,7 +155,7 @@ public class SchemaUpdater
                 String fieldName = tokens[0].trim();
                 String fieldType = tokens[1].trim();                
                 
-                addField(fieldName, fieldType);
+                addEsField(fieldName, fieldType);
             }
         }
         finally
@@ -174,15 +174,16 @@ public class SchemaUpdater
             
             String fieldName = ddClass.nsName + "." + attr.nsName;
             String solrDataType = dtMap.getEsType(pdsDataType);
-            addField(fieldName, solrDataType);
+            addEsField(fieldName, solrDataType);
         }
     }
 
     
-    private void addField(String name, String type) throws Exception
+    private void addEsField(String name, String type) throws Exception
     {
-        if(existingFieldNames.contains(name)) return;
+        name = name.replaceAll("\\.", "\\$");
         
+        if(existingFieldNames.contains(name)) return;
         existingFieldNames.add(name);
         
         // Create add field request to the batch
