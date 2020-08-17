@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
 import gov.nasa.pds.registry.mgr.util.EsQueryBuilder;
 import gov.nasa.pds.registry.mgr.util.EsUtils;
 
@@ -79,7 +80,7 @@ public class SetArchiveStatusCmd implements CliCommand
         try
         {
             // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl);
+            client = EsClientBuilder.createClient(esUrl);
 
             // Create request
             Request req = new Request("POST", "/" + indexName + "/_update_by_query");

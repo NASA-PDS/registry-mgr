@@ -17,6 +17,7 @@ import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
+import gov.nasa.pds.registry.mgr.cmd.UpdateSchemaCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
 
@@ -164,7 +165,7 @@ public class RegistryManagerCli
         commands.put("delete-registry", new DeleteRegistryCmd());
 
         commands.put("generate-schema", new GenerateSchemaCmd());
-        // commands.put("update-solr-schema", new UpdateSolrSchemaCmd());
+        commands.put("update-schema", new UpdateSchemaCmd());
 
         // Data load / delete / edit
         commands.put("load-data", new LoadDataCmd());

@@ -3,11 +3,10 @@ package gov.nasa.pds.registry.mgr.schema;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.stream.JsonWriter;
+import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
 import gov.nasa.pds.registry.mgr.schema.dd.DDAttr;
@@ -15,32 +14,54 @@ import gov.nasa.pds.registry.mgr.schema.dd.DDClass;
 import gov.nasa.pds.registry.mgr.schema.dd.DataDictionary;
 import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.EsUtils;
 
 
-public class SchemaGenerator
+/**
+ * Updates Elasticsearch schema by calling Elasticsearch API  
+ * @author karpenko
+ */
+public class SchemaUpdater
 {
     private Configuration cfg;
-    private JsonWriter writer;
-    
     private Pds2EsDataTypeMap dtMap;
+    
+    private RestClient client;
+    private String indexName;
+    
     private Set<String> existingFieldNames;
     
-
-    public SchemaGenerator(Configuration cfg, JsonWriter writer) throws Exception
+    private UpdateBatch batch;
+    private int totalCount;
+    private int lastBatchCount;
+    private int batchSize = 100;
+    
+    /**
+     * Constructor 
+     * @param cfg Registry manager configuration
+     * @param client Elasticsearch client
+     * @param indexName Elasticsearch index name
+     * @throws Exception
+     */
+    public SchemaUpdater(Configuration cfg, RestClient client, String indexName) throws Exception
     {
-        if(cfg == null) throw new IllegalArgumentException("Missing configuration parameter.");
-        if(writer == null) throw new IllegalArgumentException("Missing writer parameter.");
-        
         this.cfg = cfg;
-        this.writer = writer;
-
-        // Load PDS to Elasticsearch data type mapping files
+        this.client = client;
+        this.indexName = indexName;
+        
+        // Load PDS to Solr data type mapping files
         dtMap = loadDataTypeMap();
-
-        existingFieldNames = new HashSet<String>(2000);
+        
+        // Get a list of existing field names from Solr
+        this.existingFieldNames = EsUtils.getFieldNames(client, indexName);
     }
 
-    
+
+    /**
+     * Load PDS to Elasticsearch data type map(s)
+     * @return
+     * @throws Exception
+     */
     private Pds2EsDataTypeMap loadDataTypeMap() throws Exception
     {
         Pds2EsDataTypeMap map = new Pds2EsDataTypeMap();
@@ -55,9 +76,18 @@ public class SchemaGenerator
         return map;
     }
 
-
-    public void generateSolrSchema(DataDictionary dd) throws Exception
+    
+    /**
+     * Add fields from data dictionary to Elasticsearch schema. Ignore existing fields.
+     * @param dd
+     * @throws Exception
+     */
+    public void updateSchema(DataDictionary dd) throws Exception
     {
+        lastBatchCount = 0;
+        totalCount = 0;
+        batch = new UpdateBatch();
+        
         Map<String, String> attrId2Type = dd.getAttributeDataTypeMap();
         Set<String> dataTypes = dd.getDataTypes();
         
@@ -86,6 +116,8 @@ public class SchemaGenerator
                 addClassAttributes(ddClass, attrId2Type);
             }
         }
+        
+        finish();
     }
     
     
@@ -122,7 +154,8 @@ public class SchemaGenerator
                 
                 String fieldName = tokens[0].trim();
                 String fieldType = tokens[1].trim();                
-                addEsField(fieldName, fieldType);
+                
+                addField(fieldName, fieldType);
             }
         }
         finally
@@ -140,20 +173,41 @@ public class SchemaGenerator
             if(pdsDataType == null) throw new Exception("No data type mapping for attribute " + attr.id);
             
             String fieldName = ddClass.nsName + "." + attr.nsName;
-            String esDataType = dtMap.getEsType(pdsDataType);
-            addEsField(fieldName, esDataType);
+            String solrDataType = dtMap.getEsType(pdsDataType);
+            addField(fieldName, solrDataType);
         }
     }
 
     
-    private void addEsField(String name, String type) throws Exception
+    private void addField(String name, String type) throws Exception
     {
-        if(existingFieldNames.contains(name)) return;        
+        if(existingFieldNames.contains(name)) return;
+        
         existingFieldNames.add(name);
         
-        writer.name(name);
-        writer.beginObject();
-        writer.name("type").value(type);
-        writer.endObject();
+        // Create add field request to the batch
+        batch.addField(name, type);
+        totalCount++;
+
+        // Commit if reached batch/commit size
+        if(totalCount % batchSize == 0)
+        {
+            System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
+            EsUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+            lastBatchCount = totalCount;
+            batch = new UpdateBatch();
+        }
     }
+    
+    
+    private void finish() throws Exception
+    {
+        if(batch.isEmpty()) return;
+        
+        System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
+        EsUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+        lastBatchCount = totalCount;
+    }
+    
+    
 }

@@ -15,6 +15,7 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
 import gov.nasa.pds.registry.mgr.util.EsUtils;
 
 
@@ -60,7 +61,7 @@ public class LoadDataCmd implements CliCommand
         try
         {
             // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl);
+            client = EsClientBuilder.createClient(esUrl);
             
             for(File file: files)
             {
