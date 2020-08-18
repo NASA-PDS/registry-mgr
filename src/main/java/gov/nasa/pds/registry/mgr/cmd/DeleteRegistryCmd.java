@@ -8,8 +8,8 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
-import gov.nasa.pds.registry.mgr.util.EsUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class DeleteRegistryCmd implements CliCommand

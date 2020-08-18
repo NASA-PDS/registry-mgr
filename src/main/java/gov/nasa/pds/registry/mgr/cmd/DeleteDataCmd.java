@@ -15,9 +15,9 @@ import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
-import gov.nasa.pds.registry.mgr.util.EsQueryBuilder;
-import gov.nasa.pds.registry.mgr.util.EsUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class DeleteDataCmd implements CliCommand
@@ -44,10 +44,7 @@ public class DeleteDataCmd implements CliCommand
         String query = buildEsQuery(cmdLine);
         if(query == null)
         {
-            System.out.println("[ERROR] One of the following options is required: -lidvid, -lid, -packageId, -all");
-            System.out.println();
-            printHelp();
-            return;
+            throw new Exception("One of the following options is required: -lidvid, -lid, -packageId, -all");
         }
 
         System.out.println("Elasticsearch URL: " + esUrl);
@@ -107,7 +104,7 @@ public class DeleteDataCmd implements CliCommand
     
     private String buildEsQuery(CommandLine cmdLine) throws Exception
     {
-        EsQueryBuilder bld = new EsQueryBuilder();
+        EsRequestBuilder bld = new EsRequestBuilder();
         
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)

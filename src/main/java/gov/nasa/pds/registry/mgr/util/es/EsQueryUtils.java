@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util;
+package gov.nasa.pds.registry.mgr.util.es;
 
 import java.io.IOException;
 
@@ -10,6 +10,15 @@ public class EsQueryUtils
     {
         writer.name("match_all");
         writer.beginObject();
+        writer.endObject();
+    }
+
+
+    public static void appendMatchAllQuery(JsonWriter writer) throws IOException
+    {
+        writer.name("query");
+        writer.beginObject();
+        appendMatchAll(writer);
         writer.endObject();
     }
 

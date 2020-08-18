@@ -14,7 +14,7 @@ import gov.nasa.pds.registry.mgr.schema.dd.DDClass;
 import gov.nasa.pds.registry.mgr.schema.dd.DataDictionary;
 import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.EsUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
 
 
 /**
@@ -53,7 +53,7 @@ public class SchemaUpdater
         dtMap = loadDataTypeMap();
         
         // Get a list of existing field names from Solr
-        this.existingFieldNames = EsUtils.getFieldNames(client, indexName);
+        this.existingFieldNames = EsSchemaUtils.getFieldNames(client, indexName);
     }
 
 
@@ -194,7 +194,7 @@ public class SchemaUpdater
         if(totalCount % batchSize == 0)
         {
             System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-            EsUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+            EsSchemaUtils.updateMappings(client, indexName, batch.closeAndGetJson());
             lastBatchCount = totalCount;
             batch = new UpdateBatch();
         }
@@ -206,7 +206,7 @@ public class SchemaUpdater
         if(batch.isEmpty()) return;
         
         System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-        EsUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+        EsSchemaUtils.updateMappings(client, indexName, batch.closeAndGetJson());
         lastBatchCount = totalCount;
     }
     

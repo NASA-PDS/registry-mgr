@@ -2,7 +2,8 @@ package tt;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
-import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
+
+import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
 
 
 public class TestRestClient

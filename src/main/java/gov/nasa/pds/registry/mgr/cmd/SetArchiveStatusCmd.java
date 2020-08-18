@@ -17,9 +17,9 @@ import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.EsClientBuilder;
-import gov.nasa.pds.registry.mgr.util.EsQueryBuilder;
-import gov.nasa.pds.registry.mgr.util.EsUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class SetArchiveStatusCmd implements CliCommand
@@ -131,16 +131,16 @@ public class SetArchiveStatusCmd implements CliCommand
         if(id != null)
         {
             filterMessage = "           LIDVID: " + id;
-            EsQueryBuilder bld = new EsQueryBuilder();
-            return bld.createUpdateStatusJson(status, "lidvid", id);
+            EsRequestBuilder bld = new EsRequestBuilder();
+            return bld.createUpdateStatusRequest(status, "lidvid", id);
         }
         
         id = cmdLine.getOptionValue("packageId");
         if(id != null)
         {
             filterMessage = "       Package ID: " + id;
-            EsQueryBuilder bld = new EsQueryBuilder();
-            return bld.createUpdateStatusJson(status, "_package_id", id);
+            EsRequestBuilder bld = new EsRequestBuilder();
+            return bld.createUpdateStatusRequest(status, "_package_id", id);
         }
 
         return null;

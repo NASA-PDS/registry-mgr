@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util;
+package gov.nasa.pds.registry.mgr.util.es;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
