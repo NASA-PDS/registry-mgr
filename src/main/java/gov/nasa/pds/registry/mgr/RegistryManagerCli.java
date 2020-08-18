@@ -14,6 +14,7 @@ import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.cmd.CreateRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
+import gov.nasa.pds.registry.mgr.cmd.ExportDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
@@ -83,23 +84,11 @@ public class RegistryManagerCli
             System.exit(1);
         }
 
-        // Init logger
-        initLogger();
-        
         // Run command
         if(!runCommand())
         {
             System.exit(1);
         }        
-    }
-
-
-    private void initLogger()
-    {
-        String verbosity = cmdLine.getOptionValue("v", "1");
-        String logFile = cmdLine.getOptionValue("log");
-
-        //Log4jConfigurator.configure(verbosity, logFile);
     }
 
     
@@ -170,7 +159,7 @@ public class RegistryManagerCli
         // Data load / delete / edit
         commands.put("load-data", new LoadDataCmd());
         commands.put("delete-data", new DeleteDataCmd());
-        //commands.put("export-data", new ExportDataCmd());
+        commands.put("export-data", new ExportDataCmd());
         //commands.put("export-file", new ExportFileCmd());
         commands.put("set-archive-status", new SetArchiveStatusCmd());
     }

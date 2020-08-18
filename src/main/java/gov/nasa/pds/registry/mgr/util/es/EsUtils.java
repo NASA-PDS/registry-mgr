@@ -36,7 +36,17 @@ public class EsUtils
             Object obj = gson.fromJson(json, Object.class);
             
             obj = ((Map)obj).get("error");
-            obj = ((Map)obj).get("reason");
+            
+            Object rc = ((Map)obj).get("root_cause");
+            if(rc != null)
+            {
+                List list = (List)rc;
+                obj = ((Map)list.get(0)).get("reason");
+            }
+            else
+            {
+                obj = ((Map)obj).get("reason");
+            }
             
             return obj.toString();
         }
