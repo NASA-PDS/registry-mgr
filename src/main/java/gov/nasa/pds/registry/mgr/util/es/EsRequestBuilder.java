@@ -83,7 +83,10 @@ public class EsRequestBuilder
         // "search_after" parameter is used for pagination
         if(searchAfter != null)
         {
-            writer.name("search_after").value(searchAfter);
+            writer.name("search_after");
+            writer.beginArray();
+            writer.value(searchAfter);
+            writer.endArray();
         }
         
         // Sort is required by pagination

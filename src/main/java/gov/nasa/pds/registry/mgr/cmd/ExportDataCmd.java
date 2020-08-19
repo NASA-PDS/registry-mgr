@@ -19,7 +19,7 @@ import gov.nasa.pds.registry.mgr.util.es.SearchResponseParser;
 
 public class ExportDataCmd implements CliCommand
 {
-    private static final int BATCH_SIZE = 3;
+    private static final int BATCH_SIZE = 100;
     
     private String filterFieldName;
     private String filterFieldValue;
@@ -68,45 +68,39 @@ public class ExportDataCmd implements CliCommand
         try
         {
             writer = new EsDocWriter(new File(filePath));
-            
             client = EsClientBuilder.createClient(esUrl);
-            
-            String json = (filterFieldName == null) ? 
-                    reqBld.createExportAllDataRequest(BATCH_SIZE, null) :
-                    reqBld.createExportDataRequest(filterFieldName, filterFieldValue, BATCH_SIZE, null);
-
-            Request req = new Request("GET", "/" + indexName + "/_search");
-            req.setJsonEntity(json);
-            
-            // Execute request
-            Response resp = client.performRequest(req);
-            //DebugUtils.dumpResponseBody(resp);
-            
             SearchResponseParser parser = new SearchResponseParser();
-            parser.parseResponse(resp, writer);
             
-/*            
-            SolrQuery solrQuery = new SolrQuery(query);
-
-            // Sort is required by Solr cursor
-            solrQuery.setSort(SortClause.asc("lidvid"));
-            solrQuery.setRows(BATCH_SIZE);
-
+            String searchAfter = null;
             int numDocs = 0;
             
-            SolrCursor cursor = new SolrCursor(client, collectionName, solrQuery);
-            while(cursor.next())
+            do
             {
-                SolrDocumentList docs = cursor.getResults();
-                writer.write(docs);
+                String json = (filterFieldName == null) ? 
+                        reqBld.createExportAllDataRequest(BATCH_SIZE, searchAfter) :
+                        reqBld.createExportDataRequest(filterFieldName, filterFieldValue, BATCH_SIZE, searchAfter);
+    
+                Request req = new Request("GET", "/" + indexName + "/_search");
+                req.setJsonEntity(json);
                 
-                numDocs += docs.size();
-                if(docs.size() != 0)
+                Response resp = client.performRequest(req);
+                parser.parseResponse(resp, writer);
+                
+                numDocs += parser.getNumDocs();
+                searchAfter = parser.getLastId();
+                
+                if(parser.getNumDocs() != 0)
                 {
                     System.out.println("Exported " + numDocs + " document(s)");
                 }
             }
-*/            
+            while(parser.getNumDocs() == BATCH_SIZE);
+
+            if(numDocs == 0)
+            {
+                System.out.println("No documents found");
+            }
+            
             System.out.println("Done");
         }
         catch(ResponseException ex)

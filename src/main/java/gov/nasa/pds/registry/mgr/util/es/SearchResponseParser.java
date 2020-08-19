@@ -14,13 +14,14 @@ public class SearchResponseParser
 {
     public static interface Callback
     {
-        public void onRecord(String id, Object rec);
+        public void onRecord(String id, Object rec) throws Exception;
     }
     
     
     private Callback cb;
     private Gson gson = new Gson();
     private String lastId;
+    private int numDocs;
 
     
     public SearchResponseParser()
@@ -34,12 +35,19 @@ public class SearchResponseParser
     }
     
     
+    public int getNumDocs()
+    {
+        return numDocs;
+    }
+
+    
     public void parseResponse(Response resp, Callback cb) throws Exception
     {
         if(cb == null) throw new IllegalArgumentException("Callback is null");
         this.cb = cb;
         
         lastId = null;
+        numDocs = 0;
         
         InputStream is = resp.getEntity().getContent();
         JsonReader rd = new JsonReader(new InputStreamReader(is));
@@ -116,6 +124,7 @@ public class SearchResponseParser
         
         rd.endObject();
 
+        numDocs++;
         cb.onRecord(lastId, src);
     }    
 
