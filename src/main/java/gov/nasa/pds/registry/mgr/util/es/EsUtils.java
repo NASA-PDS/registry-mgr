@@ -28,7 +28,7 @@ public class EsUtils
     
     
     @SuppressWarnings("rawtypes")
-    private static String extractReasonFromJson(String json)
+    public static String extractReasonFromJson(String json)
     {
         try
         {

@@ -42,10 +42,7 @@ public class LoadDataCmd implements CliCommand
         String filePath = cmdLine.getOptionValue("file");
         if(filePath == null) 
         {
-            System.out.println("[ERROR] Missing required parameter '-file'");
-            System.out.println();
-            printHelp();
-            return;
+            throw new Exception("Missing required parameter '-file'");
         }
         
         List<File> files = getFiles(filePath);

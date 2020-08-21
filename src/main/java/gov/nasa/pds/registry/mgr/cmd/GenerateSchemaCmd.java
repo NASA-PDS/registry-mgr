@@ -34,10 +34,7 @@ public class GenerateSchemaCmd implements CliCommand
         String cfgPath = cmdLine.getOptionValue("config");
         if(cfgPath == null)
         {
-            System.out.println("[ERROR] Missing required parameter '-config'");
-            System.out.println();
-            printHelp();
-            return;
+            throw new Exception("Missing required parameter '-config'");
         }
         
         // Read configuration file

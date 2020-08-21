@@ -5,7 +5,7 @@ import java.io.StringWriter;
 
 import com.google.gson.stream.JsonWriter;
 
-public class UpdateBatch
+public class UpdateSchemaBatch
 {
     private StringWriter buf;
     private JsonWriter writer;
@@ -13,13 +13,13 @@ public class UpdateBatch
     private boolean empty = true;
     
     
-    public UpdateBatch() throws IOException
+    public UpdateSchemaBatch() throws IOException
     {
         this(false);
     }
     
     
-    public UpdateBatch(boolean pretty) throws IOException
+    public UpdateSchemaBatch(boolean pretty) throws IOException
     {
         buf = new StringWriter();
         writer = new JsonWriter(buf);

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.elasticsearch.client.RestClient;
 
+import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
 import gov.nasa.pds.registry.mgr.schema.dd.DDAttr;
 import gov.nasa.pds.registry.mgr.schema.dd.DDClass;
@@ -31,7 +32,7 @@ public class SchemaUpdater
     
     private Set<String> existingFieldNames;
     
-    private UpdateBatch batch;
+    private UpdateSchemaBatch batch;
     private int totalCount;
     private int lastBatchCount;
     private int batchSize = 100;
@@ -86,7 +87,7 @@ public class SchemaUpdater
     {
         lastBatchCount = 0;
         totalCount = 0;
-        batch = new UpdateBatch();
+        batch = new UpdateSchemaBatch();
         
         Map<String, String> attrId2Type = dd.getAttributeDataTypeMap();
         Set<String> dataTypes = dd.getDataTypes();
@@ -181,7 +182,7 @@ public class SchemaUpdater
     
     private void addEsField(String name, String type) throws Exception
     {
-        name = name.replaceAll("\\.", "\\$");
+        name = name.replaceAll("\\.", Constants.REPLACE_DOT_WITH);
         
         if(existingFieldNames.contains(name)) return;
         existingFieldNames.add(name);
@@ -196,7 +197,7 @@ public class SchemaUpdater
             System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
             EsSchemaUtils.updateMappings(client, indexName, batch.closeAndGetJson());
             lastBatchCount = totalCount;
-            batch = new UpdateBatch();
+            batch = new UpdateSchemaBatch();
         }
     }
     

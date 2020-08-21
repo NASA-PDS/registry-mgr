@@ -13,6 +13,13 @@ public class DebugUtils
     public static void dumpResponseBody(Response resp) throws IOException
     {
         InputStream is = resp.getEntity().getContent();
+        dump(is);
+        is.close();
+    }
+    
+
+    public static void dump(InputStream is) throws IOException
+    {
         BufferedReader rd = new BufferedReader(new InputStreamReader(is));
         
         String line;
@@ -20,7 +27,5 @@ public class DebugUtils
         {
             System.out.println(line);
         }
-
-        is.close();
     }
 }

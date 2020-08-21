@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.google.gson.stream.JsonWriter;
 
+import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
 import gov.nasa.pds.registry.mgr.schema.dd.DDAttr;
 import gov.nasa.pds.registry.mgr.schema.dd.DDClass;
@@ -148,7 +149,7 @@ public class SchemaGenerator
     
     private void addEsField(String name, String type) throws Exception
     {
-        name = name.replaceAll("\\.", "\\$");
+        name = name.replaceAll("\\.", Constants.REPLACE_DOT_WITH);
         
         if(existingFieldNames.contains(name)) return;        
         existingFieldNames.add(name);
