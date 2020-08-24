@@ -3,8 +3,6 @@ package gov.nasa.pds.registry.mgr.cmd;
 import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
@@ -13,6 +11,7 @@ import org.elasticsearch.client.RestClient;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
+import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
@@ -57,7 +56,9 @@ public class CreateRegistryCmd implements CliCommand
             
             // Create request
             Request req = new Request("PUT", "/" + indexName);
-            req.setEntity(new FileEntity(schemaFile, ContentType.APPLICATION_JSON));
+            EsRequestBuilder bld = new EsRequestBuilder();
+            String jsonReq = bld.createCreateRegistryRequest(schemaFile, shards, replicas);
+            req.setJsonEntity(jsonReq);
 
             // Execute request
             Response resp = client.performRequest(req);

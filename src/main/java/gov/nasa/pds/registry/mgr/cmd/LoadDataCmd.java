@@ -7,16 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.http.entity.FileEntity;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
-import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
-import gov.nasa.pds.registry.mgr.util.es.EsUtils;
+import gov.nasa.pds.registry.mgr.util.es.DataLoader;
 
 
 public class LoadDataCmd implements CliCommand
@@ -53,28 +46,14 @@ public class LoadDataCmd implements CliCommand
         System.out.println("            Index: " + indexName);
         System.out.println();
 
-        RestClient client = null;
+        DataLoader loader = new DataLoader(esUrl, indexName);
         
-        try
+        for(File file: files)
         {
-            // Create Elasticsearch client
-            client = EsClientBuilder.createClient(esUrl);
-            
-            for(File file: files)
-            {
-                loadFile(client, indexName, file);
-            }
-            
-            System.out.println("Done");
+            loader.loadFile(file);
         }
-        catch(ResponseException ex)
-        {
-            throw new Exception(EsUtils.extractErrorMessage(ex));
-        }
-        finally
-        {
-            CloseUtils.close(client);
-        }
+        
+        System.out.println("Done");
     }
 
     
@@ -120,22 +99,6 @@ public class LoadDataCmd implements CliCommand
             list.add(file);
             return list;
         }
-    }
-    
-    
-    private void loadFile(RestClient client, String indexName, File file) throws Exception
-    {
-        System.out.println("Loading file: " + file.getAbsolutePath());
-    
-        // Create request
-        Request req = new Request("POST", "/" + indexName + "/_bulk");
-
-        FileEntity content = new FileEntity(file);
-        content.setContentType("application/x-ndjson");     // New-line-delimited JSON
-        req.setEntity(content);
-
-        // Execute request
-        Response resp = client.performRequest(req);
     }
     
     

@@ -1,10 +1,16 @@
 package gov.nasa.pds.registry.mgr.util.es;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
+
+import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 public class EsRequestBuilder
 {
@@ -35,6 +41,40 @@ public class EsRequestBuilder
     }
     
 
+    public String createCreateRegistryRequest(File schemaFile, int shards, int replicas) throws Exception
+    {
+        // Read schema template
+        FileReader rd = new FileReader(schemaFile);
+        Gson gson = new Gson();
+        Object rootObj = gson.fromJson(rd, Object.class);
+        CloseUtils.close(rd);
+        
+        Object mappings = ((Map)rootObj).get("mappings");
+        if(mappings == null) throw new Exception("Missing mappings in schema file " + schemaFile.getAbsolutePath());
+        
+        StringWriter out = new StringWriter();
+        JsonWriter writer = createJsonWriter(out);
+        
+        writer.beginObject();
+        
+        // Settings
+        writer.name("settings");
+        writer.beginObject();
+        writer.name("number_of_shards").value(shards);
+        writer.name("number_of_replicas").value(replicas);
+        writer.endObject();
+
+        // Mappings
+        writer.name("mappings");
+        gson.toJson(mappings, Object.class, writer);
+
+        writer.endObject();
+        
+        writer.close();
+        return out.toString();
+    }
+    
+    
     public String createExportDataRequest(String field, String value, int size, String searchAfter) throws IOException
     {
         StringWriter out = new StringWriter();

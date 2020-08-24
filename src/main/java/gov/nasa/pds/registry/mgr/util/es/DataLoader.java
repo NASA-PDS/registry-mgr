@@ -75,7 +75,7 @@ public class DataLoader
     }
 
     
-    public String loadBatch(BufferedReader fileReader, String firstLine) throws Exception
+    private String loadBatch(BufferedReader fileReader, String firstLine) throws Exception
     {
         HttpURLConnection con = null;
         
