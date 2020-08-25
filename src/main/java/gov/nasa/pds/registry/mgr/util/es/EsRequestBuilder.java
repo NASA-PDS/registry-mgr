@@ -41,6 +41,7 @@ public class EsRequestBuilder
     }
     
 
+    @SuppressWarnings("rawtypes")
     public String createCreateRegistryRequest(File schemaFile, int shards, int replicas) throws Exception
     {
         // Read schema template
@@ -48,7 +49,7 @@ public class EsRequestBuilder
         Gson gson = new Gson();
         Object rootObj = gson.fromJson(rd, Object.class);
         CloseUtils.close(rd);
-        
+                
         Object mappings = ((Map)rootObj).get("mappings");
         if(mappings == null) throw new Exception("Missing mappings in schema file " + schemaFile.getAbsolutePath());
         
@@ -141,6 +142,28 @@ public class EsRequestBuilder
         return out.toString();
     }
 
+
+    public String createGetBlobRequest(String lidvid) throws IOException
+    {
+        StringWriter out = new StringWriter();
+        JsonWriter writer = createJsonWriter(out);
+
+        writer.beginObject();
+        
+        // Return only BLOB
+        writer.name("_source");
+        writer.beginArray();
+        writer.value("_file_blob");
+        writer.endArray();
+        
+        // Query
+        EsQueryUtils.appendFilterQuery(writer, "lidvid", lidvid);
+        writer.endObject();
+        
+        writer.close();
+        return out.toString();
+    }
+    
     
     public String createFilterQuery(String field, String value) throws IOException
     {
