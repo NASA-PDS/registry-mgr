@@ -72,7 +72,7 @@ public class UpdateSchemaCmd implements CliCommand
     
     public void printHelp()
     {
-        System.out.println("Usage: registry-manager update-solr-schema <options>");
+        System.out.println("Usage: registry-manager update-schema <options>");
 
         System.out.println();
         System.out.println("Update Elasticsearch schema from one or more PDS data dictionaries.");

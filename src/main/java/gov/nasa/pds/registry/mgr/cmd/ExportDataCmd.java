@@ -150,13 +150,13 @@ public class ExportDataCmd implements CliCommand
         System.out.println("Export data from registry index");
         System.out.println();
         System.out.println("Required parameters:");
-        System.out.println("  -file <path>        Output file path");        
-        System.out.println("  -lidvid <id>        Export data by lidvid");
-        System.out.println("  -packageId <id>     Export data by package id");
-        System.out.println("  -all                Export all data");
+        System.out.println("  -file <path>      Output file path");        
+        System.out.println("  -lidvid <id>      Export data by lidvid");
+        System.out.println("  -packageId <id>   Export data by package id");
+        System.out.println("  -all              Export all data");
         System.out.println("Optional parameters:");
-        System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
-        System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
+        System.out.println("  -es <url>         Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -index <name>     Elasticsearch index name. Default is 'registry'");
         System.out.println();
     }
 
