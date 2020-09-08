@@ -13,7 +13,6 @@ import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
 import gov.nasa.pds.registry.mgr.schema.dd.DataDictionary;
 import gov.nasa.pds.registry.mgr.schema.dd.JsonDDParser;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
@@ -47,13 +46,14 @@ public class UpdateSchemaCmd implements CliCommand
         
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
+        String authPath = cmdLine.getOptionValue("auth");
         
         RestClient client = null;
         
         try
         {
             // Create Elasticsearch client
-            client = EsClientBuilder.createClient(esUrl);
+            client = EsUtils.createClient(esUrl, authPath);
 
             // Update Elasticsearch schema
             updateSchema(cfg, client, indexName);

@@ -1,48 +1,62 @@
 package gov.nasa.pds.registry.mgr.util.es;
 
+import java.util.Properties;
+
 import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 
 
 public class EsClientBuilder
 {
-    private static class ConfigCB implements RestClientBuilder.RequestConfigCallback
+    private RestClientBuilder bld;
+    private ClientConfigCB clientCB;
+    private RequestConfigCB reqCB;
+    
+    
+    public EsClientBuilder(String url) throws Exception
     {
-        private int connectTimeoutSec = 5;
-        private int socketTimeoutSec = 10;
+        HttpHost host = parseUrl(url);
+        bld = RestClient.builder(host);
         
+        clientCB = new ClientConfigCB();
+        reqCB = new RequestConfigCB();
+    }
+    
+    
+    public RestClient build() 
+    {
+        bld.setHttpClientConfigCallback(clientCB);
+        bld.setRequestConfigCallback(reqCB);
         
-        public ConfigCB()
-        {
-        }
+        return bld.build();
+    }
+    
+    
+    public void configureAuth(Properties props) throws Exception
+    {
+        if(props == null) return;
 
-        
-        public ConfigCB(int connectTimeoutSec, int socketTimeoutSec)
+        if(Boolean.TRUE.equals(getBoolean(props, "trust.self-signed")))
         {
-            this.connectTimeoutSec = connectTimeoutSec;
-            this.socketTimeoutSec = socketTimeoutSec;
-        }
-
-        
-        @Override
-        public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder bld)
-        {
-            bld.setConnectTimeout(connectTimeoutSec * 1000);
-            bld.setSocketTimeout(socketTimeoutSec * 1000);
-            return bld;
+            clientCB.setTrustSelfSignedCert(true);
         }
     }
     
     
-    public static RestClient createClient(String url) throws Exception
+    private static Boolean getBoolean(Properties props, String key) throws Exception
     {
-        HttpHost host = parseUrl(url);
-        RestClientBuilder bld = RestClient.builder(host);
-        // Set timeouts
-        bld.setRequestConfigCallback(new ConfigCB());
-        return bld.build();
+        if(props == null) return null;
+        
+        String str = props.getProperty(key);
+        if(str == null) return null;
+
+        if(!str.equals("true") && str.equals("false")) 
+        {
+            throw new Exception("Property " + key + " has invalid value " + str);
+        }
+        
+        return str.equals("true");
     }
     
     

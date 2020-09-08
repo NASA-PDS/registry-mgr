@@ -8,7 +8,6 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsClientBuilder;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
@@ -30,6 +29,7 @@ public class DeleteRegistryCmd implements CliCommand
         
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
+        String authPath = cmdLine.getOptionValue("auth");
 
         System.out.println("Elasticsearch URL: " + esUrl);
         System.out.println("            Index: " + indexName);
@@ -42,7 +42,7 @@ public class DeleteRegistryCmd implements CliCommand
             System.out.println("Deleting index...");
 
             // Create Elasticsearch client
-            client = EsClientBuilder.createClient(esUrl);
+            client = EsUtils.createClient(esUrl, authPath);
             
             // Create request
             Request req = new Request("DELETE", "/" + indexName);
