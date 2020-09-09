@@ -150,6 +150,7 @@ public class DeleteDataCmd implements CliCommand
         System.out.println("  -packageId <id>   Delete data by package id"); 
         System.out.println("  -all              Delete all data");
         System.out.println("Optional parameters:");
+        System.out.println("  -auth <file>      Authentication config file");
         System.out.println("  -es <url>         Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>     Elasticsearch index name. Default is 'registry'");
         System.out.println();

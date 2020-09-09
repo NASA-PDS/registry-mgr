@@ -184,6 +184,7 @@ public class SetArchiveStatusCmd implements CliCommand
         System.out.println("  -lidvid <id>       Update archive status of a document with given lidvid, or");
         System.out.println("  -packageId <id>    Update archive status of all documents with given package id"); 
         System.out.println("Optional parameters:");
+        System.out.println("  -auth <file>       Authentication config file");
         System.out.println("  -es <url>          Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>      Elasticsearch index name. Default is 'registry'");
         System.out.println();

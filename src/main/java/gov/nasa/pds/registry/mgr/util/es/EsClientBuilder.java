@@ -37,9 +37,18 @@ public class EsClientBuilder
     {
         if(props == null) return;
 
+        // Trust self-signed certificates
         if(Boolean.TRUE.equals(getBoolean(props, "trust.self-signed")))
         {
             clientCB.setTrustSelfSignedCert(true);
+        }
+        
+        // Basic authentication
+        String user = props.getProperty("user");
+        String pass = props.getProperty("password");
+        if(user != null && pass != null)
+        {
+            clientCB.setUserPass(user, pass);
         }
     }
     
