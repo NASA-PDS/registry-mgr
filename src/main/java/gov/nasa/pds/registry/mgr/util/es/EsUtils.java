@@ -1,7 +1,6 @@
 package gov.nasa.pds.registry.mgr.util.es;
 
 
-import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,7 +11,7 @@ import org.elasticsearch.client.RestClient;
 
 import com.google.gson.Gson;
 
-import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.PropUtils;
 
 
 public class EsUtils
@@ -23,32 +22,13 @@ public class EsUtils
         
         if(authPath != null)
         {
-            Properties props = loadProps(authPath);
+            Properties props = PropUtils.loadProps(authPath);
             bld.configureAuth(props);
         }
         
         return bld.build();
     }
 
-    
-    private static Properties loadProps(String path) throws Exception
-    {
-        if(path == null) return null;
-        
-        Properties props = new Properties();
-        FileReader rd = new FileReader(path);
-        
-        try
-        {
-            props.load(rd);
-        }
-        finally
-        {
-            CloseUtils.close(rd);
-        }
-        
-        return props;
-    }
     
     
     public static String extractErrorMessage(ResponseException ex)

@@ -6,6 +6,9 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 
+import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.util.PropUtils;
+
 
 public class EsClientBuilder
 {
@@ -38,7 +41,7 @@ public class EsClientBuilder
         if(props == null) return;
 
         // Trust self-signed certificates
-        if(Boolean.TRUE.equals(getBoolean(props, "trust.self-signed")))
+        if(Boolean.TRUE.equals(PropUtils.getBoolean(props, Constants.AUTH_TRUST_SELF_SIGNED)))
         {
             clientCB.setTrustSelfSignedCert(true);
         }
@@ -50,22 +53,6 @@ public class EsClientBuilder
         {
             clientCB.setUserPass(user, pass);
         }
-    }
-    
-    
-    private static Boolean getBoolean(Properties props, String key) throws Exception
-    {
-        if(props == null) return null;
-        
-        String str = props.getProperty(key);
-        if(str == null) return null;
-
-        if(!str.equals("true") && str.equals("false")) 
-        {
-            throw new Exception("Property " + key + " has invalid value " + str);
-        }
-        
-        return str.equals("true");
     }
     
     

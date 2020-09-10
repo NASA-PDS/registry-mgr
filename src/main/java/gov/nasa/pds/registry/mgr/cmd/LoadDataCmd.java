@@ -47,7 +47,7 @@ public class LoadDataCmd implements CliCommand
         System.out.println("            Index: " + indexName);
         System.out.println();
 
-        DataLoader loader = new DataLoader(esUrl, indexName);
+        DataLoader loader = new DataLoader(esUrl, indexName, authPath);
         
         for(File file: files)
         {
