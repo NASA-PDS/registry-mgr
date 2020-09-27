@@ -16,10 +16,10 @@ import gov.nasa.pds.registry.mgr.cmd.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.ExportDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.ExportFileCmd;
-import gov.nasa.pds.registry.mgr.cmd.GenerateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
 import gov.nasa.pds.registry.mgr.cmd.UpdateSchemaCmd;
+import gov.nasa.pds.registry.mgr.cmd.dd.LoadDDCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
 
@@ -45,9 +45,7 @@ public class RegistryManagerCli
         System.out.println();
         System.out.println("Commands:");
         System.out.println();
-        System.out.println("Registry:");
-        System.out.println("  create-registry      Create registry index");
-        System.out.println("  delete-registry      Delete registry index and all its data");
+        System.out.println("Data:");
         System.out.println("  load-data            Load data into registry index");
         System.out.println("  delete-data          Delete data from registry index");
         System.out.println("  export-data          Export data from registry index");
@@ -55,8 +53,10 @@ public class RegistryManagerCli
         System.out.println("  set-archive-status   Set product archive status");
         
         System.out.println();
-        System.out.println("Search:");
-        System.out.println("  generate-schema      Generate Elasticsearch schema from one or more PDS data dictionaries");        
+        System.out.println("Registry:");
+        System.out.println("  create-registry      Create registry index");
+        System.out.println("  delete-registry      Delete registry index and all its data");        
+        System.out.println("  load-dd              Load data dictionary");        
         System.out.println("  update-schema        Update Elasticsearch schema from one or more PDS data dictionaries");
         System.out.println();
         System.out.println("Options:");
@@ -150,14 +150,13 @@ public class RegistryManagerCli
     {
         commands = new HashMap<>();
 
-        // Registry collection create / delete / edit
+        // Registry: create / delete / edit
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
-
-        commands.put("generate-schema", new GenerateSchemaCmd());
+        commands.put("load-dd", new LoadDDCmd());
         commands.put("update-schema", new UpdateSchemaCmd());
 
-        // Data load / delete / edit
+        // Data: load / delete / edit
         commands.put("load-data", new LoadDataCmd());
         commands.put("delete-data", new DeleteDataCmd());
         commands.put("export-data", new ExportDataCmd());

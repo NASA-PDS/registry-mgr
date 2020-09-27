@@ -10,9 +10,6 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
-import gov.nasa.pds.registry.mgr.schema.dd.DDAttr;
-import gov.nasa.pds.registry.mgr.schema.dd.DDClass;
-import gov.nasa.pds.registry.mgr.schema.dd.DataDictionary;
 import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
@@ -83,14 +80,14 @@ public class SchemaUpdater
      * @param dd
      * @throws Exception
      */
-    public void updateSchema(DataDictionary dd) throws Exception
+    public void updateSchema() throws Exception
     {
         lastBatchCount = 0;
         totalCount = 0;
         batch = new UpdateSchemaBatch();
         
+        /*
         Map<String, String> attrId2Type = dd.getAttributeDataTypeMap();
-        Set<String> dataTypes = dd.getDataTypes();
         
         for(DDClass ddClass: dd.getClassMap().values())
         {
@@ -119,55 +116,15 @@ public class SchemaUpdater
         }
         
         finish();
+
+            */
+
     }
     
     
-    private void addCustomFields(DDClass ddClass, File file) throws Exception
+    private void addClassAttributes(Map<String, String> attrId2Type) throws Exception
     {
-        System.out.println("Loading custom generator. Class = " + ddClass.nsName + ", file = " + file.getAbsolutePath());
-        BufferedReader rd = null;
-        
-        try
-        {
-            rd = new BufferedReader(new FileReader(file));
-        }
-        catch(Exception ex)
-        {
-            throw new Exception("Could not open custom generator for class '" 
-                    + ddClass.nsName + "':  " + file.getAbsolutePath());
-        }
-        
-        try
-        {
-            String line;
-            while((line = rd.readLine()) != null)
-            {
-                line = line.trim();
-                // Skip blank lines and comments
-                if(line.isEmpty() || line.startsWith("#")) continue;
-                
-                // Line format <field name> = <data type>
-                String tokens[] = line.split("=");
-                if(tokens.length != 2)
-                {
-                    throw new Exception("Invalid entry: " + line);
-                }
-                
-                String fieldName = tokens[0].trim();
-                String fieldType = tokens[1].trim();                
-                
-                addEsField(fieldName, fieldType);
-            }
-        }
-        finally
-        {
-            CloseUtils.close(rd);
-        }
-    }
-    
-    
-    private void addClassAttributes(DDClass ddClass, Map<String, String> attrId2Type) throws Exception
-    {
+        /*
         for(DDAttr attr: ddClass.attributes)
         {
             String pdsDataType = attrId2Type.get(attr.id);
@@ -177,6 +134,7 @@ public class SchemaUpdater
             String solrDataType = dtMap.getEsType(pdsDataType);
             addEsField(fieldName, solrDataType);
         }
+        */
     }
 
     

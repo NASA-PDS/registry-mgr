@@ -10,8 +10,7 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.schema.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.schema.cfg.ConfigReader;
 import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
-import gov.nasa.pds.registry.mgr.schema.dd.DataDictionary;
-import gov.nasa.pds.registry.mgr.schema.dd.JsonDDParser;
+import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
@@ -94,11 +93,10 @@ public class UpdateSchemaCmd implements CliCommand
         for(File file: cfg.dataDicFiles)
         {
             System.out.println("Processing data dictionary " + file.getAbsolutePath());
-            JsonDDParser parser = new JsonDDParser(file);
-            DataDictionary dd = parser.parse();
-            parser.close();
+            DDParser parser = new DDParser();
+            //parser.parse();
             
-            upd.updateSchema(dd);
+            //upd.updateSchema(dd);
         }
     }
 }
