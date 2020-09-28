@@ -1,6 +1,8 @@
 package gov.nasa.pds.registry.mgr.cmd;
 
 import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.elasticsearch.client.ResponseException;
@@ -8,15 +10,43 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.schema.SchemaUpdater;
-import gov.nasa.pds.registry.mgr.schema.cfg.ConfigReader;
-import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
 import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
+import gov.nasa.pds.registry.mgr.schema.dd.DDParser.DDAttr;
+import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class UpdateSchemaCmd implements CliCommand
 {
+    private static class ParserCB implements DDParser.Callback
+    {
+        private Map<String, String> fields = new TreeMap<>();
+        private Pds2EsDataTypeMap dtMap = new Pds2EsDataTypeMap();
+        
+        public ParserCB()
+        {
+        }
+        
+        @Override
+        public void onAttribute(DDAttr attr) throws Exception
+        {
+            String tokens[] = attr.id.split("\\.");
+            if(tokens.length != 5) throw new Exception("Invalid attribute ID " + attr.id);
+            
+            String fieldName = tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + tokens[4];
+            String fieldType = dtMap.getEsType(attr.dataType);
+            
+            fields.put(fieldName, fieldType);
+        }
+        
+        public Map<String, String> getFields()
+        {
+            return fields;
+        }
+    }
+    
+    
     public UpdateSchemaCmd()
     {
     }
@@ -31,21 +61,18 @@ public class UpdateSchemaCmd implements CliCommand
             return;
         }
 
-        String cfgPath = cmdLine.getOptionValue("config");
-        if(cfgPath == null) 
+        String ddFilePath = cmdLine.getOptionValue("file");
+        if(ddFilePath == null) 
         {
-            throw new Exception("Missing required parameter '-config'");
+            throw new Exception("Missing required parameter '-file'");
         }
 
-        // Read configuration file
-        File cfgFile = new File(cfgPath);
-        System.out.println("Reading configuration from " + cfgFile.getAbsolutePath());
-        ConfigReader cfgReader = new ConfigReader();
-        Configuration cfg = cfgReader.read(cfgFile);
-        
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
+
+        // Read data dictionary
+        Map<String, String> ddFields = getDDFields(ddFilePath);
         
         RestClient client = null;
         
@@ -55,7 +82,9 @@ public class UpdateSchemaCmd implements CliCommand
             client = EsUtils.createClient(esUrl, authPath);
 
             // Update Elasticsearch schema
-            updateSchema(cfg, client, indexName);
+            SchemaUpdater su = new SchemaUpdater(client, indexName);
+            su.updateSchema(ddFields);
+            
             System.out.println("Done");
         }
         catch(ResponseException ex)
@@ -69,6 +98,19 @@ public class UpdateSchemaCmd implements CliCommand
     }
 
     
+    private Map<String, String> getDDFields(String ddFilePath) throws Exception
+    {
+        File ddFile = new File(ddFilePath);
+        System.out.println("Reading data dictionary " + ddFile.getAbsolutePath());
+        
+        ParserCB cb = new ParserCB();
+        DDParser parser = new DDParser();        
+        parser.parse(ddFile, cb);
+        
+        return cb.getFields();
+    }
+    
+    
     public void printHelp()
     {
         System.out.println("Usage: registry-manager update-schema <options>");
@@ -77,26 +119,12 @@ public class UpdateSchemaCmd implements CliCommand
         System.out.println("Update Elasticsearch schema from one or more PDS data dictionaries.");
         System.out.println();
         System.out.println("Required parameters:");
-        System.out.println("  -config <path>   Configuration file.");
+        System.out.println("  -file <path>     Data dictionary file (JSON).");
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>     Authentication config file");
         System.out.println("  -es <url>        Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>    Elasticsearch index name. Default is 'registry'");
         System.out.println();
     }
-
     
-    private void updateSchema(Configuration cfg, RestClient client, String indexName) throws Exception
-    {
-        SchemaUpdater upd = new SchemaUpdater(cfg, client, indexName);
-        
-        for(File file: cfg.dataDicFiles)
-        {
-            System.out.println("Processing data dictionary " + file.getAbsolutePath());
-            DDParser parser = new DDParser();
-            //parser.parse();
-            
-            //upd.updateSchema(dd);
-        }
-    }
 }

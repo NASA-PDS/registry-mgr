@@ -1,17 +1,8 @@
 package gov.nasa.pds.registry.mgr.schema;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.Map;
 import java.util.Set;
-
 import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.mgr.Constants;
-import gov.nasa.pds.registry.mgr.schema.cfg.Configuration;
-import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
-import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
 
 
@@ -21,9 +12,6 @@ import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
  */
 public class SchemaUpdater
 {
-    private Configuration cfg;
-    private Pds2EsDataTypeMap dtMap;
-    
     private RestClient client;
     private String indexName;
     
@@ -41,14 +29,10 @@ public class SchemaUpdater
      * @param indexName Elasticsearch index name
      * @throws Exception
      */
-    public SchemaUpdater(Configuration cfg, RestClient client, String indexName) throws Exception
+    public SchemaUpdater(RestClient client, String indexName) throws Exception
     {
-        this.cfg = cfg;
         this.client = client;
         this.indexName = indexName;
-        
-        // Load PDS to Solr data type mapping files
-        dtMap = loadDataTypeMap();
         
         // Get a list of existing field names from Solr
         this.existingFieldNames = EsSchemaUtils.getFieldNames(client, indexName);
@@ -56,96 +40,31 @@ public class SchemaUpdater
 
 
     /**
-     * Load PDS to Elasticsearch data type map(s)
-     * @return
-     * @throws Exception
-     */
-    private Pds2EsDataTypeMap loadDataTypeMap() throws Exception
-    {
-        Pds2EsDataTypeMap map = new Pds2EsDataTypeMap();
-        if(cfg.dataTypeFiles != null)
-        {
-            for(File file: cfg.dataTypeFiles)
-            {
-                map.load(file);
-            }
-        }
-        
-        return map;
-    }
-
-    
-    /**
      * Add fields from data dictionary to Elasticsearch schema. Ignore existing fields.
      * @param dd
      * @throws Exception
      */
-    public void updateSchema() throws Exception
+    public void updateSchema(Map<String, String> ddFields) throws Exception
     {
         lastBatchCount = 0;
         totalCount = 0;
         batch = new UpdateSchemaBatch();
-        
-        /*
-        Map<String, String> attrId2Type = dd.getAttributeDataTypeMap();
-        
-        for(DDClass ddClass: dd.getClassMap().values())
-        {
-            // Skip type definitions.
-            if(dataTypes.contains(ddClass.nsName)) continue;
-            
-            // Apply class filters
-            if(cfg.includeClasses != null && cfg.includeClasses.size() > 0)
-            {
-                if(!cfg.includeClasses.contains(ddClass.nsName)) continue;
-            }
-            if(cfg.excludeClasses != null && cfg.excludeClasses.size() > 0)
-            {
-                if(cfg.excludeClasses.contains(ddClass.nsName)) continue;
-            }
 
-            File customFile = (cfg.customClassGens == null) ? null : cfg.customClassGens.get(ddClass.nsName);
-            if(customFile != null)
-            {
-                addCustomFields(ddClass, customFile);
-            }
-            else
-            {
-                addClassAttributes(ddClass, attrId2Type);
-            }
+        for(Map.Entry<String, String> item: ddFields.entrySet())
+        {
+            addField(item.getKey(), item.getValue());
         }
-        
+
         finish();
-
-            */
-
     }
     
     
-    private void addClassAttributes(Map<String, String> attrId2Type) throws Exception
+    private void addField(String name, String type) throws Exception
     {
-        /*
-        for(DDAttr attr: ddClass.attributes)
-        {
-            String pdsDataType = attrId2Type.get(attr.id);
-            if(pdsDataType == null) throw new Exception("No data type mapping for attribute " + attr.id);
-            
-            String fieldName = ddClass.nsName + "." + attr.nsName;
-            String solrDataType = dtMap.getEsType(pdsDataType);
-            addEsField(fieldName, solrDataType);
-        }
-        */
-    }
-
-    
-    private void addEsField(String name, String type) throws Exception
-    {
-        name = name.replaceAll("\\.", Constants.REPLACE_DOT_WITH);
-        
         if(existingFieldNames.contains(name)) return;
         existingFieldNames.add(name);
         
-        // Create add field request to the batch
+        // Add field request to the batch
         batch.addField(name, type);
         totalCount++;
 
