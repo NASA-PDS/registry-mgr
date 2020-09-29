@@ -43,7 +43,7 @@ public class EsRequestBuilder
 
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public String createCreateRegistryRequest(File schemaFile, int shards, int replicas) throws Exception
+    public String createCreateIndexRequest(File schemaFile, int shards, int replicas) throws Exception
     {
         // Read schema template
         FileReader rd = new FileReader(schemaFile);

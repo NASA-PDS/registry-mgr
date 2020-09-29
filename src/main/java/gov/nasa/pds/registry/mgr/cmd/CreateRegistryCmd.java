@@ -16,6 +16,11 @@ import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 public class CreateRegistryCmd implements CliCommand
 {
+    private static enum SchemaType { Registry, DataDictionary };
+    
+    private RestClient client;
+
+    
     public CreateRegistryCmd()
     {
     }
@@ -34,30 +39,46 @@ public class CreateRegistryCmd implements CliCommand
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
         
-        File schemaFile = getSchemaFile(cmdLine.getOptionValue("schema"));
+        File schemaFile = getSchemaFile(cmdLine.getOptionValue("schema"), SchemaType.Registry);
         int shards = parseShards(cmdLine.getOptionValue("shards", "1"));
         int replicas = parseReplicas(cmdLine.getOptionValue("replicas", "0"));
         
         System.out.println("Elasticsearch URL: " + esUrl);
-        System.out.println("           Schema: " + schemaFile.getAbsolutePath());
-        System.out.println("            Index: " + indexName);
-        System.out.println("           Shards: " + shards);
-        System.out.println("         Replicas: " + replicas);
         System.out.println();
-
-        RestClient client = null;
         
+        client = EsUtils.createClient(esUrl, authPath);
+
+        try
+        {
+            // Registry
+            createIndex(schemaFile, indexName, shards, replicas);
+            System.out.println();
+            
+            // Data dictionary
+            File ddSchemaFile = getSchemaFile(null, SchemaType.DataDictionary); 
+            createIndex(ddSchemaFile, indexName + "-dd", 1, replicas);
+        }
+        finally
+        {
+            CloseUtils.close(client);
+        }
+    }
+
+    
+    private void createIndex(File schemaFile, String indexName, int shards, int replicas) throws Exception
+    {
         try
         {
             System.out.println("Creating index...");
-
-            // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl, authPath);
+            System.out.println("   Index: " + indexName);
+            System.out.println("  Schema: " + schemaFile.getAbsolutePath());
+            System.out.println("  Shards: " + shards);
+            System.out.println("Replicas: " + replicas);
             
             // Create request
             Request req = new Request("PUT", "/" + indexName);
             EsRequestBuilder bld = new EsRequestBuilder();
-            String jsonReq = bld.createCreateRegistryRequest(schemaFile, shards, replicas);
+            String jsonReq = bld.createCreateIndexRequest(schemaFile, shards, replicas);
             req.setJsonEntity(jsonReq);
 
             // Execute request
@@ -69,13 +90,9 @@ public class CreateRegistryCmd implements CliCommand
         {
             throw new Exception(EsUtils.extractErrorMessage(ex));
         }
-        finally
-        {
-            CloseUtils.close(client);
-        }
     }
-
     
+
     private int parseShards(String str) throws Exception
     {
         int val = parseInt(str);
@@ -109,7 +126,7 @@ public class CreateRegistryCmd implements CliCommand
     }
     
     
-    private File getSchemaFile(String path) throws Exception
+    private File getSchemaFile(String path, SchemaType type) throws Exception
     {
         File file = null;
         
@@ -121,8 +138,16 @@ public class CreateRegistryCmd implements CliCommand
             {
                 throw new Exception("Could not find default configuration directory. REGISTRY_MANAGER_HOME environment variable is not set.");
             }
-            
-            file = new File(home, "elastic/registry.json");
+
+            switch(type)
+            {
+            case Registry:
+                file = new File(home, "elastic/registry.json");
+                break;
+            case DataDictionary:
+                file = new File(home, "elastic/data-dic.json");
+                break;
+            }
         }
         else
         {

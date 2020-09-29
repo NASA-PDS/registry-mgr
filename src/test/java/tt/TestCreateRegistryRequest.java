@@ -11,7 +11,7 @@ public class TestCreateRegistryRequest
         EsRequestBuilder bld = new EsRequestBuilder(true);
 
         File schemaFile = new File("/tmp/schema/t2.json");
-        String json = bld.createCreateRegistryRequest(schemaFile, 3, 1);
+        String json = bld.createCreateIndexRequest(schemaFile, 3, 1);
         System.out.println(json);
         
     }
