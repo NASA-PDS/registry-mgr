@@ -25,5 +25,13 @@ public class EsSchemaUtils
         req.setJsonEntity(json);
         Response resp = client.performRequest(req);
     }
+    
+    
+    public static boolean indexExists(RestClient client, String indexName) throws Exception
+    {
+        Request req = new Request("HEAD", "/" + indexName);
+        Response resp = client.performRequest(req);
+        return resp.getStatusLine().getStatusCode() == 200;
+    }
 
 }

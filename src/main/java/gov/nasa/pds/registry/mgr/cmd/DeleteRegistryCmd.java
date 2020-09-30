@@ -8,11 +8,14 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class DeleteRegistryCmd implements CliCommand
 {
+    private RestClient client;
+    
     public DeleteRegistryCmd()
     {
     }
@@ -32,29 +35,14 @@ public class DeleteRegistryCmd implements CliCommand
         String authPath = cmdLine.getOptionValue("auth");
 
         System.out.println("Elasticsearch URL: " + esUrl);
-        System.out.println("            Index: " + indexName);
-        System.out.println();
 
-        RestClient client = null;
+        client = EsUtils.createClient(esUrl, authPath);
         
         try
         {
-            System.out.println("Deleting index...");
-
-            // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl, authPath);
-            
-            // Create request
-            Request req = new Request("DELETE", "/" + indexName);
-
-            // Execute request
-            Response resp = client.performRequest(req);
-            EsUtils.printWarnings(resp);
-            System.out.println("Done");
-        }
-        catch(ResponseException ex)
-        {
-            throw new Exception(EsUtils.extractErrorMessage(ex));
+            deleteIndex(indexName);
+            deleteIndex(indexName + "-dd");
+            System.out.println("Done");            
         }
         finally
         {
@@ -62,6 +50,31 @@ public class DeleteRegistryCmd implements CliCommand
         }
     }
 
+    
+    private void deleteIndex(String indexName) throws Exception
+    {
+        try
+        {
+            System.out.println("Deleting index " + indexName);
+            
+            if(!EsSchemaUtils.indexExists(client, indexName)) 
+            {
+                return;
+            }
+
+            // Create request
+            Request req = new Request("DELETE", "/" + indexName);
+
+            // Execute request
+            Response resp = client.performRequest(req);
+            EsUtils.printWarnings(resp);
+        }
+        catch(ResponseException ex)
+        {
+            throw new Exception(EsUtils.extractErrorMessage(ex));
+        }
+    }
+    
     
     public void printHelp()
     {
