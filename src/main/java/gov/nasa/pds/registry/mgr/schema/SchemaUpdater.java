@@ -1,9 +1,12 @@
 package gov.nasa.pds.registry.mgr.schema;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.elasticsearch.client.RestClient;
-import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
+
+import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
 
 
 /**
@@ -15,7 +18,7 @@ public class SchemaUpdater
     private RestClient client;
     private String indexName;
     
-    private Set<String> existingFieldNames;
+    private Set<String> esFieldNames;
     
     private UpdateSchemaBatch batch;
     private int totalCount;
@@ -35,7 +38,7 @@ public class SchemaUpdater
         this.indexName = indexName;
         
         // Get a list of existing field names from Solr
-        this.existingFieldNames = EsSchemaUtils.getFieldNames(client, indexName);
+        this.esFieldNames = SchemaDAO.getFieldNames(client, indexName);
     }
 
 
@@ -44,35 +47,34 @@ public class SchemaUpdater
      * @param dd
      * @throws Exception
      */
-    public void updateSchema(Map<String, String> ddFields) throws Exception
+    public void updateSchema(List<String> newFields) throws Exception
     {
         lastBatchCount = 0;
         totalCount = 0;
         batch = new UpdateSchemaBatch();
 
-        for(Map.Entry<String, String> item: ddFields.entrySet())
+        for(String newField: newFields)
         {
-            addField(item.getKey(), item.getValue());
+            addField(newField);
         }
 
         finish();
     }
     
     
-    private void addField(String name, String type) throws Exception
+    private void addField(String name) throws Exception
     {
-        if(existingFieldNames.contains(name)) return;
-        existingFieldNames.add(name);
+        if(esFieldNames.contains(name)) return;
         
         // Add field request to the batch
-        batch.addField(name, type);
+        batch.addField(name, "");
         totalCount++;
 
         // Commit if reached batch/commit size
         if(totalCount % batchSize == 0)
         {
             System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-            EsSchemaUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+            SchemaDAO.updateMappings(client, indexName, batch.closeAndGetJson());
             lastBatchCount = totalCount;
             batch = new UpdateSchemaBatch();
         }
@@ -84,7 +86,7 @@ public class SchemaUpdater
         if(batch.isEmpty()) return;
         
         System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-        EsSchemaUtils.updateMappings(client, indexName, batch.closeAndGetJson());
+        SchemaDAO.updateMappings(client, indexName, batch.closeAndGetJson());
         lastBatchCount = totalCount;
     }
     

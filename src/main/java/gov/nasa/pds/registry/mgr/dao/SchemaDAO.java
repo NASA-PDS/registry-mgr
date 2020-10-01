@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.dao;
 
 import java.util.Set;
 
@@ -7,7 +7,7 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
 
-public class EsSchemaUtils
+public class SchemaDAO
 {
     public static Set<String> getFieldNames(RestClient client, String indexName) throws Exception
     {
@@ -34,4 +34,6 @@ public class EsSchemaUtils
         return resp.getStatusLine().getStatusCode() == 200;
     }
 
+    
+    
 }

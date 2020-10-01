@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.es.client;
 
 import org.apache.http.client.config.RequestConfig;
 import org.elasticsearch.client.RestClientBuilder;

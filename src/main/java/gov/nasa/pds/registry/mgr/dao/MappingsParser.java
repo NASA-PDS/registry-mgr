@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.dao;
 
 import java.io.IOException;
 import java.io.InputStream;

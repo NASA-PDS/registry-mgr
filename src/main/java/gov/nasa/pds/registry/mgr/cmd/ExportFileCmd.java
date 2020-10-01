@@ -9,6 +9,7 @@ import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.EmbeddedBlobExporter;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
@@ -102,7 +103,7 @@ public class ExportFileCmd implements CliCommand
         try
         {
             // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl, authPath);
+            client = EsClientFactory.createRestClient(esUrl, authPath);
 
             // Create request
             Request req = new Request("GET", "/" + indexName + "/_search");

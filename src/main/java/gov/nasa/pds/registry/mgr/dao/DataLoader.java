@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.dao;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,16 +9,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
-import java.util.Properties;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-
-import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.es.client.HttpConnectionFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.HttpConnectionFactory;
-import gov.nasa.pds.registry.mgr.util.PropUtils;
-import gov.nasa.pds.registry.mgr.util.ssl.SSLUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class DataLoader
@@ -31,31 +25,7 @@ public class DataLoader
     public DataLoader(String esUrl, String indexName, String authConfigFile) throws Exception
     {
         conFactory = new HttpConnectionFactory(esUrl, indexName, "_bulk");
-        initAuth(authConfigFile);
-    }
-    
-    
-    private void initAuth(String authConfigFile) throws Exception
-    {
-        if(authConfigFile == null) return;
-        
-        Properties props = PropUtils.loadProps(authConfigFile);
-        if(props == null) return;
-        
-        // Trust self-signed certificates
-        if(Boolean.TRUE.equals(PropUtils.getBoolean(props, Constants.AUTH_TRUST_SELF_SIGNED)))
-        {
-            SSLContext sslCtx = SSLUtils.createTrustAllContext();
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
-        }
-        
-        // Basic authentication
-        String user = props.getProperty("user");
-        String pass = props.getProperty("password");
-        if(user != null && pass != null)
-        {
-            conFactory.setBasicAuthentication(user, pass);
-        }
+        conFactory.initAuth(authConfigFile);
     }
     
     

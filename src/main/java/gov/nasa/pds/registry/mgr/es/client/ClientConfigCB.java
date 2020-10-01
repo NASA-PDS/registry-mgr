@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.es.client;
 
 import javax.net.ssl.SSLContext;
 

@@ -9,6 +9,7 @@ import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsDocWriter;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
@@ -68,7 +69,7 @@ public class ExportDataCmd implements CliCommand
         try
         {
             writer = new EsDocWriter(new File(filePath));
-            client = EsUtils.createClient(esUrl, authPath);
+            client = EsClientFactory.createRestClient(esUrl, authPath);
             SearchResponseParser parser = new SearchResponseParser();
             
             String searchAfter = null;

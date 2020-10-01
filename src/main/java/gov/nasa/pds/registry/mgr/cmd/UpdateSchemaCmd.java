@@ -1,52 +1,23 @@
 package gov.nasa.pds.registry.mgr.cmd;
 
-import java.io.File;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.schema.SchemaUpdater;
-import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
-import gov.nasa.pds.registry.mgr.schema.dd.DDParser.DDAttr;
-import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
 public class UpdateSchemaCmd implements CliCommand
 {
-    private static class ParserCB implements DDParser.Callback
-    {
-        private Map<String, String> fields = new TreeMap<>();
-        private Pds2EsDataTypeMap dtMap = new Pds2EsDataTypeMap();
-        
-        public ParserCB()
-        {
-        }
-        
-        @Override
-        public void onAttribute(DDAttr attr) throws Exception
-        {
-            String tokens[] = attr.id.split("\\.");
-            if(tokens.length != 5) throw new Exception("Invalid attribute ID " + attr.id);
-            
-            String fieldName = tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + tokens[4];
-            String fieldType = dtMap.getEsType(attr.dataType);
-            
-            fields.put(fieldName, fieldType);
-        }
-        
-        public Map<String, String> getFields()
-        {
-            return fields;
-        }
-    }
-    
-    
     public UpdateSchemaCmd()
     {
     }
@@ -61,8 +32,8 @@ public class UpdateSchemaCmd implements CliCommand
             return;
         }
 
-        String ddFilePath = cmdLine.getOptionValue("file");
-        if(ddFilePath == null) 
+        String filePath = cmdLine.getOptionValue("file");
+        if(filePath == null) 
         {
             throw new Exception("Missing required parameter '-file'");
         }
@@ -72,18 +43,18 @@ public class UpdateSchemaCmd implements CliCommand
         String authPath = cmdLine.getOptionValue("auth");
 
         // Read data dictionary
-        Map<String, String> ddFields = getDDFields(ddFilePath);
+        List<String> newFields = getNewFields(filePath);
         
         RestClient client = null;
         
         try
         {
             // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl, authPath);
+            client = EsClientFactory.createRestClient(esUrl, authPath);
 
             // Update Elasticsearch schema
             SchemaUpdater su = new SchemaUpdater(client, indexName);
-            su.updateSchema(ddFields);
+            su.updateSchema(newFields);
             
             System.out.println("Done");
         }
@@ -98,16 +69,27 @@ public class UpdateSchemaCmd implements CliCommand
     }
 
     
-    private Map<String, String> getDDFields(String ddFilePath) throws Exception
+    private List<String> getNewFields(String filePath) throws Exception
     {
-        File ddFile = new File(ddFilePath);
-        System.out.println("Reading data dictionary " + ddFile.getAbsolutePath());
+        List<String> fields = new ArrayList<>();
         
-        ParserCB cb = new ParserCB();
-        DDParser parser = new DDParser();        
-        parser.parse(ddFile, cb);
+        BufferedReader rd = new BufferedReader(new FileReader(filePath));
+        try
+        {
+            String line;
+            while((line = rd.readLine()) != null)
+            {
+                line = line.trim();
+                if(line.length() == 0) continue;
+                fields.add(line);
+            }
+        }
+        finally
+        {
+            CloseUtils.close(rd);
+        }
         
-        return cb.getFields();
+        return fields;
     }
     
     
@@ -119,7 +101,7 @@ public class UpdateSchemaCmd implements CliCommand
         System.out.println("Update Elasticsearch schema from one or more PDS data dictionaries.");
         System.out.println();
         System.out.println("Required parameters:");
-        System.out.println("  -file <path>     Data dictionary file (JSON).");
+        System.out.println("  -file <path>     A file with a list of field names");
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>     Authentication config file");
         System.out.println("  -es <url>        Elasticsearch URL. Default is http://localhost:9200");

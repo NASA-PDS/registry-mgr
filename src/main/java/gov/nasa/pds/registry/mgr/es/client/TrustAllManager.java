@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.ssl;
+package gov.nasa.pds.registry.mgr.es.client;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

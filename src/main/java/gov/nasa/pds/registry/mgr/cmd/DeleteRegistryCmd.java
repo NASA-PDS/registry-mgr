@@ -7,8 +7,9 @@ import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
+import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsSchemaUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
@@ -36,7 +37,7 @@ public class DeleteRegistryCmd implements CliCommand
 
         System.out.println("Elasticsearch URL: " + esUrl);
 
-        client = EsUtils.createClient(esUrl, authPath);
+        client = EsClientFactory.createRestClient(esUrl, authPath);
         
         try
         {
@@ -57,7 +58,7 @@ public class DeleteRegistryCmd implements CliCommand
         {
             System.out.println("Deleting index " + indexName);
             
-            if(!EsSchemaUtils.indexExists(client, indexName)) 
+            if(!SchemaDAO.indexExists(client, indexName)) 
             {
                 return;
             }

@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 
 import gov.nasa.pds.registry.mgr.Constants;
-import gov.nasa.pds.registry.mgr.util.es.DataLoader;
+import gov.nasa.pds.registry.mgr.dao.DataLoader;
 
 
 public class LoadDataCmd implements CliCommand

@@ -14,6 +14,7 @@ import org.elasticsearch.client.RestClient;
 import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
@@ -57,7 +58,7 @@ public class DeleteDataCmd implements CliCommand
         try
         {
             // Create Elasticsearch client
-            client = EsUtils.createClient(esUrl, authPath);
+            client = EsClientFactory.createRestClient(esUrl, authPath);
 
             // Create request
             Request req = new Request("POST", "/" + indexName + "/_delete_by_query");
