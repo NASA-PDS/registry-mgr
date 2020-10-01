@@ -1,12 +1,10 @@
-package gov.nasa.pds.registry.mgr.schema;
+package gov.nasa.pds.registry.mgr.dao;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.elasticsearch.client.RestClient;
 
-import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
+import gov.nasa.pds.registry.mgr.schema.UpdateSchemaBatch;
 
 
 /**
@@ -17,6 +15,7 @@ public class SchemaUpdater
 {
     private RestClient client;
     private String indexName;
+    private SchemaDAO dao;
     
     private Set<String> esFieldNames;
     
@@ -36,9 +35,10 @@ public class SchemaUpdater
     {
         this.client = client;
         this.indexName = indexName;
+        this.dao = new SchemaDAO(client);
         
         // Get a list of existing field names from Solr
-        this.esFieldNames = SchemaDAO.getFieldNames(client, indexName);
+        this.esFieldNames = dao.getFieldNames(indexName);
     }
 
 
@@ -74,7 +74,7 @@ public class SchemaUpdater
         if(totalCount % batchSize == 0)
         {
             System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-            SchemaDAO.updateMappings(client, indexName, batch.closeAndGetJson());
+            dao.updateMappings(indexName, batch.closeAndGetJson());
             lastBatchCount = totalCount;
             batch = new UpdateSchemaBatch();
         }
@@ -86,7 +86,7 @@ public class SchemaUpdater
         if(batch.isEmpty()) return;
         
         System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
-        SchemaDAO.updateMappings(client, indexName, batch.closeAndGetJson());
+        dao.updateMappings(indexName, batch.closeAndGetJson());
         lastBatchCount = totalCount;
     }
     

@@ -25,7 +25,7 @@
       "description": { "type": "text" },
 
       "es_field_name": { "type": "keyword" },
-      "es_data_type": { "type": "keyword" }
+      "es_data_type": { "type": "keyword", "store": true }
     }
   }
 }
