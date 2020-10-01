@@ -8,6 +8,7 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
 import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
+import gov.nasa.pds.registry.mgr.util.es.DataLoader;
 
 
 public class LoadDDCmd implements CliCommand
@@ -19,10 +20,14 @@ public class LoadDDCmd implements CliCommand
         private Pds2EsDataTypeMap dtMap;
         
         
-        public DDWriterCB(File ddFile) throws Exception
+        public DDWriterCB(File ddFile, File typeMapFile) throws Exception
         {
             dtMap = new Pds2EsDataTypeMap();
-            //dtMap.load(file);
+
+            if(typeMapFile != null)
+            {
+                dtMap.load(typeMapFile);
+            }
             
             writer = new DDNJsonWriter(ddFile);
         }
@@ -79,6 +84,7 @@ public class LoadDDCmd implements CliCommand
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>    Authentication config file");
         System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");        
         System.out.println();
     }
 
@@ -93,6 +99,7 @@ public class LoadDDCmd implements CliCommand
         }
 
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
+        String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
 
         String ddFile = cmdLine.getOptionValue("file");
@@ -101,16 +108,48 @@ public class LoadDDCmd implements CliCommand
             throw new Exception("Missing required parameter '-file'");
         }
 
-        System.out.println("  Data dictionary: " + ddFile);
         System.out.println("Elasticsearch URL: " + esUrl);
-        
+        System.out.println("            Index: " + indexName);
+        System.out.println("  Data dictionary: " + ddFile);        
         System.out.println();
-        System.out.println("Reading data dictionary...");
+                
+        // Parse data dictionary and create temporary file
+        File tempOutFile = getTempOutFile();
+        File dtCfgFile = getDataTypesCfgFile();
         
         DDParser parser = new DDParser();
-        DDWriterCB wr = new DDWriterCB(new File("/tmp/njson.json"));
+        DDWriterCB wr = new DDWriterCB(tempOutFile, dtCfgFile);
         parser.parse(new File(ddFile), wr);
         wr.close();
+        
+        // Load temporary file into data dictionary index
+        DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);
+        loader.loadFile(tempOutFile);
+        
+        // Delete temporary file
+        tempOutFile.delete();
+        
+        System.out.println("Done");
     }
 
+    
+    private File getTempOutFile()
+    {
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        File file = new File(tempDir, "pds-registry-dd.tmp.json");
+        return file;
+    }
+    
+    
+    private File getDataTypesCfgFile() throws Exception
+    {
+        String home = System.getenv("REGISTRY_MANAGER_HOME");
+        if(home == null) 
+        {
+            throw new Exception("Could not find default configuration directory. REGISTRY_MANAGER_HOME environment variable is not set.");
+        }
+
+        File file = new File(home, "elastic/data-dic-types.cfg");
+        return file;
+    }
 }
