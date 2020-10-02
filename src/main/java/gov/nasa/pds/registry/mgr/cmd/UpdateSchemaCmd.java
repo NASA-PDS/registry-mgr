@@ -98,7 +98,7 @@ public class UpdateSchemaCmd implements CliCommand
         System.out.println("Usage: registry-manager update-schema <options>");
 
         System.out.println();
-        System.out.println("Update Elasticsearch schema from one or more PDS data dictionaries.");
+        System.out.println("Update Elasticsearch schema");
         System.out.println();
         System.out.println("Required parameters:");
         System.out.println("  -file <path>     A file with a list of field names");

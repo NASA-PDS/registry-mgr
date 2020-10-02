@@ -1,13 +1,14 @@
 package tt;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
 import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
+import gov.nasa.pds.registry.mgr.util.Tuple;
 
 
 public class TestSchemaDAO
@@ -51,11 +52,15 @@ public class TestSchemaDAO
         RestClient client = EsClientFactory.createRestClient("localhost", null);
         SchemaDAO dao = new SchemaDAO(client);
         
-        List<String> ids = new ArrayList<>();
+        Set<String> ids = new TreeSet<>();
         ids.add("pds/Property_Map/pds/identifier");
-        ids.add("pds/Property_Maps/pds/identifier");
+        ids.add("test");
         
-        dao.getDataTypes("registry", ids);
+        List<Tuple> results = dao.getDataTypes("registry", ids);
+        for(Tuple res: results)
+        {
+            System.out.println(res.item1 + "  -->  " + res.item2);
+        }
         
         client.close();
     }

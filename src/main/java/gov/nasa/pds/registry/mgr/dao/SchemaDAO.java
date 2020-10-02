@@ -1,15 +1,13 @@
 package gov.nasa.pds.registry.mgr.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.mgr.util.DebugUtils;
+import gov.nasa.pds.registry.mgr.util.Tuple;
 
 
 public class SchemaDAO
@@ -33,14 +31,6 @@ public class SchemaDAO
     }
     
     
-    public void updateMappings(String indexName, String json) throws Exception
-    {
-        Request req = new Request("PUT", "/" + indexName + "/_mapping");
-        req.setJsonEntity(json);
-        Response resp = client.performRequest(req);
-    }
-    
-    
     public boolean indexExists(String indexName) throws Exception
     {
         Request req = new Request("HEAD", "/" + indexName);
@@ -48,13 +38,27 @@ public class SchemaDAO
         return resp.getStatusLine().getStatusCode() == 200;
     }
 
+
+    public void updateMappings(String indexName, Collection<String> ids) throws Exception
+    {
+        if(ids == null || ids.isEmpty()) return;
+        
+        List<Tuple> fields = getDataTypes(indexName, ids);
+        SchemaRequestBld bld = new SchemaRequestBld();
+        String json = bld.createUpdateSchemaRequest(fields);
+        
+        Request req = new Request("PUT", "/" + indexName + "/_mapping");
+        req.setJsonEntity(json);
+        Response resp = client.performRequest(req);
+    }
     
-    public Map<String, String> getDataTypes(String indexName, List<String> ids) throws Exception
+    
+    public List<Tuple> getDataTypes(String indexName, Collection<String> ids) throws Exception
     {
         if(indexName == null) throw new IllegalArgumentException("Index name is null");
 
-        Map<String, String> map = new TreeMap<>();
-        if(ids == null || ids.isEmpty()) return map;
+        List<Tuple> results = new ArrayList<>();
+        if(ids == null || ids.isEmpty()) return results;
         
         // Create request
         indexName = indexName + "-dd";
@@ -67,9 +71,21 @@ public class SchemaDAO
         
         // Call ES
         Response resp = client.performRequest(req);
+        MgetParser parser = new MgetParser();
+        List<MgetParser.Record> records = parser.parse(resp.getEntity());
         
-        DebugUtils.dumpResponseBody(resp);
+        for(MgetParser.Record rec: records)
+        {
+            if(rec.found)
+            {
+                results.add(new Tuple(rec.id, rec.esDataType));
+            }
+            else
+            {
+                System.out.println("[WARN] Could not find datatype for field '" + rec.id + "'");
+            }
+        }
         
-        return map;
+        return results;
     }
 }

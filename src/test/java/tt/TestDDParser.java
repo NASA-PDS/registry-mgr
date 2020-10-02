@@ -2,7 +2,7 @@ package tt;
 
 import java.io.File;
 
-import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
+import gov.nasa.pds.registry.mgr.util.dd.DDParser;
 
 public class TestDDParser
 {

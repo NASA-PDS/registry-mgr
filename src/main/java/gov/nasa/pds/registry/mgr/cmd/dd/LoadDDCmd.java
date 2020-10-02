@@ -7,8 +7,8 @@ import org.apache.commons.cli.CommandLine;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
-import gov.nasa.pds.registry.mgr.schema.dd.DDParser;
-import gov.nasa.pds.registry.mgr.schema.dd.Pds2EsDataTypeMap;
+import gov.nasa.pds.registry.mgr.util.dd.DDParser;
+import gov.nasa.pds.registry.mgr.util.dd.Pds2EsDataTypeMap;
 
 
 public class LoadDDCmd implements CliCommand
