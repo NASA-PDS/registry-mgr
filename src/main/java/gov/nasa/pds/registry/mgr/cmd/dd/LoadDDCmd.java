@@ -7,6 +7,8 @@ import org.apache.commons.cli.CommandLine;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
+import gov.nasa.pds.registry.mgr.util.dd.DDAttribute;
+import gov.nasa.pds.registry.mgr.util.dd.DDNJsonWriter;
 import gov.nasa.pds.registry.mgr.util.dd.DDParser;
 import gov.nasa.pds.registry.mgr.util.dd.Pds2EsDataTypeMap;
 

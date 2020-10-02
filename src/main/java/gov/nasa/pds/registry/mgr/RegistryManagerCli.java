@@ -19,6 +19,7 @@ import gov.nasa.pds.registry.mgr.cmd.ExportFileCmd;
 import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
 import gov.nasa.pds.registry.mgr.cmd.UpdateSchemaCmd;
+import gov.nasa.pds.registry.mgr.cmd.dd.ExportDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.LoadDDCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
@@ -54,10 +55,11 @@ public class RegistryManagerCli
         
         System.out.println();
         System.out.println("Registry:");
-        System.out.println("  create-registry      Create registry index");
-        System.out.println("  delete-registry      Delete registry index and all its data");        
-        System.out.println("  load-dd              Load data dictionary");        
-        System.out.println("  update-schema        Update Elasticsearch schema from one or more PDS data dictionaries");
+        System.out.println("  create-registry      Create registry and data dictionary indices");
+        System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");        
+        System.out.println("  load-dd              Load data dictionary");
+        System.out.println("  export-dd            Export data dictionary");
+        System.out.println("  update-schema        Update registry schema");
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -help  Print help for a command");
@@ -154,6 +156,7 @@ public class RegistryManagerCli
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
         commands.put("load-dd", new LoadDDCmd());
+        commands.put("export-dd", new ExportDDCmd());
         commands.put("update-schema", new UpdateSchemaCmd());
 
         // Data: load / delete / edit

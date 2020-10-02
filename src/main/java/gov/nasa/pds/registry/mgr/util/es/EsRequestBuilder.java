@@ -119,7 +119,7 @@ public class EsRequestBuilder
     }
 
     
-    public String createExportAllDataRequest(int size, String searchAfter) throws IOException
+    public String createExportAllDataRequest(String sortField, int size, String searchAfter) throws IOException
     {
         StringWriter out = new StringWriter();
         JsonWriter writer = createJsonWriter(out);
@@ -144,7 +144,7 @@ public class EsRequestBuilder
         // Sort is required by pagination
         writer.name("sort");
         writer.beginObject();
-        writer.name("lidvid").value("asc");
+        writer.name(sortField).value("asc");
         writer.endObject();
 
         writer.endObject();

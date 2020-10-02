@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.cmd.dd;
+package gov.nasa.pds.registry.mgr.util.dd;
 
 import java.io.File;
 

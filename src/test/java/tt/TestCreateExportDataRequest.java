@@ -17,11 +17,11 @@ public class TestCreateExportDataRequest
         System.out.println(json);
 
         System.out.println();
-        json = bld.createExportAllDataRequest(100, null);
+        json = bld.createExportAllDataRequest("lidvid", 100, null);
         System.out.println(json);
         
         System.out.println();
-        json = bld.createExportAllDataRequest(100, "after::123::abc");
+        json = bld.createExportAllDataRequest("lidvid", 100, "after::123::abc");
         System.out.println(json);
 
     }
