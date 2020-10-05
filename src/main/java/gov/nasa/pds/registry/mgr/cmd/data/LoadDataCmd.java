@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.cmd;
+package gov.nasa.pds.registry.mgr.cmd.data;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 
 

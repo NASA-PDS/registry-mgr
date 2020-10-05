@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.cmd;
+package gov.nasa.pds.registry.mgr.cmd.data;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,6 +16,7 @@ import org.elasticsearch.client.RestClient;
 import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;

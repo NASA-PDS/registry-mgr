@@ -1,10 +1,8 @@
 package gov.nasa.pds.registry.mgr.util.dd;
 
 import java.io.File;
-
 import com.google.gson.stream.JsonWriter;
-
-import gov.nasa.pds.registry.mgr.util.BaseNJsonWriter;
+import gov.nasa.pds.registry.mgr.util.json.BaseNJsonWriter;
 
 
 public class DDNJsonWriter extends BaseNJsonWriter<DDAttribute>

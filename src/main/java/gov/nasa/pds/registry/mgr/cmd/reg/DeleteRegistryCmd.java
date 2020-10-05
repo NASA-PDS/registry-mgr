@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.cmd;
+package gov.nasa.pds.registry.mgr.cmd.reg;
 
 import org.apache.commons.cli.CommandLine;
 import org.elasticsearch.client.Request;
@@ -7,6 +7,7 @@ import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
 import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;

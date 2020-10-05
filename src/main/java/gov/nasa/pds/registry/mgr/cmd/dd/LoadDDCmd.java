@@ -1,74 +1,25 @@
 package gov.nasa.pds.registry.mgr.cmd.dd;
 
 import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.cli.CommandLine;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
-import gov.nasa.pds.registry.mgr.util.dd.DDAttribute;
-import gov.nasa.pds.registry.mgr.util.dd.DDNJsonWriter;
 import gov.nasa.pds.registry.mgr.util.dd.DDParser;
-import gov.nasa.pds.registry.mgr.util.dd.Pds2EsDataTypeMap;
+import gov.nasa.pds.registry.mgr.util.json.DDWriterCB;
 
 
 public class LoadDDCmd implements CliCommand
 {
-    private static class DDWriterCB implements DDParser.Callback
-    {
-        private DDNJsonWriter writer;
-        private DDAttribute attr = new DDAttribute();
-        private Pds2EsDataTypeMap dtMap;
-        
-        
-        public DDWriterCB(File ddFile, File typeMapFile) throws Exception
-        {
-            dtMap = new Pds2EsDataTypeMap();
-
-            if(typeMapFile != null)
-            {
-                dtMap.load(typeMapFile);
-            }
-            
-            writer = new DDNJsonWriter(ddFile);
-        }
-        
-        
-        @Override
-        public void onAttribute(DDParser.DDAttr dda) throws Exception
-        {
-            String tokens[] = dda.id.split("\\.");
-            if(tokens.length != 5)
-            {
-                System.out.println("[WARNING] Invalid attribute ID " + dda.id);
-                return;
-            }
-            
-            attr.classNs = tokens[1];
-            attr.className = tokens[2];
-            attr.attrNs = tokens[3];
-            attr.attrName = tokens[4];
-            
-            attr.esFieldName = attr.classNs + "/" + attr.className 
-                    + "/" + attr.attrNs + "/" + attr.attrName;
-            
-            attr.dataType = dda.dataType;
-            attr.esDataType = dtMap.getEsType(attr.dataType);
-            
-            attr.description = dda.description;
-            
-            writer.write(attr.esFieldName, attr);
-        }
-
-        
-        public void close() throws Exception
-        {
-            writer.close();
-        }
-    }
+    private String esUrl;
+    private String indexName;
+    private String authPath;
     
-
+    
     public LoadDDCmd()
     {
     }
@@ -80,17 +31,19 @@ public class LoadDDCmd implements CliCommand
 
         System.out.println();
         System.out.println("Load data dictionary");
-        System.out.println();
-        System.out.println("Required parameters:");
-        System.out.println("  -file <path>    A data dictionary file (JSON) to load."); 
+        System.out.println();        
+        System.out.println("Required parameters, one of:");
+        System.out.println("  -dd <path>         A data dictionary file (JSON)");
+        System.out.println("  -dump <path>       A data dump created by export-dd command (NJSON)");        
         System.out.println("Optional parameters:");
-        System.out.println("  -auth <file>    Authentication config file");
-        System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
-        System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");        
+        System.out.println("  -auth <file>       Authentication config file");
+        System.out.println("  -es <url>          Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -index <name>      Elasticsearch index name. Default is 'registry'");        
+        System.out.println("  -ns <namespaces>   Comma separated list of namespaces. Can be used with -dd parameter.");
         System.out.println();
     }
 
-        
+    
     @Override
     public void run(CommandLine cmdLine) throws Exception
     {
@@ -100,19 +53,50 @@ public class LoadDDCmd implements CliCommand
             return;
         }
 
-        String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
-        String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
-        String authPath = cmdLine.getOptionValue("auth");
+        this.esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
+        this.indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
+        this.authPath = cmdLine.getOptionValue("auth");
 
-        String ddFile = cmdLine.getOptionValue("file");
-        if(ddFile == null) 
+        String path = cmdLine.getOptionValue("dd");
+        if(path != null)
         {
-            throw new Exception("Missing required parameter '-file'");
+            String namespaces = cmdLine.getOptionValue("ns");
+            loadDataDictionary(path, namespaces);
+            return;
         }
+        
+        path = cmdLine.getOptionValue("dump");
+        if(path != null)
+        {
+            loadDataDump(path);
+            return;
+        }        
+        
+        throw new Exception("One of the following options is required: -dd, -dump");
+    }
 
+        
+    private void loadDataDictionary(String path, String namespaces) throws Exception
+    {
+        Set<String> nsFilter = new TreeSet<>();
+        
         System.out.println("Elasticsearch URL: " + esUrl);
         System.out.println("            Index: " + indexName);
-        System.out.println("  Data dictionary: " + ddFile);        
+        System.out.println("  Data dictionary: " + path);
+        
+        if(namespaces != null)
+        {
+            System.out.println("       Namespaces: " + namespaces);
+            String[] tokens = namespaces.split(",");
+            for(String token: tokens)
+            {
+                token = token.trim();
+                if(token.length() > 0)
+                {
+                    nsFilter.add(token);
+                }
+            }
+        }
         System.out.println();
                 
         // Parse data dictionary and create temporary file
@@ -120,8 +104,8 @@ public class LoadDDCmd implements CliCommand
         File dtCfgFile = getDataTypesCfgFile();
         
         DDParser parser = new DDParser();
-        DDWriterCB wr = new DDWriterCB(tempOutFile, dtCfgFile);
-        parser.parse(new File(ddFile), wr);
+        DDWriterCB wr = new DDWriterCB(tempOutFile, dtCfgFile, nsFilter);
+        parser.parse(new File(path), wr);
         wr.close();
         
         // Load temporary file into data dictionary index
@@ -130,10 +114,20 @@ public class LoadDDCmd implements CliCommand
         
         // Delete temporary file
         tempOutFile.delete();
-        
-        System.out.println("Done");
     }
-
+    
+    
+    private void loadDataDump(String path) throws Exception
+    {
+        System.out.println("Elasticsearch URL: " + esUrl);
+        System.out.println("            Index: " + indexName);
+        System.out.println("        Data dump: " + path);        
+        System.out.println();
+        
+        DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);
+        loader.loadFile(new File(path));
+    }
+    
     
     private File getTempOutFile()
     {

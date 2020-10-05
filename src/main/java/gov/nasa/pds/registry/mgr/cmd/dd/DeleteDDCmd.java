@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.cmd;
+package gov.nasa.pds.registry.mgr.cmd.dd;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,17 +14,18 @@ import org.elasticsearch.client.RestClient;
 import com.google.gson.Gson;
 
 import gov.nasa.pds.registry.mgr.Constants;
+import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 
-public class DeleteDataCmd implements CliCommand
+public class DeleteDDCmd implements CliCommand
 {
     private String filterMessage;
 
-    public DeleteDataCmd()
+    public DeleteDDCmd()
     {
     }
 
@@ -45,7 +46,7 @@ public class DeleteDataCmd implements CliCommand
         String query = buildEsQuery(cmdLine);
         if(query == null)
         {
-            throw new Exception("One of the following options is required: -lidvid, -lid, -packageId, -all");
+            throw new Exception("One of the following options is required: -id, -ns, -all");
         }
 
         System.out.println("Elasticsearch URL: " + esUrl);
@@ -61,7 +62,7 @@ public class DeleteDataCmd implements CliCommand
             client = EsClientFactory.createRestClient(esUrl, authPath);
 
             // Create request
-            Request req = new Request("POST", "/" + indexName + "/_delete_by_query");
+            Request req = new Request("POST", "/" + indexName + "-dd" + "/_delete_by_query");
             req.setJsonEntity(query);
             
             // Execute request
@@ -107,25 +108,18 @@ public class DeleteDataCmd implements CliCommand
     {
         EsRequestBuilder bld = new EsRequestBuilder();
         
-        String id = cmdLine.getOptionValue("lidvid");
+        String id = cmdLine.getOptionValue("id");
         if(id != null)
         {
-            filterMessage = "           LIDVID: " + id;
-            return bld.createFilterQuery("lidvid", id);
+            filterMessage = "               ID: " + id;
+            return bld.createFilterQuery("_id", id);
         }
         
-        id = cmdLine.getOptionValue("lid");
+        id = cmdLine.getOptionValue("ns");
         if(id != null)
         {
-            filterMessage = "              LID: " + id;
-            return bld.createFilterQuery("lid", id);
-        }
-
-        id = cmdLine.getOptionValue("packageId");
-        if(id != null)
-        {
-            filterMessage = "       Package ID: " + id;            
-            return bld.createFilterQuery("_package_id", id);
+            filterMessage = "        Namespace: " + id;
+            return bld.createFilterQuery("class_ns", id);
         }
 
         if(cmdLine.hasOption("all"))
@@ -140,15 +134,14 @@ public class DeleteDataCmd implements CliCommand
     
     public void printHelp()
     {
-        System.out.println("Usage: registry-manager delete-data <options>");
+        System.out.println("Usage: registry-manager delete-dd <options>");
 
         System.out.println();
-        System.out.println("Delete data from registry index");
+        System.out.println("Delete data from data dictionary index");
         System.out.println();
         System.out.println("Required parameters, one of:");
-        System.out.println("  -lidvid <id>      Delete data by lidvid");
-        System.out.println("  -lid <id>         Delete data by lid");
-        System.out.println("  -packageId <id>   Delete data by package id"); 
+        System.out.println("  -id <id>          Delete data by ID (Full field name)");
+        System.out.println("  -ns <namespace>   Delete data by namespace");
         System.out.println("  -all              Delete all data");
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>      Authentication config file");

@@ -11,16 +11,16 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
-import gov.nasa.pds.registry.mgr.cmd.CreateRegistryCmd;
-import gov.nasa.pds.registry.mgr.cmd.DeleteDataCmd;
-import gov.nasa.pds.registry.mgr.cmd.DeleteRegistryCmd;
-import gov.nasa.pds.registry.mgr.cmd.ExportDataCmd;
-import gov.nasa.pds.registry.mgr.cmd.ExportFileCmd;
-import gov.nasa.pds.registry.mgr.cmd.LoadDataCmd;
-import gov.nasa.pds.registry.mgr.cmd.SetArchiveStatusCmd;
-import gov.nasa.pds.registry.mgr.cmd.UpdateSchemaCmd;
+import gov.nasa.pds.registry.mgr.cmd.data.ExportDataCmd;
+import gov.nasa.pds.registry.mgr.cmd.data.ExportFileCmd;
+import gov.nasa.pds.registry.mgr.cmd.data.LoadDataCmd;
+import gov.nasa.pds.registry.mgr.cmd.data.SetArchiveStatusCmd;
+import gov.nasa.pds.registry.mgr.cmd.dd.DeleteDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ExportDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.LoadDDCmd;
+import gov.nasa.pds.registry.mgr.cmd.dd.UpdateSchemaCmd;
+import gov.nasa.pds.registry.mgr.cmd.reg.CreateRegistryCmd;
+import gov.nasa.pds.registry.mgr.cmd.reg.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.util.ExceptionUtils;
 
 
@@ -45,6 +45,7 @@ public class RegistryManagerCli
 
         System.out.println();
         System.out.println("Commands:");
+        
         System.out.println();
         System.out.println("Data:");
         System.out.println("  load-data            Load data into registry index");
@@ -57,9 +58,14 @@ public class RegistryManagerCli
         System.out.println("Registry:");
         System.out.println("  create-registry      Create registry and data dictionary indices");
         System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");        
-        System.out.println("  load-dd              Load data dictionary");
+        
+        System.out.println();
+        System.out.println("Data Dictionary:");
+        System.out.println("  load-dd              Load data into data dictionary");
+        System.out.println("  delete-dd            Delete data from data dictionary");        
         System.out.println("  export-dd            Export data dictionary");
         System.out.println("  update-schema        Update registry schema");
+
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -help  Print help for a command");
@@ -152,16 +158,19 @@ public class RegistryManagerCli
     {
         commands = new HashMap<>();
 
-        // Registry: create / delete / edit
+        // Registry
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
+
+        // Data dictionary
         commands.put("load-dd", new LoadDDCmd());
+        commands.put("delete-dd", new DeleteDDCmd());
         commands.put("export-dd", new ExportDDCmd());
         commands.put("update-schema", new UpdateSchemaCmd());
-
-        // Data: load / delete / edit
+        
+        // Data
         commands.put("load-data", new LoadDataCmd());
-        commands.put("delete-data", new DeleteDataCmd());
+        commands.put("delete-data", new DeleteDDCmd());
         commands.put("export-data", new ExportDataCmd());
         commands.put("export-file", new ExportFileCmd());
         commands.put("set-archive-status", new SetArchiveStatusCmd());
@@ -186,13 +195,20 @@ public class RegistryManagerCli
         bld = Option.builder("file").hasArg().argName("path");
         options.addOption(bld.build());
 
-        bld = Option.builder("config").hasArg().argName("path");
+        // Data dictionary commands
+        bld = Option.builder("id").hasArg().argName("id");
         options.addOption(bld.build());
 
-        bld = Option.builder("outDir").hasArg().argName("dir");
+        bld = Option.builder("ns").hasArg().argName("namespace");
         options.addOption(bld.build());
         
-        // delete-data command
+        bld = Option.builder("dd").hasArg().argName("path");
+        options.addOption(bld.build());
+
+        bld = Option.builder("dump").hasArg().argName("path");
+        options.addOption(bld.build());
+        
+        // Data commands
         bld = Option.builder("lidvid").hasArg().argName("id");
         options.addOption(bld.build());
 
@@ -205,11 +221,10 @@ public class RegistryManagerCli
         bld = Option.builder("all");
         options.addOption(bld.build());
         
-        // Status
         bld = Option.builder("status").hasArg().argName("status");
         options.addOption(bld.build());
         
-        // Create update collection
+        // Registry
         bld = Option.builder("index").hasArg().argName("name");
         options.addOption(bld.build());
 

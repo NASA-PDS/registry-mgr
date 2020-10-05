@@ -17,6 +17,8 @@ import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 public class DataLoader
 {
+    private int printProgressSize = 5000;
+    
     private int batchSize = 100;
     private HttpConnectionFactory conFactory; 
     private int totalRecords;
@@ -51,7 +53,10 @@ public class DataLoader
             
             while((firstLine = loadBatch(rd, firstLine)) != null)
             {
-                System.out.println("Loaded " + totalRecords + " document(s)");
+                if(totalRecords % printProgressSize == 0)
+                {
+                    System.out.println("Loaded " + totalRecords + " document(s)");
+                }
             }
             
             System.out.println("Loaded " + totalRecords + " document(s)");
@@ -115,7 +120,6 @@ public class DataLoader
             writer.close();
         
             String respJson = getLastLine(con.getInputStream());
-            //System.out.println(respJson);
 
             totalRecords += numRecords;
 
