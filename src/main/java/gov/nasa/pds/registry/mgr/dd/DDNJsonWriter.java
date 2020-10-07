@@ -1,11 +1,11 @@
-package gov.nasa.pds.registry.mgr.util.dd;
+package gov.nasa.pds.registry.mgr.dd;
 
 import java.io.File;
 import com.google.gson.stream.JsonWriter;
 import gov.nasa.pds.registry.mgr.util.json.BaseNJsonWriter;
 
 
-public class DDNJsonWriter extends BaseNJsonWriter<DDAttribute>
+public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
 {
     public DDNJsonWriter(File file) throws Exception
     {
@@ -14,9 +14,9 @@ public class DDNJsonWriter extends BaseNJsonWriter<DDAttribute>
 
     
     @Override
-    public void writeRecord(JsonWriter jw, DDAttribute data) throws Exception
+    public void writeRecord(JsonWriter jw, DDRecord data) throws Exception
     {
-        writeField(jw, "es_field_name", data.esFieldName);
+        writeField(jw, "es_field_name", data.getEsFieldName());
         writeField(jw, "es_data_type", data.esDataType);
 
         writeField(jw, "class_ns", data.classNs);

@@ -9,8 +9,8 @@ import org.apache.commons.cli.CommandLine;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
-import gov.nasa.pds.registry.mgr.util.dd.DDParser;
-import gov.nasa.pds.registry.mgr.util.json.DDWriterCB;
+import gov.nasa.pds.registry.mgr.dd.parser.DDParser;
+import gov.nasa.pds.registry.mgr.dd.DDWriterCB;
 
 
 public class LoadDDCmd implements CliCommand
@@ -103,8 +103,8 @@ public class LoadDDCmd implements CliCommand
         File tempOutFile = getTempOutFile();
         File dtCfgFile = getDataTypesCfgFile();
         
-        DDParser parser = new DDParser();
         DDWriterCB wr = new DDWriterCB(tempOutFile, dtCfgFile, nsFilter);
+        DDParser parser = new DDParser();
         parser.parse(new File(path), wr);
         wr.close();
         

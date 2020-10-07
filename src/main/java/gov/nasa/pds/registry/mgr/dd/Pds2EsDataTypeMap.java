@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.dd;
+package gov.nasa.pds.registry.mgr.dd;
 
 import java.io.BufferedReader;
 import java.io.File;
