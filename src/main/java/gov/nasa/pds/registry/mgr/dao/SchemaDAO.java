@@ -82,7 +82,7 @@ public class SchemaDAO
             }
             else
             {
-                System.out.println("[WARN] Could not find datatype for field '" + rec.id + "'");
+                throw new Exception("Could not find datatype for field '" + rec.id + "'");
             }
         }
         

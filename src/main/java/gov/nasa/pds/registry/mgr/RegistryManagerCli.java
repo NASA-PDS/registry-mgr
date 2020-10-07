@@ -207,7 +207,10 @@ public class RegistryManagerCli
 
         bld = Option.builder("dump").hasArg().argName("path");
         options.addOption(bld.build());
-        
+
+        bld = Option.builder("updateSchema").hasArg().argName("y/n");
+        options.addOption(bld.build());
+
         // Data commands
         bld = Option.builder("lidvid").hasArg().argName("id");
         options.addOption(bld.build());

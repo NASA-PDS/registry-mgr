@@ -1,9 +1,6 @@
 package gov.nasa.pds.registry.mgr.cmd.dd;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 import org.elasticsearch.client.ResponseException;
@@ -43,20 +40,13 @@ public class UpdateSchemaCmd implements CliCommand
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
 
-        // Read data dictionary
-        List<String> newFields = getNewFields(filePath);
-        
         RestClient client = null;
         
         try
         {
-            // Create Elasticsearch client
             client = EsClientFactory.createRestClient(esUrl, authPath);
-
-            // Update Elasticsearch schema
             SchemaUpdater su = new SchemaUpdater(client, indexName);
-            su.updateSchema(newFields);
-            
+            su.updateSchema(new File(filePath));
             System.out.println("Done");
         }
         catch(ResponseException ex)
@@ -69,30 +59,6 @@ public class UpdateSchemaCmd implements CliCommand
         }
     }
 
-    
-    private List<String> getNewFields(String filePath) throws Exception
-    {
-        List<String> fields = new ArrayList<>();
-        
-        BufferedReader rd = new BufferedReader(new FileReader(filePath));
-        try
-        {
-            String line;
-            while((line = rd.readLine()) != null)
-            {
-                line = line.trim();
-                if(line.length() == 0) continue;
-                fields.add(line);
-            }
-        }
-        finally
-        {
-            CloseUtils.close(rd);
-        }
-        
-        return fields;
-    }
-    
     
     public void printHelp()
     {

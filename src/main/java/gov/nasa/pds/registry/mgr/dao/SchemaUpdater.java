@@ -1,10 +1,16 @@
 package gov.nasa.pds.registry.mgr.dao;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
+
+import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 
 /**
@@ -20,7 +26,6 @@ public class SchemaUpdater
     
     private Set<String> batch;
     private int totalCount;
-    private int lastBatchCount;
     private int batchSize = 100;
     
     /**
@@ -41,7 +46,14 @@ public class SchemaUpdater
         this.batch = new TreeSet<>();
     }
 
-
+    
+    public void updateSchema(File file) throws Exception
+    {
+        List<String> newFields = getNewFields(file);
+        updateSchema(newFields);
+    }
+    
+    
     /**
      * Add fields from data dictionary to Elasticsearch schema. Ignore existing fields.
      * @param dd
@@ -49,7 +61,6 @@ public class SchemaUpdater
      */
     public void updateSchema(List<String> newFields) throws Exception
     {
-        lastBatchCount = 0;
         totalCount = 0;
         batch.clear();
 
@@ -59,6 +70,7 @@ public class SchemaUpdater
         }
 
         finish();
+        System.out.println("Processed " + totalCount + " fields");
     }
     
     
@@ -73,9 +85,7 @@ public class SchemaUpdater
         // Commit if reached batch/commit size
         if(totalCount % batchSize == 0)
         {
-            System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
             dao.updateMappings(indexName, batch);
-            lastBatchCount = totalCount;
             batch.clear();
         }
     }
@@ -84,11 +94,32 @@ public class SchemaUpdater
     private void finish() throws Exception
     {
         if(batch.isEmpty()) return;
-        
-        System.out.println("Adding fields " + (lastBatchCount+1) + "-" + totalCount);
         dao.updateMappings(indexName, batch);
-        lastBatchCount = totalCount;
     }
     
+    
+    private static List<String> getNewFields(File file) throws Exception
+    {
+        List<String> fields = new ArrayList<>();
+        
+        BufferedReader rd = new BufferedReader(new FileReader(file));
+        try
+        {
+            String line;
+            while((line = rd.readLine()) != null)
+            {
+                line = line.trim();
+                if(line.length() == 0) continue;
+                fields.add(line);
+            }
+        }
+        finally
+        {
+            CloseUtils.close(rd);
+        }
+        
+        return fields;
+    }
+
     
 }
