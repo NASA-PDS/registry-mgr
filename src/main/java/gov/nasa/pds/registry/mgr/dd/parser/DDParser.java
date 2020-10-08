@@ -13,7 +13,7 @@ public class DDParser
 {
     public static interface Callback
     {
-        public void onClass(DDClass claz) throws Exception;
+        public void onClass(DDClass ddClass) throws Exception;
         public void onAttribute(DDAttribute attr) throws Exception;
     }
     
@@ -54,6 +54,8 @@ public class DDParser
     
     public void parse(File file, Callback cb) throws Exception
     {
+        System.out.println("Parsing data dictionary " + file.getAbsolutePath());
+        
         init(file, cb);
 
         try

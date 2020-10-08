@@ -10,7 +10,7 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dd.parser.DDParser;
-import gov.nasa.pds.registry.mgr.dd.DDWriterCB;
+import gov.nasa.pds.registry.mgr.dd.DDProcessor;
 
 
 public class LoadDDCmd implements CliCommand
@@ -103,10 +103,11 @@ public class LoadDDCmd implements CliCommand
         File tempOutFile = getTempOutFile();
         File dtCfgFile = getDataTypesCfgFile();
         
-        DDWriterCB wr = new DDWriterCB(tempOutFile, dtCfgFile, nsFilter);
+        DDProcessor proc = new DDProcessor(tempOutFile, dtCfgFile, nsFilter);
         DDParser parser = new DDParser();
-        parser.parse(new File(path), wr);
-        wr.close();
+        parser.parse(new File(path), proc);
+        proc.processParentClasses();
+        proc.close();
         
         // Load temporary file into data dictionary index
         DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);

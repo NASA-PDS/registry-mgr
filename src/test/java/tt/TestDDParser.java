@@ -12,11 +12,11 @@ public class TestDDParser
     private static class MyCB implements DDParser.Callback
     {
         @Override
-        public void onClass(DDClass claz) throws Exception
+        public void onClass(DDClass ddClass) throws Exception
         {
-            if(claz.parentId != null)
+            if(ddClass.parentId != null)
             {
-                System.out.println(claz.getId() + "  -->  " + claz.parentId);
+                System.out.println(ddClass.getId() + "  -->  " + ddClass.parentId);
             }
         }
 
