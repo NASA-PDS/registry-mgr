@@ -14,6 +14,10 @@ public class TestDDParser
         @Override
         public void onClass(DDClass claz) throws Exception
         {
+            if(claz.parentId != null)
+            {
+                System.out.println(claz.getId() + "  -->  " + claz.parentId);
+            }
         }
 
         
@@ -27,10 +31,14 @@ public class TestDDParser
     
     public static void main(String[] args) throws Exception
     {
-        File file = new File("/tmp/schema/PDS4_PROC_1B00_1100.JSON");
+        //File file = new File("/tmp/schema/PDS4_PROC_1B00_1100.JSON");
+        //File file = new File("/tmp/schema/PDS4_CART_1D00_1933.JSON");
+        File file = new File("/tmp/schema/PDS4_PDS_JSON_1E00.JSON");
+        
         MyCB cb = new MyCB();
         
         DDParser parser = new DDParser();
+        parser.setParseAttributeDictionary(false);
         parser.parse(file, cb);
     }
 }

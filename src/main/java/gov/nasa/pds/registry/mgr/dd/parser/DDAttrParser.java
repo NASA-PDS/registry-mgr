@@ -9,9 +9,9 @@ import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
 
 class DDAttrParser
 {
-    private int attrCount;
     private JsonReader rd;
     private Callback cb;
+    private int itemCount;
 
     
     public DDAttrParser(JsonReader rd, Callback cb)
@@ -51,9 +51,9 @@ class DDAttrParser
 
     private void parseAttr() throws Exception
     {
-        DDAttribute attr = new DDAttribute();
+        itemCount++;
         
-        attrCount++;
+        DDAttribute attr = new DDAttribute();
         
         rd.beginObject();
         
@@ -87,9 +87,9 @@ class DDAttrParser
         
         rd.endObject();
         
-        if(attr.attrName == null) 
+        if(attr.attrName == null)
         {
-            String msg = "Missing identifier in attribute definition. Index = " + attrCount;
+            String msg = "Missing identifier in attribute definition. Index = " + itemCount;
             throw new Exception(msg);
         }
         
