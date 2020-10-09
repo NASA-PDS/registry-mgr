@@ -1,19 +1,16 @@
 package gov.nasa.pds.registry.mgr.dd;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
-import gov.nasa.pds.registry.mgr.dd.parser.DDClass;
-import gov.nasa.pds.registry.mgr.dd.parser.DDParser;
+import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
+import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 
 
-public class DDProcessor implements DDParser.Callback
+public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAttrAssociationParser.Callback
 {
     private DDNJsonWriter writer;
     private DDRecord ddRec = new DDRecord();
@@ -21,9 +18,7 @@ public class DDProcessor implements DDParser.Callback
     private Pds2EsDataTypeMap dtMap;
     private Set<String> nsFilter;
     
-    private Map<String, DDClass> ddClassMap = new TreeMap<>();
-    private Set<String> classIdsToCache = new TreeSet<>();
-    private DDAttributeCache ddAttrCache = new DDAttributeCache();
+    private Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
     
     
     public DDProcessor(File outFile, File typeMapFile, Set<String> nsFilter) throws Exception
@@ -52,32 +47,30 @@ public class DDProcessor implements DDParser.Callback
 
     
     @Override
-    public void onClass(DDClass ddClass) throws Exception
-    {
-        if(ddClass.parentId != null)
-        {
-            ddClassMap.put(ddClass.getId(), ddClass);
-            classIdsToCache.add(ddClass.parentId);
-        }
-    }
-
-    
-    @Override
     public void onAttribute(DDAttribute dda) throws Exception
     {
         // Apply namespace filter
         if(nsFilter != null && !nsFilter.contains(dda.classNs)) return;        
         
-        String classId = dda.getClassNsName();
-        if(classIdsToCache.contains(classId))
-        {
-            ddAttrCache.add(classId, dda);
-        }
-        
-        writeRecord(dda.classNs, dda.className, dda);
+        ddAttrCache.put(dda.id, dda);
     }
 
     
+    @Override
+    public void onAssociation(String classNs, String className, String attrId) throws Exception
+    {
+        DDAttribute attr = ddAttrCache.get(attrId);
+        if(attr == null)
+        {
+            System.out.println("[WARNING] Missing attribute " + attrId);
+        }
+        else
+        {
+            writeRecord(classNs, className, attr);
+        }
+    }
+
+        
     private void writeRecord(String classNs, String className, DDAttribute dda) throws Exception
     {
         // Assign values
@@ -93,43 +86,12 @@ public class DDProcessor implements DDParser.Callback
 
         // Write
         writer.write(ddRec.getEsFieldName(), ddRec);
-    }
     
-    
-    public void processParentClasses() throws Exception
-    {
-        if(ddClassMap.isEmpty()) return;
-        
-        System.out.println("Processing parent classes...");
-        
-        for(DDClass ddClass: ddClassMap.values())
+        if(!classNs.equals(dda.attrNs))
         {
-            processClass(ddClass);
+            ddRec.attrNs = classNs;
+            writer.write(ddRec.getEsFieldName(), ddRec);
         }
     }
-
-    
-    private void processClass(DDClass ddClass) throws Exception
-    {
-        while(ddClass != null)
-        {
-            List<DDAttribute> list = ddAttrCache.get(ddClass.parentId);
-            
-            if(list == null)
-            {
-                //TODO: Load from ES
-                
-                System.out.println("[WARNING] There are no attributes for " + ddClass.parentId);
-                list = new ArrayList<>();
-                ddAttrCache.put(ddClass.parentId, list);
-            }
         
-            for(DDAttribute attr: list)
-            {
-                writeRecord(ddClass.classNs, ddClass.className, attr);
-            }
-    
-            ddClass = ddClassMap.get(ddClass.parentId);
-        }
-    }
 }

@@ -70,7 +70,7 @@ public class SchemaUpdater
         }
 
         finish();
-        System.out.println("Processed " + totalCount + " fields");
+        System.out.println("Updated " + totalCount + " fields");
     }
     
     

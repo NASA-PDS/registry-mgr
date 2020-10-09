@@ -68,7 +68,6 @@ public class LoadDataCmd implements CliCommand
         
         // Load data
         loadData(filePath);
-        System.out.println("Done");
     }
 
     
@@ -93,6 +92,7 @@ public class LoadDataCmd implements CliCommand
     private void updateSchema(String filePath) throws Exception
     {
         File newFields = getFieldListFile(filePath);
+        System.out.println("Updating schema with fields from " + newFields.getAbsolutePath());
         
         RestClient client = null;
         
@@ -101,7 +101,6 @@ public class LoadDataCmd implements CliCommand
             client = EsClientFactory.createRestClient(esUrl, authPath);
             SchemaUpdater su = new SchemaUpdater(client, indexName);
             su.updateSchema(newFields);
-            System.out.println("Done");
         }
         catch(ResponseException ex)
         {
@@ -128,6 +127,8 @@ public class LoadDataCmd implements CliCommand
     
     private void loadData(String filePath) throws Exception
     {
+        System.out.println("Loading data...");
+        
         List<File> files = getFiles(filePath);
         if(files == null || files.isEmpty()) return;
 

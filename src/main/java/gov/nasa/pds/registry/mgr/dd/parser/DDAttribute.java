@@ -2,6 +2,8 @@ package gov.nasa.pds.registry.mgr.dd.parser;
 
 public class DDAttribute
 {
+    public String id;
+    
     public String classNs;
     public String className;
     
@@ -26,11 +28,5 @@ public class DDAttribute
     public String getAttributeNsName()
     {
         return attrNs + "." + attrName;
-    }
-
-    
-    public String getId()
-    {
-        return classNs + "." + className + "." + attrNs + "." + attrName;
     }
 }

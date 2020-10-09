@@ -9,7 +9,8 @@ import org.apache.commons.cli.CommandLine;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
-import gov.nasa.pds.registry.mgr.dd.parser.DDParser;
+import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
+import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 import gov.nasa.pds.registry.mgr.dd.DDProcessor;
 
 
@@ -102,11 +103,15 @@ public class LoadDDCmd implements CliCommand
         // Parse data dictionary and create temporary file
         File tempOutFile = getTempOutFile();
         File dtCfgFile = getDataTypesCfgFile();
+        File ddFile = new File(path);
         
         DDProcessor proc = new DDProcessor(tempOutFile, dtCfgFile, nsFilter);
-        DDParser parser = new DDParser();
-        parser.parse(new File(path), proc);
-        proc.processParentClasses();
+        
+        AttributeDictionaryParser parser1 = new AttributeDictionaryParser(ddFile, proc);
+        parser1.parse();
+        ClassAttrAssociationParser parser2 = new ClassAttrAssociationParser(ddFile, proc);
+        parser2.parse();
+        
         proc.close();
         
         // Load temporary file into data dictionary index
