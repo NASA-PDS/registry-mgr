@@ -27,11 +27,11 @@ public class TestRequestBld
     {
         EsRequestBuilder bld = new EsRequestBuilder(true);
         
-        String json = bld.createExportDataRequest("lidvid", "abc123", 100, null);
+        String json = bld.createExportDataRequest("lidvid", "abc123", "lidvid", 100, null);
         System.out.println(json);
 
         System.out.println();
-        json = bld.createExportDataRequest("lidvid", "abc123", 100, "after::123::abc");
+        json = bld.createExportDataRequest("lidvid", "abc123", "lidvid", 100, "after::123::abc");
         System.out.println(json);
 
         System.out.println();

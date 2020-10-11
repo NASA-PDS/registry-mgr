@@ -49,9 +49,6 @@ public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAtt
     @Override
     public void onAttribute(DDAttribute dda) throws Exception
     {
-        // Apply namespace filter
-        if(nsFilter != null && !nsFilter.contains(dda.classNs)) return;        
-        
         ddAttrCache.put(dda.id, dda);
     }
 
@@ -59,6 +56,9 @@ public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAtt
     @Override
     public void onAssociation(String classNs, String className, String attrId) throws Exception
     {
+        // Apply namespace filter
+        if(nsFilter != null && !nsFilter.contains(classNs)) return;        
+
         DDAttribute attr = ddAttrCache.get(attrId);
         if(attr == null)
         {
@@ -85,12 +85,12 @@ public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAtt
         ddRec.description = dda.description;
 
         // Write
-        writer.write(ddRec.getEsFieldName(), ddRec);
+        writer.write(ddRec.esFieldNameFromComponents(), ddRec);
     
         if(!classNs.equals(dda.attrNs))
         {
             ddRec.attrNs = classNs;
-            writer.write(ddRec.getEsFieldName(), ddRec);
+            writer.write(ddRec.esFieldNameFromComponents(), ddRec);
         }
     }
         

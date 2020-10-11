@@ -1,17 +1,23 @@
 package gov.nasa.pds.registry.mgr.cmd.dd;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.cli.CommandLine;
+
+import com.opencsv.CSVReader;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
+import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.dd.DDNJsonWriter;
 import gov.nasa.pds.registry.mgr.dd.DDProcessor;
+import gov.nasa.pds.registry.mgr.dd.DDRecord;
 
 
 public class LoadDDCmd implements CliCommand
@@ -34,8 +40,9 @@ public class LoadDDCmd implements CliCommand
         System.out.println("Load data dictionary");
         System.out.println();        
         System.out.println("Required parameters, one of:");
-        System.out.println("  -dd <path>         A data dictionary file (JSON)");
-        System.out.println("  -dump <path>       A data dump created by export-dd command (NJSON)");        
+        System.out.println("  -dd <path>         Standard PDS4 data dictionary file (JSON)");
+        System.out.println("  -dump <path>       Data dump created by 'export-dd' command (NJSON)");
+        System.out.println("  -csv <path>        Custom data dictionary file in CSV format");
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>       Authentication config file");
         System.out.println("  -es <url>          Elasticsearch URL. Default is http://localhost:9200");
@@ -72,8 +79,15 @@ public class LoadDDCmd implements CliCommand
             loadDataDump(path);
             return;
         }        
-        
-        throw new Exception("One of the following options is required: -dd, -dump");
+
+        path = cmdLine.getOptionValue("csv");
+        if(path != null)
+        {
+            loadCsv(path);
+            return;
+        }        
+
+        throw new Exception("One of the following options is required: -dd, -dump, -csv");
     }
 
         
@@ -132,6 +146,123 @@ public class LoadDDCmd implements CliCommand
         
         DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);
         loader.loadFile(new File(path));
+    }
+    
+    
+    private void loadCsv(String path) throws Exception
+    {
+        System.out.println("Elasticsearch URL: " + esUrl);
+        System.out.println("            Index: " + indexName);
+        System.out.println("         CSV file: " + path);
+        System.out.println();
+        
+
+        File tempOutFile = getTempOutFile();
+        
+        DDNJsonWriter writer = null;
+        CSVReader rd = new CSVReader(new FileReader(path));
+        
+        try
+        {
+            // Header
+            String[] header = rd.readNext();
+            if(header == null) return;
+            validateCsvHeader(header);
+            
+            System.out.println("Creating temprary ES NJSON " + tempOutFile.getAbsolutePath());
+            writer = new DDNJsonWriter(tempOutFile);
+            
+            int line = 1;
+            String[] values = null;
+            while((values = rd.readNext()) != null)
+            {
+                ++line;
+                DDRecord rec = createDDRecord(header, values, line);
+                writer.write(rec.esFieldName, rec);
+            }
+        }
+        finally
+        {
+            CloseUtils.close(rd);
+            CloseUtils.close(writer);
+        }
+        
+        // Load temporary file into data dictionary index
+        DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);
+        loader.loadFile(tempOutFile);
+        
+        // Delete temporary file
+        tempOutFile.delete();
+    }
+    
+    
+    private static DDRecord createDDRecord(String[] header, String[] values, int line) throws Exception
+    {
+        if(values.length != header.length) throw new Exception("Invalid number of values at line " + line);
+        
+        DDRecord rec = new DDRecord();
+        
+        for(int i = 0; i < values.length; i++)
+        {
+            String column = header[i];
+            String value = values[i];
+            
+            switch(column)
+            {
+            case "es_field_name":
+                rec.esFieldName = value;
+                break;
+            case "es_data_type":
+                rec.esDataType = value;
+                break;
+            case "class_ns":
+                rec.classNs = value;
+                break;
+            case "class_name":
+                rec.className = value;
+                break;
+            case "attr_ns":
+                rec.attrNs = value;
+                break;
+            case "attr_name":
+                rec.attrName = value;
+                break;
+            case "data_type":
+                rec.dataType = value;
+                break;
+            case "description":
+                rec.description = value;
+                break;
+            }
+        }
+        
+        return rec;
+    }
+    
+    
+    private void validateCsvHeader(String[] hdr) throws Exception
+    {
+        if(hdr == null) return;
+        
+        boolean esFieldNameExists = false;
+        boolean esDataTypeExists = false;
+        
+        for(int i = 0; i < hdr.length; i++)
+        {
+            String val = hdr[i].toLowerCase();
+            hdr[i] = val;
+            if("es_field_name".equals(val))
+            {
+                esFieldNameExists = true;
+            }
+            else if("es_data_type".equals(val))
+            {
+                esDataTypeExists = true;
+            }
+        }
+        
+        if(!esFieldNameExists) throw new Exception("Invalid CSV file header. Missing 'es_field_name' column");
+        if(!esDataTypeExists) throw new Exception("Invalid CSV file header. Missing 'es_data_type' column");
     }
     
     

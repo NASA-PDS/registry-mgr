@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
@@ -18,6 +19,8 @@ import gov.nasa.pds.registry.mgr.util.es.EsUtils;
 
 public class CreateRegistryCmd implements CliCommand
 {
+    private static final String ERR_CFG = "Could not find default configuration directory. REGISTRY_MANAGER_HOME environment variable is not set."; 
+    
     private static enum SchemaType { Registry, DataDictionary };
     
     private RestClient client;
@@ -57,8 +60,13 @@ public class CreateRegistryCmd implements CliCommand
             System.out.println();
             
             // Data dictionary
+            // Create index
             File ddSchemaFile = getSchemaFile(null, SchemaType.DataDictionary); 
             createIndex(ddSchemaFile, indexName + "-dd", 1, replicas);
+            // Load data
+            DataLoader dl = new DataLoader(esUrl, indexName + "-dd", authPath);
+            File zipFile = getDDDataFile();
+            dl.loadZippedFile(zipFile, "dd.json");
         }
         finally
         {
@@ -138,7 +146,7 @@ public class CreateRegistryCmd implements CliCommand
             String home = System.getenv("REGISTRY_MANAGER_HOME");
             if(home == null) 
             {
-                throw new Exception("Could not find default configuration directory. REGISTRY_MANAGER_HOME environment variable is not set.");
+                throw new Exception(ERR_CFG);
             }
 
             switch(type)
@@ -158,6 +166,19 @@ public class CreateRegistryCmd implements CliCommand
         
         if(!file.exists()) throw new Exception("Schema file " + file.getAbsolutePath() + " does not exist");
         
+        return file;
+    }
+    
+    
+    private File getDDDataFile() throws Exception
+    {
+        String home = System.getenv("REGISTRY_MANAGER_HOME");
+        if(home == null) 
+        {
+            throw new Exception(ERR_CFG);
+        }
+        
+        File file = new File(home, "elastic/data-dic-data.jar");
         return file;
     }
     

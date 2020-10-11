@@ -2,6 +2,9 @@ package gov.nasa.pds.registry.mgr.dd;
 
 public class DDRecord
 {
+    public String esFieldName;
+    public String esDataType;
+    
     public String classNs;
     public String className;
     
@@ -11,7 +14,6 @@ public class DDRecord
     public String description;
 
     public String dataType;
-    public String esDataType;
     
     
     public DDRecord()
@@ -19,7 +21,7 @@ public class DDRecord
     }
     
     
-    public String getEsFieldName()
+    public String esFieldNameFromComponents()
     {
         return classNs + "/" + className + "/" + attrNs + "/" + attrName;
     }

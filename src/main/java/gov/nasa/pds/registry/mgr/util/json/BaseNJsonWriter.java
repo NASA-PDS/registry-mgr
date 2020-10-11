@@ -1,13 +1,15 @@
 package gov.nasa.pds.registry.mgr.util.json;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 
 import com.google.gson.stream.JsonWriter;
 
 
-public abstract class BaseNJsonWriter<Record>
+public abstract class BaseNJsonWriter<Record> implements Closeable
 {
     protected FileWriter writer;
     
@@ -21,7 +23,8 @@ public abstract class BaseNJsonWriter<Record>
     public abstract void writeRecord(JsonWriter jw, Record data) throws Exception;
 
     
-    public void close() throws Exception
+    @Override    
+    public void close() throws IOException
     {
         writer.close();
     }
@@ -57,6 +60,8 @@ public abstract class BaseNJsonWriter<Record>
 
     protected void writePK(String id) throws Exception
     {
+        if(id == null) throw new Exception("Primary key is null");
+        
         StringWriter sw = new StringWriter();
         JsonWriter jw = new JsonWriter(sw);
         

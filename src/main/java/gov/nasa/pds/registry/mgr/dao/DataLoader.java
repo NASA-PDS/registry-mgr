@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import gov.nasa.pds.registry.mgr.es.client.HttpConnectionFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
@@ -41,9 +43,39 @@ public class DataLoader
     public void loadFile(File file) throws Exception
     {
         System.out.println("Loading file: " + file.getAbsolutePath());
-        totalRecords = 0;
         
         BufferedReader rd = new BufferedReader(new FileReader(file));
+        loadFile(rd);
+    }
+    
+    
+    public void loadZippedFile(File zipFile, String fileName) throws Exception
+    {
+        System.out.println("Loading file: " + zipFile.getAbsolutePath() + ":" + fileName);
+        
+        ZipFile zip = new ZipFile(zipFile);
+        
+        try
+        {
+            ZipEntry ze = zip.getEntry(fileName);
+            if(ze == null) 
+            {
+                throw new Exception("Could not find " + fileName +  " in " + zipFile.getAbsolutePath());
+            }
+            
+            BufferedReader rd = new BufferedReader(new InputStreamReader(zip.getInputStream(ze)));
+            loadFile(rd);
+        }
+        finally
+        {
+            CloseUtils.close(zip);
+        }
+    }
+    
+    
+    private void loadFile(BufferedReader rd) throws Exception
+    {
+        totalRecords = 0;
         
         try
         {
@@ -60,6 +92,7 @@ public class DataLoader
             }
             
             System.out.println("Loaded " + totalRecords + " document(s)");
+            System.out.println("Done");
         }
         finally
         {

@@ -16,7 +16,11 @@ public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
     @Override
     public void writeRecord(JsonWriter jw, DDRecord data) throws Exception
     {
-        writeField(jw, "es_field_name", data.getEsFieldName());
+        String fieldName = (data.esFieldName != null) ? data.esFieldName : data.esFieldNameFromComponents();
+        if(fieldName == null) throw new Exception("ES field name is null");
+        writeField(jw, "es_field_name", fieldName);
+        
+        if(data.esDataType == null) throw new Exception("ES data type is null");
         writeField(jw, "es_data_type", data.esDataType);
 
         writeField(jw, "class_ns", data.classNs);
@@ -27,7 +31,7 @@ public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
         writeField(jw, "description", data.description);
     }
 
-    
+
     private void writeField(JsonWriter jw, String name, String value) throws Exception
     {
         if(value == null) return;
