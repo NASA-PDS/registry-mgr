@@ -9,6 +9,7 @@ import org.elasticsearch.client.RestClient;
 import gov.nasa.pds.registry.common.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
 import gov.nasa.pds.registry.mgr.util.Tuple;
+import gov.nasa.pds.registry.mgr.util.es.IndexUtils;
 
 
 public class TestSchemaDAO
@@ -23,9 +24,8 @@ public class TestSchemaDAO
     private static void testIndexExists() throws Exception
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
-        SchemaDAO dao = new SchemaDAO(client);
         
-        boolean b = dao.indexExists("t123");
+        boolean b = IndexUtils.indexExists(client, "t123");
         System.out.println(b);
         
         client.close();
@@ -50,18 +50,24 @@ public class TestSchemaDAO
     private static void testGetDataType() throws Exception
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
-        SchemaDAO dao = new SchemaDAO(client);
         
-        Set<String> ids = new TreeSet<>();
-        ids.add("pds/Property_Map/pds/identifier");
-        ids.add("test");
-        
-        List<Tuple> results = dao.getDataTypes("registry", ids);
-        for(Tuple res: results)
+        try
         {
-            System.out.println(res.item1 + "  -->  " + res.item2);
+            SchemaDAO dao = new SchemaDAO(client);
+            
+            Set<String> ids = new TreeSet<>();
+            ids.add("pds:Property_Map/pds:identifier");
+            ids.add("test");
+            
+            List<Tuple> results = dao.getDataTypes("registry", ids, (name) -> { return null; });
+            for(Tuple res: results)
+            {
+                System.out.println(res.item1 + "  -->  " + res.item2);
+            }
         }
-        
-        client.close();
+        finally
+        {
+            client.close();
+        }
     }
 }

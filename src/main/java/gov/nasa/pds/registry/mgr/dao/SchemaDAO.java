@@ -31,19 +31,12 @@ public class SchemaDAO
     }
     
     
-    public boolean indexExists(String indexName) throws Exception
-    {
-        Request req = new Request("HEAD", "/" + indexName);
-        Response resp = client.performRequest(req);
-        return resp.getStatusLine().getStatusCode() == 200;
-    }
-
-
-    public void updateMappings(String indexName, Collection<String> ids) throws Exception
+    public void updateMappings(String indexName, Collection<String> ids, 
+            MissingDataTypeCallback cb) throws Exception
     {
         if(ids == null || ids.isEmpty()) return;
         
-        List<Tuple> fields = getDataTypes(indexName, ids);
+        List<Tuple> fields = getDataTypes(indexName, ids, cb);
         SchemaRequestBld bld = new SchemaRequestBld();
         String json = bld.createUpdateSchemaRequest(fields);
         
@@ -53,7 +46,14 @@ public class SchemaDAO
     }
     
     
-    public List<Tuple> getDataTypes(String indexName, Collection<String> ids) throws Exception
+    public static interface MissingDataTypeCallback
+    {
+        public String getDataType(String fieldId);
+    }
+    
+    
+    public List<Tuple> getDataTypes(String indexName, Collection<String> ids, 
+            MissingDataTypeCallback cb) throws Exception
     {
         if(indexName == null) throw new IllegalArgumentException("Index name is null");
 
@@ -82,26 +82,20 @@ public class SchemaDAO
             }
             else
             {
-                handleMissingDataTypeMapping(rec.id, results);
+                String dataType = cb.getDataType(rec.id);
+                if(dataType == null)
+                {
+                    throw new Exception("Could not find datatype for field '" + rec.id + "'.\n" 
+                            + "See 'https://nasa-pds.github.io/pds-registry-app/operate/common-ops.html#Load' for more information.");
+                }
+                else
+                {
+                    results.add(new Tuple(rec.id, dataType));
+                }
             }
         }
         
         return results;
     }
     
-    
-    private void handleMissingDataTypeMapping(String fieldId, List<Tuple> results) throws Exception
-    {
-        if(fieldId.startsWith("ref_lid_") || fieldId.startsWith("ref_lidvid_") 
-                || fieldId.endsWith("_Area"))
-        {
-            results.add(new Tuple(fieldId, "keyword"));
-        }
-        else
-        {
-            throw new Exception("Could not find datatype for field '" + fieldId + "'.\n" 
-                    + "See 'https://nasa-pds.github.io/pds-registry-app/operate/common-ops.html#Load' for more information.");
-        }
-        
-    }
 }

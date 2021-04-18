@@ -92,7 +92,7 @@ public class LoadDataCmd implements CliCommand
     private void updateSchema(File dir) throws Exception
     {
         File newFields = new File(dir, FIELDS_FILE);
-        System.out.println("Updating schema with fields from " + newFields.getAbsolutePath());
+        System.out.println("[INFO] Updating schema with fields from " + newFields.getAbsolutePath());
         
         RestClient client = null;
         

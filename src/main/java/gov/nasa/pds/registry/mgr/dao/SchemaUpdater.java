@@ -17,7 +17,7 @@ import gov.nasa.pds.registry.mgr.util.CloseUtils;
  * Updates Elasticsearch schema by calling Elasticsearch schema API  
  * @author karpenko
  */
-public class SchemaUpdater
+public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
 {
     private String indexName;
     private SchemaDAO dao;
@@ -27,6 +27,10 @@ public class SchemaUpdater
     private Set<String> batch;
     private int totalCount;
     private int batchSize = 100;
+    
+    private String schemaRepoUrl;
+    private File tempDir;
+
     
     /**
      * Constructor 
@@ -44,6 +48,8 @@ public class SchemaUpdater
         this.esFieldNames = dao.getFieldNames(indexName);
         
         this.batch = new TreeSet<>();
+        
+        this.tempDir = new File(System.getProperty("java.io.tmpdir"));
     }
 
     
@@ -85,7 +91,7 @@ public class SchemaUpdater
         // Commit if reached batch/commit size
         if(totalCount % batchSize == 0)
         {
-            dao.updateMappings(indexName, batch);
+            dao.updateMappings(indexName, batch, this);
             batch.clear();
         }
     }
@@ -94,7 +100,7 @@ public class SchemaUpdater
     private void finish() throws Exception
     {
         if(batch.isEmpty()) return;
-        dao.updateMappings(indexName, batch);
+        dao.updateMappings(indexName, batch, this);
     }
     
     
@@ -121,5 +127,14 @@ public class SchemaUpdater
         return fields;
     }
 
-    
+
+    @Override
+    public String getDataType(String fieldId)
+    {
+        if(fieldId.startsWith("ref_lid_") || fieldId.startsWith("ref_lidvid_") 
+                || fieldId.endsWith("_Area")) return "keyword";
+        
+        return null;
+    }
+
 }
