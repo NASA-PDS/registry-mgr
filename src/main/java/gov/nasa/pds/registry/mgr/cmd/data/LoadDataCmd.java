@@ -17,6 +17,7 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
+import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 
@@ -99,7 +100,8 @@ public class LoadDataCmd implements CliCommand
         try
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
-            SchemaUpdater su = new SchemaUpdater(client, indexName);
+            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName);
+            SchemaUpdater su = new SchemaUpdater(client, suCfg);
             su.updateSchema(newFields);
         }
         catch(ResponseException ex)

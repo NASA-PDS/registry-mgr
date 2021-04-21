@@ -11,6 +11,7 @@ import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
+import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 
@@ -45,7 +46,8 @@ public class UpdateSchemaCmd implements CliCommand
         try
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
-            SchemaUpdater su = new SchemaUpdater(client, indexName);
+            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName);
+            SchemaUpdater su = new SchemaUpdater(client, suCfg);
             su.updateSchema(new File(filePath));
             System.out.println("Done");
         }
