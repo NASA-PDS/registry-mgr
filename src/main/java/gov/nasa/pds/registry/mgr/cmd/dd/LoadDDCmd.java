@@ -16,10 +16,20 @@ import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.dd.DDNJsonWriter;
-import gov.nasa.pds.registry.mgr.dd.DDProcessor;
+import gov.nasa.pds.registry.mgr.dd.LddProcessor;
 import gov.nasa.pds.registry.mgr.dd.DDRecord;
+import gov.nasa.pds.registry.mgr.dd.LddLoader;
 
 
+/**
+ * A command to load data dictionary into registry.
+ * The following data dictionary formats are supported:
+ * - PDS LDD (JSON)
+ * - Elasticsearch dump (JSON)
+ * - CSV
+ * 
+ * @author karpenko
+ */
 public class LoadDDCmd implements CliCommand
 {
     private String esUrl;
@@ -27,6 +37,9 @@ public class LoadDDCmd implements CliCommand
     private String authPath;
     
     
+    /**
+     * Constructor
+     */
     public LoadDDCmd()
     {
     }
@@ -69,7 +82,7 @@ public class LoadDDCmd implements CliCommand
         if(path != null)
         {
             String namespaces = cmdLine.getOptionValue("ns");
-            loadDataDictionary(path, namespaces);
+            loadLdd(path, namespaces);
             return;
         }
         
@@ -91,7 +104,7 @@ public class LoadDDCmd implements CliCommand
     }
 
         
-    private void loadDataDictionary(String path, String namespaces) throws Exception
+    private void loadLdd(String path, String namespaces) throws Exception
     {
         Set<String> nsFilter = new TreeSet<>();
         
@@ -102,6 +115,7 @@ public class LoadDDCmd implements CliCommand
         if(namespaces != null)
         {
             System.out.println("       Namespaces: " + namespaces);
+            
             String[] tokens = namespaces.split(",");
             for(String token: tokens)
             {
@@ -112,28 +126,16 @@ public class LoadDDCmd implements CliCommand
                 }
             }
         }
+
         System.out.println();
-                
-        // Parse data dictionary and create temporary file
-        File tempOutFile = getTempOutFile();
-        File dtCfgFile = getDataTypesCfgFile();
-        File ddFile = new File(path);
-        
-        DDProcessor proc = new DDProcessor(tempOutFile, dtCfgFile, nsFilter);
-        
-        AttributeDictionaryParser parser1 = new AttributeDictionaryParser(ddFile, proc);
-        parser1.parse();
-        ClassAttrAssociationParser parser2 = new ClassAttrAssociationParser(ddFile, proc);
-        parser2.parse();
-        
-        proc.close();
-        
-        // Load temporary file into data dictionary index
-        DataLoader loader = new DataLoader(esUrl, indexName + "-dd", authPath);
-        loader.loadFile(tempOutFile);
-        
-        // Delete temporary file
-        tempOutFile.delete();
+
+        // Init LDD loader
+        LddLoader loader = new LddLoader();
+        loader.loadPds2EsDataTypeMap(getDataTypesCfgFile());
+        loader.setElasticInfo(esUrl, indexName, authPath);
+
+        //Load LDD
+        loader.load(new File(path), nsFilter);
     }
     
     
@@ -169,7 +171,7 @@ public class LoadDDCmd implements CliCommand
             if(header == null) return;
             validateCsvHeader(header);
             
-            System.out.println("Creating temprary ES NJSON " + tempOutFile.getAbsolutePath());
+            System.out.println("[INFO] Creating temprary ES NJSON " + tempOutFile.getAbsolutePath());
             writer = new DDNJsonWriter(tempOutFile);
             
             int line = 1;
@@ -266,23 +268,25 @@ public class LoadDDCmd implements CliCommand
     }
     
     
+    private File getDataTypesCfgFile() throws Exception
+    {
+        String home = System.getenv("REGISTRY_MANAGER_HOME");
+        if(home == null) 
+        {
+            throw new Exception("Could not find default configuration directory. " 
+                    + "REGISTRY_MANAGER_HOME environment variable is not set.");
+        }
+
+        File file = new File(home, "elastic/data-dic-types.cfg");
+        return file;
+    }
+
+
     private File getTempOutFile()
     {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
         File file = new File(tempDir, "pds-registry-dd.tmp.json");
         return file;
     }
-    
-    
-    private File getDataTypesCfgFile() throws Exception
-    {
-        String home = System.getenv("REGISTRY_MANAGER_HOME");
-        if(home == null) 
-        {
-            throw new Exception("Could not find default configuration directory. REGISTRY_MANAGER_HOME environment variable is not set.");
-        }
 
-        File file = new File(home, "elastic/data-dic-types.cfg");
-        return file;
-    }
 }

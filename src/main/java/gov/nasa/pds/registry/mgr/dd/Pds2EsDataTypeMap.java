@@ -49,7 +49,9 @@ public class Pds2EsDataTypeMap
     
     public void load(File file) throws Exception
     {
-        System.out.println("Loading data type configuration from " + file.getAbsolutePath());
+        if(file == null) return;
+        
+        System.out.println("[INFO] Loading PDS to ES data type mapping from " + file.getAbsolutePath());
         
         BufferedReader rd = null;
         

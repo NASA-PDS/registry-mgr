@@ -8,18 +8,53 @@ import com.google.gson.stream.JsonToken;
 
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
-
+/**
+ * Base parser of PDS LDD JSON files (Data dictionary files).
+ * This implementation is using Google "GSON" streaming parser to reduce memory footprint.
+ * (We only need a subset of values from a JSON file).
+ *  
+ * @author karpenko
+ */
 public class BaseDDParser
 {
     protected JsonReader jsonReader;
     
+    private String ddVersion;
+    private String ddDate;
     
+    
+    /**
+     * Constructor
+     * @param file PDS LDD JSON file to parse
+     * @throws Exception
+     */
     public BaseDDParser(File file) throws Exception
     {
         jsonReader = new JsonReader(new FileReader(file));
     }
 
+    /**
+     * Returns LDD version
+     * @return
+     */
+    public String getLddVersion()
+    {
+        return ddVersion;
+    }
     
+    /**
+     * Returns LDD (creation) date
+     * @return
+     */
+    public String getLddDate()
+    {
+        return ddDate;
+    }
+    
+    /**
+     * Parse PDS LDD JSON file
+     * @throws Exception
+     */
     public void parse() throws Exception
     {
         try
@@ -33,6 +68,10 @@ public class BaseDDParser
     }
     
     
+    /**
+     * Parse root element
+     * @throws Exception
+     */
     private void parseRoot() throws Exception
     {
         jsonReader.beginArray();
@@ -61,18 +100,30 @@ public class BaseDDParser
     }
     
     
+    /**
+     * Parse "dataDictionary" -> "classDictionary" subtree
+     * @throws Exception
+     */
     protected void parseClassDictionary() throws Exception
     {
         jsonReader.skipValue();
     }
     
 
+    /**
+     * Parse "dataDictionary" -> "attributeDictionary" subtree
+     * @throws Exception
+     */
     protected void parseAttributeDictionary() throws Exception
     {
         jsonReader.skipValue();
     }
 
     
+    /**
+     * Parse "dataDictionary" subtree
+     * @throws Exception
+     */
     private void parseDataDic() throws Exception
     {
         jsonReader.beginObject();
@@ -81,7 +132,15 @@ public class BaseDDParser
         {
             String name = jsonReader.nextName();
             
-            if("classDictionary".equals(name))
+            if("Version".equals(name))
+            {
+                ddVersion = jsonReader.nextString();
+            }
+            else if("Date".equals(name))
+            {
+                ddDate = jsonReader.nextString();
+            }
+            else if("classDictionary".equals(name))
             {
                 parseClassDictionary();
             }

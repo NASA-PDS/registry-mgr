@@ -7,12 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
-
-import com.opencsv.CSVReader;
 
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
@@ -165,9 +162,8 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
 
         File file = new File(cfg.tempDir, "pds_registry_dd_repo.csv");
         downloader.download(cfg.dataDictionaryRepoUrl, file);
-        
-        ddRepo = new TreeMap<>();
-        
+
+        ddRepo = DDUtils.createDataDictionaryMap(file);        
     }
     
     

@@ -10,7 +10,7 @@ import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 
 
-public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAttrAssociationParser.Callback
+public class LddProcessor implements AttributeDictionaryParser.Callback, ClassAttrAssociationParser.Callback
 {
     private DDNJsonWriter writer;
     private DDRecord ddRec = new DDRecord();
@@ -21,21 +21,16 @@ public class DDProcessor implements AttributeDictionaryParser.Callback, ClassAtt
     private Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
     
     
-    public DDProcessor(File outFile, File typeMapFile, Set<String> nsFilter) throws Exception
+    public LddProcessor(File outFile, Pds2EsDataTypeMap dtMap, Set<String> nsFilter) throws Exception
     {
-        System.out.println("Will export data dictionary to ES NJSON " + outFile.getAbsolutePath());
+        System.out.println("[INFO] Exporting data dictionary to ES NJSON " + outFile.getAbsolutePath());
         
         if(nsFilter != null && nsFilter.size() > 0)
         {
             this.nsFilter = nsFilter;
         }
 
-        dtMap = new Pds2EsDataTypeMap();
-        if(typeMapFile != null)
-        {
-            dtMap.load(typeMapFile);
-        }
-        
+        this.dtMap = dtMap;
         writer = new DDNJsonWriter(outFile);
     }
 

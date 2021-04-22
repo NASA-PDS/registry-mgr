@@ -62,11 +62,55 @@ public class DDUtils
     }
     
     
-    public static String extractVersionFromUrl(String url) throws Exception
+    public static long extractVersionFromUrl(String url) throws Exception
     {
-        url = url.toLowerCase();
-        if(!url.endsWith(".json")) throw new Exception("Invalid data dictionary URL. Not a JSON file: " + url);
-            
-        return null;
+        // Validate HTTP / HTTPS protocol
+        String lowerUrl = url.toLowerCase();
+        if(!lowerUrl.startsWith("http://") && !lowerUrl.startsWith("https://")) 
+            throw new Exception("Invalid data dictionary URL. Only HTTP and HTTPS protocols are supported: " + url);
+
+        // Extract file name
+        int idx = lowerUrl.lastIndexOf('/');
+        String fileName = lowerUrl.substring(idx+1);
+        
+        // Validate supported file types
+        if(fileName.endsWith(".json"))
+        {
+            fileName = fileName.substring(0, fileName.length() - 5);
+        }
+        else
+        {
+            throw new Exception("Invalid data dictionary URL. Not a JSON file: " + url);            
+        }
+        
+        // Extract version
+        String[] tokens = fileName.split("_");
+        if(tokens.length < 2)
+            throw new Exception("Could not extract data dictionary version from " + url);
+        
+        int verLo = parseHexInt(tokens[tokens.length - 1]);
+        if(verLo < 0)
+            throw new Exception("Could not extract data dictionary version from " + url);
+        
+        int verHi = parseHexInt(tokens[tokens.length - 2]);
+        if(verHi < 0)
+        {
+            return verLo;
+        }
+
+        return  parseHexInt(tokens[tokens.length - 2] + tokens[tokens.length - 1]);
+    }
+    
+    
+    private static int parseHexInt(String str)
+    {
+        try
+        {
+            return Integer.parseInt(str, 16);
+        }
+        catch(Exception ex)
+        {
+            return -1;
+        }
     }
 }

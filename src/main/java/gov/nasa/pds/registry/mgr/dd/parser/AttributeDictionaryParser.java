@@ -2,7 +2,6 @@ package gov.nasa.pds.registry.mgr.dd.parser;
 
 import java.io.File;
 import com.google.gson.stream.JsonToken;
-import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
 
 
 public class AttributeDictionaryParser extends BaseDDParser
