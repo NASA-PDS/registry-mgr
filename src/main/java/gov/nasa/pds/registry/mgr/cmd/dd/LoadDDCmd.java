@@ -16,7 +16,7 @@ import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.dd.DDNJsonWriter;
-import gov.nasa.pds.registry.mgr.dd.LddProcessor;
+import gov.nasa.pds.registry.mgr.dd.LddEsJsonWriter;
 import gov.nasa.pds.registry.mgr.dd.DDRecord;
 import gov.nasa.pds.registry.mgr.dd.LddLoader;
 

@@ -3,48 +3,58 @@ package gov.nasa.pds.registry.mgr.dd;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
-import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 
 
-public class LddProcessor implements AttributeDictionaryParser.Callback, ClassAttrAssociationParser.Callback
+/**
+ * Writes Elasticsearch JSON data file to be loaded into data dictionary index.
+ * 
+ * @author karpenko
+ */
+public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
 {
     private DDNJsonWriter writer;
     private DDRecord ddRec = new DDRecord();
     
     private Pds2EsDataTypeMap dtMap;
+    private Map<String, DDAttribute> ddAttrCache;
     private Set<String> nsFilter;
     
-    private Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
-    
-    
-    public LddProcessor(File outFile, Pds2EsDataTypeMap dtMap, Set<String> nsFilter) throws Exception
-    {
-        System.out.println("[INFO] Exporting data dictionary to ES NJSON " + outFile.getAbsolutePath());
-        
-        if(nsFilter != null && nsFilter.size() > 0)
-        {
-            this.nsFilter = nsFilter;
-        }
 
-        this.dtMap = dtMap;
+    /**
+     * Constructor
+     * @param outFile Elasticsearch JSON data file
+     * @param dtMap PDS to Elasticsearch data type map
+     * @param ddAttrCache LDD attribute cache
+     * @throws Exception
+     */
+    public LddEsJsonWriter(File outFile, Pds2EsDataTypeMap dtMap, Map<String, DDAttribute> ddAttrCache) throws Exception
+    {
         writer = new DDNJsonWriter(outFile);
+        this.dtMap = dtMap;
+        this.ddAttrCache = ddAttrCache;
     }
 
     
+    /**
+     * Set namespace filter. Only process classes having these namespaces.
+     * @param filter
+     */
+    public void setNamespaceFilter(Set<String> filter)
+    {
+        this.nsFilter = (filter != null && filter.size() > 0) ? filter : null;
+    }
+    
+    
+    /**
+     * Close output file
+     * @throws Exception
+     */
     public void close() throws Exception
     {
         writer.close();
-    }
-
-    
-    @Override
-    public void onAttribute(DDAttribute dda) throws Exception
-    {
-        ddAttrCache.put(dda.id, dda);
     }
 
     

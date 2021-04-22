@@ -1,33 +1,41 @@
 package tt;
 
 import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
-import gov.nasa.pds.registry.mgr.dd.LddProcessor;
+import gov.nasa.pds.registry.mgr.dd.LddEsJsonWriter;
 import gov.nasa.pds.registry.mgr.dd.Pds2EsDataTypeMap;
 import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
+import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
 
 
 public class TestDDProcessor
 {
     public static void main(String[] args) throws Exception
     {
-        File outFile = new File("/tmp/test.dd.json");
-
         Pds2EsDataTypeMap dtMap = new Pds2EsDataTypeMap();
         dtMap.load(new File("src/main/resources/elastic/data-dic-types.cfg"));
-        
-        //File ddFile = new File("/tmp/schema/PDS4_PDS_JSON_1E00.JSON");
-        File ddFile = new File("/tmp/schema/PDS4_INSIGHT_1B00_1870.JSON");
-        
-        LddProcessor proc = new LddProcessor(outFile, dtMap, null);
 
-        AttributeDictionaryParser parser1 = new AttributeDictionaryParser(ddFile, proc);
-        parser1.parse();
-        ClassAttrAssociationParser parser2 = new ClassAttrAssociationParser(ddFile, proc);
-        parser2.parse();
+        File ddFile = new File("src/test/data/PDS4_MSN_1B00_1100.JSON");
+        File outFile = new File("/tmp/test.dd.json");
         
-        proc.close();
+        // Parse and cache attributes
+        Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
+        AttributeDictionaryParser attrParser = new AttributeDictionaryParser(ddFile, 
+                (attr) -> { ddAttrCache.put(attr.id, attr); } );
+        attrParser.parse();
+
+        // Parse class attribute associations and write ES data file
+        LddEsJsonWriter writer = new LddEsJsonWriter(outFile, dtMap, ddAttrCache);
+        ClassAttrAssociationParser caaParser = new ClassAttrAssociationParser(ddFile, writer);
+        caaParser.parse();
+        writer.close();
+        
+        System.out.println();
+        System.out.println("LDD Version: " + attrParser.getLddVersion());
+        System.out.println("LDD Date:    " + attrParser.getLddDate());
     }
 
 }

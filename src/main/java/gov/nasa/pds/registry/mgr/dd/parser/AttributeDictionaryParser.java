@@ -3,11 +3,25 @@ package gov.nasa.pds.registry.mgr.dd.parser;
 import java.io.File;
 import com.google.gson.stream.JsonToken;
 
-
+/**
+ * PDS LDD JSON file parser. 
+ * Parses "dataDictionary" -> "attributeDictionary" subtree.
+ *  
+ * @author karpenko
+ */
 public class AttributeDictionaryParser extends BaseDDParser
 {
+    /**
+     * Callback interface 
+     * @author karpenko
+     */
     public static interface Callback
     {
+        /**
+         * This method will be called for each attribute in "attributeDictionary". 
+         * @param attr
+         * @throws Exception
+         */
         public void onAttribute(DDAttribute attr) throws Exception;
     }
     
@@ -17,6 +31,12 @@ public class AttributeDictionaryParser extends BaseDDParser
     private int itemCount;
 
     
+    /**
+     * Constructor
+     * @param file PDS LDD JSON file
+     * @param cb Callback
+     * @throws Exception
+     */
     public AttributeDictionaryParser(File file, Callback cb) throws Exception
     {
         super(file);
@@ -27,7 +47,7 @@ public class AttributeDictionaryParser extends BaseDDParser
     @Override
     protected void parseAttributeDictionary() throws Exception
     {
-        System.out.println("Parsing attribute dictionary...");
+        System.out.println("[INFO] Parsing attribute dictionary...");
         
         jsonReader.beginArray();
         

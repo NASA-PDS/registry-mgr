@@ -4,10 +4,30 @@ import java.io.File;
 import com.google.gson.stream.JsonToken;
 
 
+/**
+ * PDS LDD JSON file parser. 
+ * Parses "dataDictionary" -> "classDictionary" subtree and extracts attribute associations 
+ * ("class" -> "association" -> "isAttribute" == true).
+ * For each "attributeId" a callback method is called.
+ * 
+ * @author karpenko
+ */
 public class ClassAttrAssociationParser extends BaseDDParser
 {
+    /**
+     * Callback interface 
+     * @author karpenko
+     */
     public static interface Callback
     {
+        /**
+         * This method is called for each "attributeId" from class attribute association
+         * ("class" -> "association" -> "isAttribute" == true).
+         * @param classNs class namespace
+         * @param className class name
+         * @param attrId attribute ID
+         * @throws Exception
+         */
         public void onAssociation(String classNs, String className, String attrId) throws Exception;
     }
     
@@ -21,6 +41,12 @@ public class ClassAttrAssociationParser extends BaseDDParser
     private String className;
     
     
+    /**
+     * Constructor
+     * @param file PDS LDD JSON file
+     * @param cb Callback
+     * @throws Exception
+     */
     public ClassAttrAssociationParser(File file, Callback cb) throws Exception
     {
         super(file);
@@ -31,7 +57,7 @@ public class ClassAttrAssociationParser extends BaseDDParser
     @Override
     protected void parseClassDictionary() throws Exception
     {
-        System.out.println("Parsing class and attribute associations...");
+        System.out.println("[INFO] Parsing class and attribute associations...");
 
         jsonReader.beginArray();
         
