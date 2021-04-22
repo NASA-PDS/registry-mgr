@@ -20,15 +20,19 @@ public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
         if(fieldName == null) throw new Exception("ES field name is null");
         writeField(jw, "es_field_name", fieldName);
         
-        if(data.esDataType == null) throw new Exception("ES data type is null");
         writeField(jw, "es_data_type", data.esDataType);
 
         writeField(jw, "class_ns", data.classNs);
         writeField(jw, "class_name", data.className);
+        
         writeField(jw, "attr_ns", data.attrNs);
         writeField(jw, "attr_name", data.attrName);
+        
         writeField(jw, "data_type", data.dataType);
         writeField(jw, "description", data.description);
+
+        writeField(jw, "version", data.version);
+        writeField(jw, "date", data.date);
     }
 
 

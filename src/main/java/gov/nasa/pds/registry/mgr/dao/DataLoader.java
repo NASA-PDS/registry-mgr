@@ -42,7 +42,7 @@ public class DataLoader
     
     public void loadFile(File file) throws Exception
     {
-        System.out.println("Loading file: " + file.getAbsolutePath());
+        System.out.println("[INFO] Loading file: " + file.getAbsolutePath());
         
         BufferedReader rd = new BufferedReader(new FileReader(file));
         loadFile(rd);
@@ -51,7 +51,7 @@ public class DataLoader
     
     public void loadZippedFile(File zipFile, String fileName) throws Exception
     {
-        System.out.println("Loading file: " + zipFile.getAbsolutePath() + ":" + fileName);
+        System.out.println("[INFO] Loading file: " + zipFile.getAbsolutePath() + ":" + fileName);
         
         ZipFile zip = new ZipFile(zipFile);
         
@@ -87,11 +87,11 @@ public class DataLoader
             {
                 if(totalRecords % printProgressSize == 0)
                 {
-                    System.out.println("Loaded " + totalRecords + " document(s)");
+                    System.out.println("[INFO] Loaded " + totalRecords + " document(s)");
                 }
             }
             
-            System.out.println("Loaded " + totalRecords + " document(s)");
+            System.out.println("[INFO] Loaded " + totalRecords + " document(s)");
         }
         finally
         {

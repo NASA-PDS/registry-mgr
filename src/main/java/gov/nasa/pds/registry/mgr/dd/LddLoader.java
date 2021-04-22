@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
@@ -69,31 +70,56 @@ public class LddLoader
      * @param nsFilter Namespace filter. Only load classes having these namespaces.
      * @throws Exception
      */
-    public void load(File ddFile, Set<String> nsFilter) throws Exception
+    public void load(File ddFile, String namespace) throws Exception
     {
         File tempEsDataFile = new File(tempDir, "pds-registry-dd.tmp.json");
-        
-        // Parse and cache attributes
-        Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
-        AttributeDictionaryParser attrParser = new AttributeDictionaryParser(ddFile, 
-                (attr) -> { ddAttrCache.put(attr.id, attr); } );
-        attrParser.parse();
-        
-        // Parse class attribute associations and write ES data file
-        LddEsJsonWriter writer = new LddEsJsonWriter(tempEsDataFile, dtMap, ddAttrCache);
-        writer.setNamespaceFilter(nsFilter);
-        ClassAttrAssociationParser caaParser = new ClassAttrAssociationParser(ddFile, writer);
-        caaParser.parse();
-        writer.close();
+        createEsDataFile(ddFile, namespace, tempEsDataFile);
 
         // Load temporary file into data dictionary index
         DataLoader loader = new DataLoader(esUrl, esIndexName, esAuthFilePath);
         loader.loadFile(tempEsDataFile);
         
-        // Update data dictionary version
-        
         // Delete temporary file
         tempEsDataFile.delete();
     }
 
+    
+    public void createEsDataFile(File ddFile, String namespace, File esFile) throws Exception
+    {
+        // Parse and cache LDD attributes
+        Map<String, DDAttribute> ddAttrCache = new TreeMap<>();
+        AttributeDictionaryParser attrParser = new AttributeDictionaryParser(ddFile, 
+                (attr) -> { ddAttrCache.put(attr.id, attr); } );
+        attrParser.parse();
+
+        // Create a writer to save LDD data in Elasticsearch JSON data file
+        LddEsJsonWriter writer = new LddEsJsonWriter(esFile, dtMap, ddAttrCache);
+        writer.setNamespaceFilter(namespace);
+        
+        // Parse class attribute associations and write to ES data file
+        Set<String> namespaces = new TreeSet<>();
+        ClassAttrAssociationParser caaParser = new ClassAttrAssociationParser(ddFile, 
+                (classNs, className, attrId) -> { 
+                    writer.writeFieldDefinition(classNs, className, attrId);
+                    namespaces.add(classNs);
+        });
+        caaParser.parse();
+
+        // Determine LDD namespace
+        if(namespace == null)
+        {
+            if(namespaces.size() == 1)
+            {
+                namespace = namespaces.iterator().next();
+            }
+            else
+            {
+                throw new Exception("Data dictionary has multiple namespaces. Specify one namespace to use.");
+            }
+        }
+        
+        // Write data dictionary version
+        writer.writeDataDictionaryVersion(namespace, attrParser.getLddVersion(), attrParser.getLddDate());
+        writer.close();
+    }
 }

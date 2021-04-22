@@ -1,11 +1,11 @@
 package gov.nasa.pds.registry.mgr.dd;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
-import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 
 
 /**
@@ -13,14 +13,14 @@ import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
  * 
  * @author karpenko
  */
-public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
+public class LddEsJsonWriter
 {
     private DDNJsonWriter writer;
     private DDRecord ddRec = new DDRecord();
     
     private Pds2EsDataTypeMap dtMap;
     private Map<String, DDAttribute> ddAttrCache;
-    private Set<String> nsFilter;
+    private String nsFilter;
     
 
     /**
@@ -39,12 +39,12 @@ public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
 
     
     /**
-     * Set namespace filter. Only process classes having these namespaces.
+     * Set namespace filter. Only process classes having this namespace.
      * @param filter
      */
-    public void setNamespaceFilter(Set<String> filter)
+    public void setNamespaceFilter(String filter)
     {
-        this.nsFilter = (filter != null && filter.size() > 0) ? filter : null;
+        this.nsFilter = filter;
     }
     
     
@@ -58,11 +58,17 @@ public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
     }
 
     
-    @Override
-    public void onAssociation(String classNs, String className, String attrId) throws Exception
+    /**
+     * Write field definition (Elasticsearch field name, data type and other information)
+     * @param classNs LDD class namespace
+     * @param className LDD class name
+     * @param attrId LDD attribute ID
+     * @throws Exception
+     */
+    public void writeFieldDefinition(String classNs, String className, String attrId) throws Exception
     {
         // Apply namespace filter
-        if(nsFilter != null && !nsFilter.contains(classNs)) return;        
+        if(nsFilter != null && !nsFilter.equals(classNs)) return;        
 
         DDAttribute attr = ddAttrCache.get(attrId);
         if(attr == null)
@@ -75,7 +81,29 @@ public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
         }
     }
 
+
+    public void writeDataDictionaryVersion(String namespace, String version, String date) throws Exception
+    {
+        if(namespace == null || namespace.isBlank()) throw new IllegalArgumentException("Missing data dictionary namespace");
+        if(version == null || version.isBlank()) throw new IllegalArgumentException("Missing data dictionary version");
+        if(date == null || date.isBlank()) throw new IllegalArgumentException("Missing data dictionary date");
         
+        DDRecord rec = new DDRecord();
+        rec.classNs = "registry";
+        rec.className = "LDD_Info";
+        rec.attrNs = "registry";
+        rec.attrName = namespace;
+        
+        rec.version = version;
+        
+        @SuppressWarnings("deprecation")
+        Date dt = new Date(date);
+        rec.date = DateTimeFormatter.ISO_INSTANT.format(dt.toInstant());
+        
+        writer.write(rec.esFieldNameFromComponents(), rec);
+    }
+    
+    
     private void writeRecord(String classNs, String className, DDAttribute dda) throws Exception
     {
         // Assign values
@@ -92,6 +120,7 @@ public class LddEsJsonWriter implements ClassAttrAssociationParser.Callback
         // Write
         writer.write(ddRec.esFieldNameFromComponents(), ddRec);
     
+        // Fix wrong attribute namespace
         if(!classNs.equals(dda.attrNs))
         {
             ddRec.attrNs = classNs;
