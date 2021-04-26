@@ -13,6 +13,7 @@ import javax.net.ssl.SSLSession;
 
 import gov.nasa.pds.registry.common.es.client.SSLUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 
 public class FileDownloader
@@ -44,7 +45,7 @@ public class FileDownloader
                 System.out.println("[ERROR] " + ex.getMessage());
                 if(count < numRetries)
                 {
-                    System.out.println("[INFO] Will retry in 5 seconds");
+                    Logger.info("Will retry in 5 seconds");
                     Thread.sleep(5000);
                 }
                 else
@@ -61,7 +62,7 @@ public class FileDownloader
         InputStream is = null;
         FileOutputStream os = null;
         
-        System.out.println("[INFO] Downloading " + fromUrl);
+        Logger.info("Downloading " + fromUrl);
         
         try
         {

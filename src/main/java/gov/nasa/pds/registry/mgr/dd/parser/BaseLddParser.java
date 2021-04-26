@@ -15,12 +15,13 @@ import gov.nasa.pds.registry.mgr.util.CloseUtils;
  *  
  * @author karpenko
  */
-public class BaseDDParser
+public class BaseLddParser
 {
+    protected File ddFile;
     protected JsonReader jsonReader;
     
-    private String ddVersion;
-    private String ddDate;
+    protected String ddVersion;
+    protected String ddDate;
     
     
     /**
@@ -28,8 +29,9 @@ public class BaseDDParser
      * @param file PDS LDD JSON file to parse
      * @throws Exception
      */
-    public BaseDDParser(File file) throws Exception
+    public BaseLddParser(File file) throws Exception
     {
+        this.ddFile = file;
         jsonReader = new JsonReader(new FileReader(file));
     }
 

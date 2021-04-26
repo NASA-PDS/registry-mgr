@@ -10,6 +10,7 @@ import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dd.parser.AttributeDictionaryParser;
 import gov.nasa.pds.registry.mgr.dd.parser.ClassAttrAssociationParser;
 import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 
 /**
@@ -73,6 +74,7 @@ public class LddLoader
     public void load(File ddFile, String namespace) throws Exception
     {
         File tempEsDataFile = new File(tempDir, "pds-registry-dd.tmp.json");
+        Logger.info("Creating temporary ES data file " + tempEsDataFile.getAbsolutePath());
         createEsDataFile(ddFile, namespace, tempEsDataFile);
 
         // Load temporary file into data dictionary index

@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.common.es.client.HttpConnectionFactory;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 
 public class DataLoader
@@ -42,7 +43,7 @@ public class DataLoader
     
     public void loadFile(File file) throws Exception
     {
-        System.out.println("[INFO] Loading file: " + file.getAbsolutePath());
+        Logger.info("Loading ES data file: " + file.getAbsolutePath());
         
         BufferedReader rd = new BufferedReader(new FileReader(file));
         loadFile(rd);
@@ -51,7 +52,7 @@ public class DataLoader
     
     public void loadZippedFile(File zipFile, String fileName) throws Exception
     {
-        System.out.println("[INFO] Loading file: " + zipFile.getAbsolutePath() + ":" + fileName);
+        Logger.info("Loading ES data file: " + zipFile.getAbsolutePath() + ":" + fileName);
         
         ZipFile zip = new ZipFile(zipFile);
         
@@ -87,11 +88,11 @@ public class DataLoader
             {
                 if(totalRecords % printProgressSize == 0)
                 {
-                    System.out.println("[INFO] Loaded " + totalRecords + " document(s)");
+                    Logger.info("Loaded " + totalRecords + " document(s)");
                 }
             }
             
-            System.out.println("[INFO] Loaded " + totalRecords + " document(s)");
+            Logger.info("Loaded " + totalRecords + " document(s)");
         }
         finally
         {

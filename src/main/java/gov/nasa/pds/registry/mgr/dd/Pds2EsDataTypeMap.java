@@ -7,29 +7,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 
+/**
+ * <p>Mappings between PDS LDD data types such as 'ASCII_LID' 
+ * and Elasticsearch data types such as 'keyword'.</p>
+ * 
+ * <p>Mappings are loaded from a configuration file similar to Java properties file.
+ * There is one mapping per line:<br/>
+ * &lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;</p>
+ * 
+ * <p>Default configuration file is in 
+ * &lt;PROJECT_ROOT&gt;/src/main/resources/elastic/data-dic-types.cfg</p>
+ * 
+ * @author karpenko
+ */
 public class Pds2EsDataTypeMap
 {
     private Map<String, String> map;
     
-    
+    /**
+     * Constructor
+     */
     public Pds2EsDataTypeMap()
     {
         map = new HashMap<>();
     }
 
     
+    /**
+     * Get Elasticsearch data type for a PDS LDD data type
+     * @param pdsType PDS LDD data type
+     * @return Elasticsearch data type
+     */
     public String getEsType(String pdsType)
     {
-        String solrType = map.get(pdsType);
-        if(solrType != null) return solrType;
+        String esType = map.get(pdsType);
+        if(esType != null) return esType;
         
-        solrType = guessType(pdsType);
-        System.out.println("[WARN] No PDS to Elasticsearch data type mapping for '" + pdsType + "'. Will use '" + solrType + "'");
+        esType = guessType(pdsType);
+        Logger.warn("No PDS to Elasticsearch data type mapping for '" + pdsType 
+                + "'. Will use '" + esType + "'");
 
-        map.put(pdsType, solrType);
-        return solrType;
+        map.put(pdsType, esType);
+        return esType;
     }
     
     
@@ -47,11 +69,19 @@ public class Pds2EsDataTypeMap
     }
     
     
+    /**
+     * Load data type mappings from a configuration file
+     * @param file Configuration file with PDS LDD to Elasticsearch data type mappings.
+     * <p>Mappings are loaded from a configuration file similar to Java properties file.
+     * There is one mapping per line:<br/>
+     * &lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;</p>
+     * @throws Exception
+     */
     public void load(File file) throws Exception
     {
         if(file == null) return;
         
-        System.out.println("[INFO] Loading PDS to ES data type mapping from " + file.getAbsolutePath());
+        Logger.info("Loading PDS to ES data type mapping from " + file.getAbsolutePath());
         
         BufferedReader rd = null;
         
@@ -102,12 +132,11 @@ public class Pds2EsDataTypeMap
     }
     
     
+    /**
+     * Prints all mappings
+     */
     public void debug()
     {
-        for(String key: map.keySet())
-        {
-            String val = map.get(key);
-            System.out.println(key + "  -->  " + val);
-        }
+        map.forEach((key, val) -> { System.out.println(key + "  -->  " + val); } );
     }
 }

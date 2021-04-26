@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
 
 
@@ -147,7 +148,7 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
         }
         catch(Exception ex)
         {
-            System.out.println("[WARN] Could not load list of data dictionaries. " 
+            Logger.warn("Could not load list of data dictionaries. " 
                     + "Automatic data dictionary updates are not available.");
             return null;
         }

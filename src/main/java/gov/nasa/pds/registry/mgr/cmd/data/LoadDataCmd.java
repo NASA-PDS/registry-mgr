@@ -19,6 +19,7 @@ import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 /**
  * A command to load PDS4 metadata into Registry 
@@ -101,7 +102,7 @@ public class LoadDataCmd implements CliCommand
     private void updateSchema(File dir) throws Exception
     {
         File newFields = new File(dir, FIELDS_FILE);
-        System.out.println("[INFO] Updating schema with fields from " + newFields.getAbsolutePath());
+        Logger.info("Updating schema with fields from " + newFields.getAbsolutePath());
         
         RestClient client = null;
         
@@ -145,7 +146,7 @@ public class LoadDataCmd implements CliCommand
             }
             else
             {
-                System.out.println("[WARN] Unknown file type: " + file.getAbsolutePath());
+                Logger.warn("Unknown file type: " + file.getAbsolutePath());
             }
         }
     }
