@@ -7,8 +7,10 @@ import java.io.FileWriter;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.dd.parser.BaseLddParser;
 import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
+
 
 public class CreateLddListCsv
 {
@@ -23,11 +25,11 @@ public class CreateLddListCsv
     
     public static void main(String[] args) throws Exception
     {
-        test1();
+        createLddList();
     }
     
     
-    private static void test1() throws Exception
+    private static void createLddList() throws Exception
     {
         CSVWriter writer = new CSVWriter(new FileWriter("/tmp/schema/ldd_list.csv"));        
         String[] outValues = new String[4];
@@ -54,7 +56,7 @@ public class CreateLddListCsv
             outValues[0] = namespace;
             outValues[1] = url;
             outValues[2] = lddInfo.version;
-            outValues[3] = lddInfo.date;
+            outValues[3] = LddUtils.lddDateToIsoInstant(lddInfo.date);
             
             writer.writeNext(outValues, true);
         }

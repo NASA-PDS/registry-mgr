@@ -40,13 +40,14 @@ public class UpdateSchemaCmd implements CliCommand
         String esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
+        String lddCfgUrl = cmdLine.getOptionValue("ldd", Constants.DEFAULT_LDD_LIST_URL);
 
         RestClient client = null;
         
         try
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
-            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName);
+            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName, lddCfgUrl);
             SchemaUpdater su = new SchemaUpdater(client, suCfg);
             su.updateSchema(new File(filePath));
             System.out.println("Done");
@@ -75,7 +76,8 @@ public class UpdateSchemaCmd implements CliCommand
         System.out.println("  -auth <file>     Authentication config file");
         System.out.println("  -es <url>        Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>    Elasticsearch index name. Default is 'registry'");
+        System.out.println("  -ldd <url>       PDS LDD configuration url. Default is 'TBD'");        
         System.out.println();
     }
-    
+
 }

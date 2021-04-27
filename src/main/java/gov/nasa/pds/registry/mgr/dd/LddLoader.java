@@ -68,7 +68,7 @@ public class LddLoader
     /**
      * Load PDS LDD JSON file into Elasticsearch data dictionary index
      * @param ddFile PDS LDD JSON file
-     * @param nsFilter Namespace filter. Only load classes having these namespaces.
+     * @param namespace Namespace filter. Only load classes having this namespace.
      * @throws Exception
      */
     public void load(File ddFile, String namespace) throws Exception
@@ -86,6 +86,13 @@ public class LddLoader
     }
 
     
+    /**
+     * Create Elasticsearch data file to be loaded into data dictionary index.
+     * @param ddFile PDS LDD JSON file
+     * @param namespace Namespace filter. Only load classes having this namespace.
+     * @param esFile Write to this Elasticsearch file
+     * @throws Exception
+     */
     public void createEsDataFile(File ddFile, String namespace, File esFile) throws Exception
     {
         // Parse and cache LDD attributes
@@ -120,7 +127,7 @@ public class LddLoader
             }
         }
         
-        // Write data dictionary version
+        // Write data dictionary version and date
         writer.writeDataDictionaryVersion(namespace, attrParser.getLddVersion(), attrParser.getLddDate());
         writer.close();
     }

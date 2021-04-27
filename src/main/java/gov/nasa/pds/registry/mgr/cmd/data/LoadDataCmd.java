@@ -73,7 +73,8 @@ public class LoadDataCmd implements CliCommand
         // Update schema
         if(updateSchema)
         {
-            updateSchema(dir);
+            String lddCfgUrl = cmdLine.getOptionValue("ldd", Constants.DEFAULT_LDD_LIST_URL);
+            updateSchema(dir, lddCfgUrl);
         }
         
         // Load data
@@ -99,7 +100,7 @@ public class LoadDataCmd implements CliCommand
     }
     
     
-    private void updateSchema(File dir) throws Exception
+    private void updateSchema(File dir, String lddCfgUrl) throws Exception
     {
         File newFields = new File(dir, FIELDS_FILE);
         Logger.info("Updating schema with fields from " + newFields.getAbsolutePath());
@@ -109,7 +110,7 @@ public class LoadDataCmd implements CliCommand
         try
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
-            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName);
+            SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName, lddCfgUrl);
             SchemaUpdater su = new SchemaUpdater(client, suCfg);
             su.updateSchema(newFields);
         }
@@ -177,6 +178,7 @@ public class LoadDataCmd implements CliCommand
         System.out.println("  -es <url>             Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>         Elasticsearch index name. Default is 'registry'");
         System.out.println("  -updateSchema <y/n>   Update registry schema. Default is 'yes'");
+        System.out.println("  -ldd <url>            PDS LDD configuration url. Default is 'TBD'");
 
         System.out.println();
     }

@@ -11,6 +11,8 @@ import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
 
+import gov.nasa.pds.registry.mgr.dd.LddInfo;
+import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.Logger;
 import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
@@ -24,7 +26,7 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
 {
     private SchemaDAO dao;
 
-    private Map<String, DDInfo> ddRepo;
+    private Map<String, LddInfo> ddRepo;
     private Set<String> esFieldNames;
     
     private Set<String> batch;
@@ -140,11 +142,11 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
         String ns = getNamespace(fieldId);
         if(ns == null) return null;
         
-        // Load list of data dictionaries if needed
-        if(cfg.dataDictionaryRepoUrl == null) return null;
+        // Load LDD list if needed
+        if(cfg.lddCfgUrl == null) return null;
         try
         {
-            loadDataDictionaryRepo();
+            loadLddList();
         }
         catch(Exception ex)
         {
@@ -157,14 +159,14 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
     }
 
     
-    private void loadDataDictionaryRepo() throws Exception
+    private void loadLddList() throws Exception
     {
         if(ddRepo != null) return;
 
-        File file = new File(cfg.tempDir, "pds_registry_dd_repo.csv");
-        downloader.download(cfg.dataDictionaryRepoUrl, file);
+        File file = new File(cfg.tempDir, "pds_registry_ldd_list.csv");
+        downloader.download(cfg.lddCfgUrl, file);
 
-        ddRepo = DDUtils.createDataDictionaryMap(file);        
+        ddRepo = LddUtils.loadLddList(file);
     }
     
     

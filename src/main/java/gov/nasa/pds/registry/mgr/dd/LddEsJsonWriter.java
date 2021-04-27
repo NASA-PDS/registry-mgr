@@ -1,11 +1,10 @@
 package gov.nasa.pds.registry.mgr.dd;
 
 import java.io.File;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Map;
 
 import gov.nasa.pds.registry.mgr.dd.parser.DDAttribute;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 
 /**
@@ -73,7 +72,7 @@ public class LddEsJsonWriter
         DDAttribute attr = ddAttrCache.get(attrId);
         if(attr == null)
         {
-            System.out.println("[WARNING] Missing attribute " + attrId);
+            Logger.warn("Missing attribute " + attrId);
         }
         else
         {
@@ -81,7 +80,14 @@ public class LddEsJsonWriter
         }
     }
 
-
+    
+    /**
+     * Write PDS LDD version and date
+     * @param namespace LDD namespace
+     * @param version LDD version
+     * @param date LDD date
+     * @throws Exception
+     */
     public void writeDataDictionaryVersion(String namespace, String version, String date) throws Exception
     {
         if(namespace == null || namespace.isBlank()) throw new IllegalArgumentException("Missing data dictionary namespace");
@@ -95,10 +101,7 @@ public class LddEsJsonWriter
         rec.attrName = namespace;
         
         rec.version = version;
-        
-        @SuppressWarnings("deprecation")
-        Date dt = new Date(date);
-        rec.date = DateTimeFormatter.ISO_INSTANT.format(dt.toInstant());
+        rec.date = LddUtils.lddDateToIsoInstant(date);
         
         writer.write(rec.esFieldNameFromComponents(), rec);
     }
