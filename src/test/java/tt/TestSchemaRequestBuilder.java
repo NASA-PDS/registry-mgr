@@ -1,19 +1,19 @@
 package tt;
 
-import gov.nasa.pds.registry.mgr.dao.SchemaRequestBld;
+import gov.nasa.pds.registry.mgr.dao.SchemaRequestBuilder;
 
 public class TestSchemaRequestBuilder
 {
     public static void main(String[] args) throws Exception
     {
-        testGetDDInfoRequest();
+        testGetLddInfoRequest();
     }
     
     
-    public static void testGetDDInfoRequest() throws Exception
+    public static void testGetLddInfoRequest() throws Exception
     {
-        SchemaRequestBld bld = new SchemaRequestBld(true);
-        String req = bld.createGetDDInfoRequest("pds");
+        SchemaRequestBuilder bld = new SchemaRequestBuilder(true);
+        String req = bld.createGetLddInfoRequest("pds");
         System.out.println(req);
     }
 }

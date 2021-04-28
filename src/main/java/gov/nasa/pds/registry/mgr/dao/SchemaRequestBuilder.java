@@ -14,7 +14,7 @@ import gov.nasa.pds.registry.mgr.util.Tuple;
  * Methods to build JSON requests for Elasticsearch APIs.
  * @author karpenko
  */
-public class SchemaRequestBld
+public class SchemaRequestBuilder
 {
     private boolean pretty;
 
@@ -22,7 +22,7 @@ public class SchemaRequestBld
      * Constructor
      * @param pretty Format JSON for humans to read.
      */
-    public SchemaRequestBld(boolean pretty)
+    public SchemaRequestBuilder(boolean pretty)
     {
         this.pretty = pretty;
     }
@@ -30,7 +30,7 @@ public class SchemaRequestBld
     /**
      * Constructor
      */
-    public SchemaRequestBld()
+    public SchemaRequestBuilder()
     {
         this(false);
     }
@@ -109,11 +109,11 @@ public class SchemaRequestBld
 
     /**
      * Create get data dictionary (LDD) info request.
-     * @param schema LDD schema ID, such as 'pds', 'cart', etc.
+     * @param namespace LDD namespace ID, such as 'pds', 'cart', etc.
      * @return Elasticsearch query in JSON format
      * @throws IOException
      */
-    public String createGetDDInfoRequest(String schema) throws IOException
+    public String createGetLddInfoRequest(String namespace) throws IOException
     {
         StringWriter wr = new StringWriter();
         JsonWriter jw = createJsonWriter(wr);
@@ -128,7 +128,7 @@ public class SchemaRequestBld
         
         jw.name("values");
         jw.beginArray();
-        jw.value("registry:LDD_Info/registry:" + schema);
+        jw.value("registry:LDD_Info/registry:" + namespace);
         jw.endArray();
         
         jw.endObject();

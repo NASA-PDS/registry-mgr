@@ -1,5 +1,6 @@
 package tt;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,7 +18,19 @@ public class TestSchemaDAO
 
     public static void main(String[] args) throws Exception
     {
-        testGetDataType();
+        testGetLddDate();
+    }
+
+
+    private static void testGetLddDate() throws Exception
+    {
+        RestClient client = EsClientFactory.createRestClient("localhost", null);
+        
+        SchemaDAO dao = new SchemaDAO(client);
+        Instant date = dao.getLddDate("registry", "test");
+        System.out.println(date);
+        
+        client.close();
     }
 
     

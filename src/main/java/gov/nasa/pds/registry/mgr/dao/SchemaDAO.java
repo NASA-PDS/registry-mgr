@@ -4,10 +4,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+
+import gov.nasa.pds.registry.common.es.client.SearchResponseParser;
 import gov.nasa.pds.registry.mgr.util.Tuple;
 
 
@@ -47,12 +50,37 @@ public class SchemaDAO
     }
     
     
+    private static class GetLddDateRespParser extends SearchResponseParser implements SearchResponseParser.Callback
+    {
+        public Instant date = null;
+        
+        @Override
+        public void onRecord(String id, Object rec) throws Exception
+        {
+            if(rec instanceof Map)
+            {
+                @SuppressWarnings("rawtypes")
+                Map map = (Map)rec;
+                String strDate = (String)map.get("date");
+                if(strDate == null) return;
+
+                date = Instant.parse(strDate);
+            }
+        }
+    }
+    
     public Instant getLddDate(String indexName, String namespace) throws Exception
     {
+        SchemaRequestBuilder bld = new SchemaRequestBuilder();
+        String json = bld.createGetLddInfoRequest(namespace);
+
         Request req = new Request("GET", "/" + indexName + "-dd/_search");
+        req.setJsonEntity(json);
         Response resp = client.performRequest(req);
         
-        return null;
+        GetLddDateRespParser parser = new GetLddDateRespParser();
+        parser.parseResponse(resp, parser); 
+        return parser.date;
     }
     
     
@@ -62,7 +90,7 @@ public class SchemaDAO
         if(ids == null || ids.isEmpty()) return;
         
         List<Tuple> fields = getDataTypes(indexName, ids, cb);
-        SchemaRequestBld bld = new SchemaRequestBld();
+        SchemaRequestBuilder bld = new SchemaRequestBuilder();
         String json = bld.createUpdateSchemaRequest(fields);
         
         Request req = new Request("PUT", "/" + indexName + "/_mapping");
@@ -90,7 +118,7 @@ public class SchemaDAO
         Request req = new Request("GET", "/" + indexName + "/_mget?_source=es_data_type");
         
         // Create request body
-        SchemaRequestBld bld = new SchemaRequestBld();
+        SchemaRequestBuilder bld = new SchemaRequestBuilder();
         String json = bld.createMgetRequest(ids);
         req.setJsonEntity(json);
         
