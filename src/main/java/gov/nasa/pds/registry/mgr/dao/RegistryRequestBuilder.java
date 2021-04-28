@@ -1,4 +1,4 @@
-package gov.nasa.pds.registry.mgr.util.es;
+package gov.nasa.pds.registry.mgr.dao;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,19 +13,20 @@ import com.google.gson.stream.JsonWriter;
 
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.es.EsQueryUtils;
 
-public class EsRequestBuilder
+public class RegistryRequestBuilder
 {
     private boolean pretty;
 
     
-    public EsRequestBuilder(boolean pretty)
+    public RegistryRequestBuilder(boolean pretty)
     {
         this.pretty = pretty;
     }
 
     
-    public EsRequestBuilder()
+    public RegistryRequestBuilder()
     {
         this(false);
     }

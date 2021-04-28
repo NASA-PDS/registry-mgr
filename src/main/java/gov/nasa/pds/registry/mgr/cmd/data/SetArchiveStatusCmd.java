@@ -19,8 +19,8 @@ import gov.nasa.pds.registry.common.es.client.EsClientFactory;
 import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 
 
 public class SetArchiveStatusCmd implements CliCommand
@@ -134,7 +134,7 @@ public class SetArchiveStatusCmd implements CliCommand
         if(id != null)
         {
             filterMessage = "           LIDVID: " + id;
-            EsRequestBuilder bld = new EsRequestBuilder();
+            RegistryRequestBuilder bld = new RegistryRequestBuilder();
             return bld.createUpdateStatusRequest(status, "lidvid", id);
         }
         
@@ -142,7 +142,7 @@ public class SetArchiveStatusCmd implements CliCommand
         if(id != null)
         {
             filterMessage = "       Package ID: " + id;
-            EsRequestBuilder bld = new EsRequestBuilder();
+            RegistryRequestBuilder bld = new RegistryRequestBuilder();
             return bld.createUpdateStatusRequest(status, "_package_id", id);
         }
 

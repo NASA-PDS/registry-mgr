@@ -19,14 +19,23 @@ import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
 
 
 /**
- * Updates Elasticsearch schema by calling Elasticsearch schema API  
+ * This class adds new fields to Elasticsearch "registry" index 
+ * by calling Elasticsearch schema API. 
+ * 
+ * The list of field names is read from a file. For all fields not in 
+ * current "registry" schema, the data type is looked up in data dictionary 
+ * index ("registry-dd").
+ * 
+ * If a field definition is not available in the data dictionary index,
+ * the latest version of LDD will be downloaded if needed.
+ * 
  * @author karpenko
  */
 public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
 {
     private SchemaDAO dao;
 
-    private Map<String, LddInfo> ddRepo;
+    private Map<String, LddInfo> remoteLddMap;
     private Set<String> esFieldNames;
     
     private Set<String> batch;
@@ -56,20 +65,15 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
     }
 
     
+    /**
+     * Add new fields to Elasticsearch "registry" index. 
+     * @param file A file with a list of fields to add.
+     * @throws Exception
+     */
     public void updateSchema(File file) throws Exception
     {
         List<String> newFields = getNewFields(file);
-        updateSchema(newFields);
-    }
-    
-    
-    /**
-     * Add fields from data dictionary to Elasticsearch schema. Ignore existing fields.
-     * @param dd
-     * @throws Exception
-     */
-    public void updateSchema(List<String> newFields) throws Exception
-    {
+
         totalCount = 0;
         batch.clear();
 
@@ -155,18 +159,25 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
             return null;
         }
         
+        LddInfo info = remoteLddMap.get(ns);
+        if(info == null)
+        {
+            Logger.warn("No LDD for namespace '" + ns + "'");
+            return null;
+        }
+        
         return null;
     }
 
     
     private void loadLddList() throws Exception
     {
-        if(ddRepo != null) return;
+        if(remoteLddMap != null) return;
 
         File file = new File(cfg.tempDir, "pds_registry_ldd_list.csv");
         downloader.download(cfg.lddCfgUrl, file);
 
-        ddRepo = LddUtils.loadLddList(file);
+        remoteLddMap = LddUtils.loadLddList(file);
     }
     
     

@@ -13,8 +13,8 @@ import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
+import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 
 
 public class CreateRegistryCmd implements CliCommand
@@ -89,7 +89,7 @@ public class CreateRegistryCmd implements CliCommand
             
             // Create request
             Request req = new Request("PUT", "/" + indexName);
-            EsRequestBuilder bld = new EsRequestBuilder();
+            RegistryRequestBuilder bld = new RegistryRequestBuilder();
             String jsonReq = bld.createCreateIndexRequest(schemaFile, shards, replicas);
             req.setJsonEntity(jsonReq);
 

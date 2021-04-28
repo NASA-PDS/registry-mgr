@@ -17,8 +17,8 @@ import gov.nasa.pds.registry.common.es.client.EsClientFactory;
 import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 
 
 public class DeleteDataCmd implements CliCommand
@@ -111,9 +111,9 @@ public class DeleteDataCmd implements CliCommand
     private void buildEsQuery(CommandLine cmdLine) throws Exception
     {
         // Registry index
-        EsRequestBuilder regBld = new EsRequestBuilder();
+        RegistryRequestBuilder regBld = new RegistryRequestBuilder();
         // Product references index
-        EsRequestBuilder refsBld = new EsRequestBuilder();
+        RegistryRequestBuilder refsBld = new RegistryRequestBuilder();
         
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)

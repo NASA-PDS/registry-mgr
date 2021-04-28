@@ -13,9 +13,9 @@ import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.common.es.client.SearchResponseParser;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.EmbeddedBlobExporter;
-import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
 
 
 public class ExportFileCmd implements CliCommand
@@ -108,7 +108,7 @@ public class ExportFileCmd implements CliCommand
 
             // Create request
             Request req = new Request("GET", "/" + indexName + "/_search");
-            EsRequestBuilder bld = new EsRequestBuilder();
+            RegistryRequestBuilder bld = new RegistryRequestBuilder();
             String jsonReq = bld.createGetBlobRequest(lidvid);
             req.setJsonEntity(jsonReq);
             

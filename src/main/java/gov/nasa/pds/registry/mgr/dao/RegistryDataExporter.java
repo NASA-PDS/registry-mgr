@@ -1,8 +1,5 @@
 package gov.nasa.pds.registry.mgr.dao;
 
-import gov.nasa.pds.registry.mgr.util.es.EsRequestBuilder;
-
-
 public class RegistryDataExporter extends DataExporter
 {
     private String filterFieldName;
@@ -25,7 +22,7 @@ public class RegistryDataExporter extends DataExporter
     @Override
     protected String createRequest(int batchSize, String searchAfter) throws Exception
     {
-        EsRequestBuilder reqBld = new EsRequestBuilder();
+        RegistryRequestBuilder reqBld = new RegistryRequestBuilder();
         
         String json = (filterFieldName == null) ? 
                 reqBld.createExportAllDataRequest("lidvid", batchSize, searchAfter) :

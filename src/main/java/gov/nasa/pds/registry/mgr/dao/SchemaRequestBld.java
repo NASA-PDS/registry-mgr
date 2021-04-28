@@ -20,7 +20,7 @@ public class SchemaRequestBld
 
     /**
      * Constructor
-     * @param pretty
+     * @param pretty Format JSON for humans to read.
      */
     public SchemaRequestBld(boolean pretty)
     {
@@ -78,8 +78,8 @@ public class SchemaRequestBld
     
     /**
      * Create update Elasticsearch schema request
-     * @param fields
-     * @return
+     * @param fields A list of fields to add. Each field tuple has a name and a data type.
+     * @return Elasticsearch query in JSON format
      * @throws IOException
      */
     public String createUpdateSchemaRequest(List<Tuple> fields) throws IOException
@@ -104,6 +104,47 @@ public class SchemaRequestBld
         jw.close();        
 
         return wr.toString();        
+    }
+
+
+    /**
+     * Create get data dictionary (LDD) info request.
+     * @param schema LDD schema ID, such as 'pds', 'cart', etc.
+     * @return Elasticsearch query in JSON format
+     * @throws IOException
+     */
+    public String createGetDDInfoRequest(String schema) throws IOException
+    {
+        StringWriter wr = new StringWriter();
+        JsonWriter jw = createJsonWriter(wr);
+
+        jw.beginObject();
+
+        // Start query
+        jw.name("query");
+        jw.beginObject();
+        jw.name("ids");
+        jw.beginObject();
         
+        jw.name("values");
+        jw.beginArray();
+        jw.value("registry:LDD_Info/registry:" + schema);
+        jw.endArray();
+        
+        jw.endObject();
+        jw.endObject();
+        // End query
+        
+        // Start source
+        jw.name("_source");
+        jw.beginArray();
+        jw.value("date").value("version");
+        jw.endArray();        
+        // End source
+        
+        jw.endObject();
+        jw.close();        
+
+        return wr.toString();        
     }
 }

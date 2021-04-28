@@ -14,7 +14,13 @@ import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
-
+/**
+ * A CLI command to update Elasticsearch schema of the "registry" index.
+ * NOTE: This command might be removed in future releases. 
+ * The same functionality is implemented by "load-data" command.
+ * 
+ * @author karpenko
+ */
 public class UpdateSchemaCmd implements CliCommand
 {
     public UpdateSchemaCmd()
@@ -41,6 +47,11 @@ public class UpdateSchemaCmd implements CliCommand
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
         String lddCfgUrl = cmdLine.getOptionValue("ldd", Constants.DEFAULT_LDD_LIST_URL);
+        
+        System.out.println("Elasticsearch URL: " + esUrl);
+        System.out.println("            Index: " + indexName);
+        System.out.println();
+
 
         RestClient client = null;
         

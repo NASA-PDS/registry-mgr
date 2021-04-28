@@ -1,5 +1,6 @@
 package gov.nasa.pds.registry.mgr.dao;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,17 +11,32 @@ import org.elasticsearch.client.RestClient;
 import gov.nasa.pds.registry.mgr.util.Tuple;
 
 
+/**
+ * Elasticsearch schema DAO (Data Access Object).
+ * 
+ * @author karpenko
+ */
 public class SchemaDAO
 {
     private RestClient client;
     
     
+    /**
+     * Constructor
+     * @param client Elasticsearch client
+     */
     public SchemaDAO(RestClient client)
     {
         this.client = client;
     }
     
     
+    /**
+     * Call Elasticsearch "mappings" API to get a list of field names for an index.
+     * @param indexName Elasticsearch index name
+     * @return a collection of field names
+     * @throws Exception
+     */
     public Set<String> getFieldNames(String indexName) throws Exception
     {
         Request req = new Request("GET", "/" + indexName + "/_mappings");
@@ -28,6 +44,15 @@ public class SchemaDAO
         
         MappingsParser parser = new MappingsParser(indexName);
         return parser.parse(resp.getEntity());
+    }
+    
+    
+    public Instant getLddDate(String indexName, String namespace) throws Exception
+    {
+        Request req = new Request("GET", "/" + indexName + "-dd/_search");
+        Response resp = client.performRequest(req);
+        
+        return null;
     }
     
     
@@ -51,7 +76,7 @@ public class SchemaDAO
         public String getDataType(String fieldId);
     }
     
-    
+
     public List<Tuple> getDataTypes(String indexName, Collection<String> ids, 
             MissingDataTypeCallback cb) throws Exception
     {
