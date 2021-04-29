@@ -3,15 +3,18 @@ package gov.nasa.pds.registry.mgr.dao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.mgr.dd.LddInfo;
+import gov.nasa.pds.registry.mgr.dd.LddLoader;
 import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.Logger;
@@ -33,9 +36,13 @@ import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
  */
 public class SchemaUpdater
 {
+    private static final String WARN_LDD_NA = "Could not load list of LDDs. Automatic data dictionary updates are not available.";
+    
     private SchemaDAO dao;
 
     private Map<String, LddInfo> remoteLddMap;
+    private Map<String, Instant> localLddMap = new TreeMap<>();
+    
     private Set<String> esFieldNames;
     
     private Set<String> batch;
@@ -44,7 +51,8 @@ public class SchemaUpdater
     
     private SchemaUpdaterConfig cfg;
 
-    private FileDownloader downloader = new FileDownloader();
+    private FileDownloader fileDownloader = new FileDownloader();
+    private LddLoader lddLoader;
     
     /**
      * Constructor 
@@ -53,10 +61,11 @@ public class SchemaUpdater
      * @param indexName Elasticsearch index name
      * @throws Exception
      */
-    public SchemaUpdater(RestClient client, SchemaUpdaterConfig cfg) throws Exception
+    public SchemaUpdater(RestClient client, LddLoader lddLoader, SchemaUpdaterConfig cfg) throws Exception
     {
         this.cfg = cfg;
         this.dao = new SchemaDAO(client);
+        this.lddLoader = lddLoader;
         
         // Get a list of existing field names from Elasticsearch
         this.esFieldNames = dao.getFieldNames(cfg.indexName);
@@ -132,8 +141,10 @@ public class SchemaUpdater
     }
     
     
-    public boolean updateLdds(Set<String> namespaces)
+    public boolean updateLdds(Set<String> namespaces) throws Exception
     {
+        if(namespaces == null || namespaces.isEmpty()) return false;
+        
         // Load LDD list if needed
         if(cfg.lddCfgUrl == null) return false;
         try
@@ -142,21 +153,42 @@ public class SchemaUpdater
         }
         catch(Exception ex)
         {
-            Logger.warn("Could not load list of data dictionaries. " 
-                    + "Automatic data dictionary updates are not available.");
+            Logger.warn(WARN_LDD_NA);
             return false;
         }
         
-        /*
-        LddInfo info = remoteLddMap.get(ns);
-        if(info == null)
-        {
-            Logger.warn("No LDD for namespace '" + ns + "'");
-            return null;
-        }
-        */
+        boolean updated = false;
         
-        return false;
+        for(String namespace: namespaces)
+        {
+            LddInfo remoteLdd = remoteLddMap.get(namespace);
+            if(remoteLdd == null || remoteLdd.date == null) continue;
+
+            // Get local LDD date
+            if(!localLddMap.containsKey(namespace))
+            {
+                Instant date = dao.getLddDate(cfg.indexName, namespace);
+                if(date == null) date = Instant.MIN;
+                localLddMap.put(namespace, date);
+            }
+
+            Instant localDate = localLddMap.get(namespace);
+            Instant remoteDate = remoteLdd.date;
+            
+            // Load the latest version of remote LDD
+            if(localDate.isBefore(remoteDate))
+            {
+                String fileName = getFileNameFromUrl(remoteLdd.url);
+                File lddFile = new File(cfg.tempDir, fileName);
+                
+                fileDownloader.download(remoteLdd.url, lddFile);
+                lddLoader.load(lddFile, namespace);
+                localLddMap.put(namespace, remoteDate);
+                updated = true;
+            }
+        }
+        
+        return updated;
     }
 
     
@@ -165,7 +197,7 @@ public class SchemaUpdater
         if(remoteLddMap != null) return;
 
         File file = new File(cfg.tempDir, "pds_registry_ldd_list.csv");
-        downloader.download(cfg.lddCfgUrl, file);
+        fileDownloader.download(cfg.lddCfgUrl, file);
 
         remoteLddMap = LddUtils.loadLddList(file);
     }
@@ -192,6 +224,17 @@ public class SchemaUpdater
         }
         
         return fields;
+    }
+
+    
+    private static String getFileNameFromUrl(String url)
+    {
+        if(url == null) return null;
+        
+        int idx = url.lastIndexOf('/');
+        if(idx < 0) return url;
+        
+        return url.substring(idx+1);
     }
 
 }

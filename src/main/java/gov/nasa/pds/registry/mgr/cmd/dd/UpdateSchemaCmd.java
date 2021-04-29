@@ -12,6 +12,8 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
+import gov.nasa.pds.registry.mgr.dd.LddLoader;
+import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 /**
@@ -52,14 +54,17 @@ public class UpdateSchemaCmd implements CliCommand
         System.out.println("            Index: " + indexName);
         System.out.println();
 
-
         RestClient client = null;
+        
+        LddLoader lddLoader = new LddLoader();
+        lddLoader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile());
+        lddLoader.setElasticInfo(esUrl, indexName, authPath);
         
         try
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
             SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName, lddCfgUrl);
-            SchemaUpdater su = new SchemaUpdater(client, suCfg);
+            SchemaUpdater su = new SchemaUpdater(client, lddLoader, suCfg);
             su.updateSchema(new File(filePath));
             System.out.println("Done");
         }

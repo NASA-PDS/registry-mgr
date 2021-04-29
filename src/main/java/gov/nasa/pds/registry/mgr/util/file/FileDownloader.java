@@ -15,19 +15,44 @@ import gov.nasa.pds.registry.common.es.client.SSLUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.Logger;
 
-
+/**
+ * File downloader with retry logic. 
+ * By default, SSL certificate and host verification is disabled for HTTPS 
+ * connections to support self-signed certificates. This can be turned off.
+ *  
+ * @author karpenko
+ */
 public class FileDownloader
 {
     private int timeout = 5000;
     private int numRetries = 3;
     private boolean sslTrustAll = true;
     
-    
+    /**
+     * Constructor
+     */
     public FileDownloader()
     {
     }
 
     
+    /**
+     * Enable or disable SSL certificate and host validation to support 
+     * self-signed certificates. By default, validation is disabled.
+     * @param val boolean flag.
+     */
+    public void setSslTrustAll(boolean val)
+    {
+        this.sslTrustAll = val;
+    }
+   
+    
+    /**
+     * Download a file from a URL.
+     * @param fromUrl Download a file from this URL.
+     * @param toFile Save to this file
+     * @throws Exception
+     */
     public void download(String fromUrl, File toFile) throws Exception
     {
         int count = 0;
@@ -42,7 +67,7 @@ public class FileDownloader
             }
             catch(Exception ex)
             {
-                System.out.println("[ERROR] " + ex.getMessage());
+                Logger.error(ex.getMessage());
                 if(count < numRetries)
                 {
                     Logger.info("Will retry in 5 seconds");
@@ -62,7 +87,7 @@ public class FileDownloader
         InputStream is = null;
         FileOutputStream os = null;
         
-        Logger.info("Downloading " + fromUrl);
+        Logger.info("Downloading " + fromUrl + " to " + toFile.getAbsolutePath());
         
         try
         {

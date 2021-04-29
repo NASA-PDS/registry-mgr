@@ -15,6 +15,7 @@ import gov.nasa.pds.registry.mgr.util.Logger;
 import gov.nasa.pds.registry.mgr.dd.DDNJsonWriter;
 import gov.nasa.pds.registry.mgr.dd.DDRecord;
 import gov.nasa.pds.registry.mgr.dd.LddLoader;
+import gov.nasa.pds.registry.mgr.dd.LddUtils;
 
 
 /**
@@ -125,7 +126,7 @@ public class LoadDDCmd implements CliCommand
 
         // Init LDD loader
         LddLoader loader = new LddLoader();
-        loader.loadPds2EsDataTypeMap(getDataTypesCfgFile());
+        loader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile());
         loader.setElasticInfo(esUrl, indexName, authPath);
 
         //Load LDD
@@ -272,20 +273,6 @@ public class LoadDDCmd implements CliCommand
     }
     
     
-    private File getDataTypesCfgFile() throws Exception
-    {
-        String home = System.getenv("REGISTRY_MANAGER_HOME");
-        if(home == null) 
-        {
-            throw new Exception("Could not find default configuration directory. " 
-                    + "REGISTRY_MANAGER_HOME environment variable is not set.");
-        }
-
-        File file = new File(home, "elastic/data-dic-types.cfg");
-        return file;
-    }
-
-
     private File getTempOutFile()
     {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));

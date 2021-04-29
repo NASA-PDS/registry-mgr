@@ -25,6 +25,26 @@ public class LddUtils
 {
     private static final DateFormat LDD_DateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
     
+    
+    /**
+     * Get default PDS to Elasticsearch data type mapping configuration file.
+     * @return File pointing to default configuration file.
+     * @throws Exception
+     */
+    public static File getPds2EsDataTypeCfgFile() throws Exception
+    {
+        String home = System.getenv("REGISTRY_MANAGER_HOME");
+        if(home == null) 
+        {
+            throw new Exception("Could not find default configuration directory. " 
+                    + "REGISTRY_MANAGER_HOME environment variable is not set.");
+        }
+
+        File file = new File(home, "elastic/data-dic-types.cfg");
+        return file;
+    }
+
+    
     /**
      * Convert LDD date, e.g., "Wed Dec 23 10:16:28 EST 2020" 
      * to ISO Instant format, e.g., "2020-12-23T15:16:28Z".

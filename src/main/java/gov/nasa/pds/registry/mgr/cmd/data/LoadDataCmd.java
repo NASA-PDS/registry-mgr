@@ -18,6 +18,8 @@ import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
+import gov.nasa.pds.registry.mgr.dd.LddLoader;
+import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.Logger;
 
@@ -104,6 +106,11 @@ public class LoadDataCmd implements CliCommand
     {
         File newFields = new File(dir, FIELDS_FILE);
         Logger.info("Updating schema with fields from " + newFields.getAbsolutePath());
+
+        // Create LDD loader
+        LddLoader lddLoader = new LddLoader();
+        lddLoader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile());
+        lddLoader.setElasticInfo(esUrl, indexName, authPath);
         
         RestClient client = null;
         
@@ -111,7 +118,7 @@ public class LoadDataCmd implements CliCommand
         {
             client = EsClientFactory.createRestClient(esUrl, authPath);
             SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName, lddCfgUrl);
-            SchemaUpdater su = new SchemaUpdater(client, suCfg);
+            SchemaUpdater su = new SchemaUpdater(client, lddLoader, suCfg);
             su.updateSchema(newFields);
         }
         catch(ResponseException ex)
