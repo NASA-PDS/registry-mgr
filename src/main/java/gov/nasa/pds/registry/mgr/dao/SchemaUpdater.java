@@ -31,7 +31,7 @@ import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
  * 
  * @author karpenko
  */
-public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
+public class SchemaUpdater
 {
     private SchemaDAO dao;
 
@@ -98,7 +98,7 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
         // Commit if reached batch/commit size
         if(totalCount % batchSize == 0)
         {
-            dao.updateMappings(cfg.indexName, batch, this);
+            updateSchema(cfg.indexName, batch);
             batch.clear();
         }
     }
@@ -107,9 +107,69 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
     private void finish() throws Exception
     {
         if(batch.isEmpty()) return;
-        dao.updateMappings(cfg.indexName, batch, this);
+        updateSchema(cfg.indexName, batch);
     }
     
+    
+    private void updateSchema(String index, Set<String> batch) throws Exception
+    {
+        DataTypesInfo info = dao.getDataTypes(index, batch, false);
+        if(info.lastMissingField == null) 
+        {
+            dao.updateSchema(index, info.newFields);
+            return;
+        }
+        
+        // Some fields are missing. Update LDDs if needed.
+        boolean updated = updateLdds(info.missingNamespaces);
+        
+        // LDDs are up-to-date or LDD list is not available
+        if(!updated) throw new DataTypeNotFoundException(info.lastMissingField);
+        
+        // LDDs were updated. Reload last batch. Stop (throw exception) on first missing field.
+        info = dao.getDataTypes(index, batch, true);
+        dao.updateSchema(index, info.newFields);
+    }
+    
+    
+    public boolean updateLdds(Set<String> namespaces)
+    {
+        // Load LDD list if needed
+        if(cfg.lddCfgUrl == null) return false;
+        try
+        {
+            loadLddList();
+        }
+        catch(Exception ex)
+        {
+            Logger.warn("Could not load list of data dictionaries. " 
+                    + "Automatic data dictionary updates are not available.");
+            return false;
+        }
+        
+        /*
+        LddInfo info = remoteLddMap.get(ns);
+        if(info == null)
+        {
+            Logger.warn("No LDD for namespace '" + ns + "'");
+            return null;
+        }
+        */
+        
+        return false;
+    }
+
+    
+    private void loadLddList() throws Exception
+    {
+        if(remoteLddMap != null) return;
+
+        File file = new File(cfg.tempDir, "pds_registry_ldd_list.csv");
+        downloader.download(cfg.lddCfgUrl, file);
+
+        remoteLddMap = LddUtils.loadLddList(file);
+    }
+
     
     private static List<String> getNewFields(File file) throws Exception
     {
@@ -134,60 +194,4 @@ public class SchemaUpdater implements SchemaDAO.MissingDataTypeCallback
         return fields;
     }
 
-
-    @Override
-    public String getDataType(String fieldId)
-    {
-        // Automatically assign data type for known fields
-        if(fieldId.startsWith("ref_lid_") || fieldId.startsWith("ref_lidvid_") 
-                || fieldId.endsWith("_Area")) return "keyword";
-        
-        // Get field namespace
-        String ns = getNamespace(fieldId);
-        if(ns == null) return null;
-        
-        // Load LDD list if needed
-        if(cfg.lddCfgUrl == null) return null;
-        try
-        {
-            loadLddList();
-        }
-        catch(Exception ex)
-        {
-            Logger.warn("Could not load list of data dictionaries. " 
-                    + "Automatic data dictionary updates are not available.");
-            return null;
-        }
-        
-        LddInfo info = remoteLddMap.get(ns);
-        if(info == null)
-        {
-            Logger.warn("No LDD for namespace '" + ns + "'");
-            return null;
-        }
-        
-        return null;
-    }
-
-    
-    private void loadLddList() throws Exception
-    {
-        if(remoteLddMap != null) return;
-
-        File file = new File(cfg.tempDir, "pds_registry_ldd_list.csv");
-        downloader.download(cfg.lddCfgUrl, file);
-
-        remoteLddMap = LddUtils.loadLddList(file);
-    }
-    
-    
-    private static String getNamespace(String fieldId)
-    {
-        if(fieldId == null) return null;
-        
-        int idx = fieldId.indexOf(':');
-        if(idx < 1) return null;
-        
-        return fieldId.substring(0, idx);
-    }
 }

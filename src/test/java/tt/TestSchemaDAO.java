@@ -1,13 +1,13 @@
 package tt;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.common.es.client.EsClientFactory;
+import gov.nasa.pds.registry.mgr.dao.DataTypesInfo;
 import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
 import gov.nasa.pds.registry.mgr.util.Tuple;
 import gov.nasa.pds.registry.mgr.util.es.IndexUtils;
@@ -18,7 +18,8 @@ public class TestSchemaDAO
 
     public static void main(String[] args) throws Exception
     {
-        testGetLddDate();
+        //testGetLddDate();
+        testGetDataTypes();
     }
 
 
@@ -60,7 +61,7 @@ public class TestSchemaDAO
     }
     
     
-    private static void testGetDataType() throws Exception
+    private static void testGetDataTypes() throws Exception
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
         
@@ -70,12 +71,21 @@ public class TestSchemaDAO
             
             Set<String> ids = new TreeSet<>();
             ids.add("pds:Property_Map/pds:identifier");
-            ids.add("test");
+            ids.add("abc:test");
             
-            List<Tuple> results = dao.getDataTypes("registry", ids, (name) -> { return null; });
-            for(Tuple res: results)
+            DataTypesInfo results = dao.getDataTypes("registry", ids, false);
+            
+            System.out.println("New fields:");
+            for(Tuple res: results.newFields)
             {
-                System.out.println(res.item1 + "  -->  " + res.item2);
+                System.out.println("  " + res.item1 + "  -->  " + res.item2);
+            }
+            
+            if(results.lastMissingField != null)
+            {
+                System.out.println();
+                System.out.println("Missing namespaces: " + results.missingNamespaces);
+                System.out.println("Last missing field: " + results.lastMissingField);
             }
         }
         finally

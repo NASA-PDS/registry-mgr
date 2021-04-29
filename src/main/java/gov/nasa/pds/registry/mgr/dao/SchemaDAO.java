@@ -1,7 +1,6 @@
 package gov.nasa.pds.registry.mgr.dao;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class SchemaDAO
     
     
     /**
-     * Call Elasticsearch "mappings" API to get a list of field names for an index.
+     * Call Elasticsearch "mappings" API to get a list of field names.
      * @param indexName Elasticsearch index name
      * @return a collection of field names
      * @throws Exception
@@ -69,6 +68,13 @@ public class SchemaDAO
         }
     }
     
+    /**
+     * 
+     * @param indexName
+     * @param namespace
+     * @return
+     * @throws Exception
+     */
     public Instant getLddDate(String indexName, String namespace) throws Exception
     {
         SchemaRequestBuilder bld = new SchemaRequestBuilder();
@@ -84,38 +90,29 @@ public class SchemaDAO
     }
     
     
-    public void updateMappings(String indexName, Collection<String> ids, 
-            MissingDataTypeCallback cb) throws Exception
+    public void updateSchema(String indexName, List<Tuple> fields) throws Exception
     {
-        if(ids == null || ids.isEmpty()) return;
+        if(fields == null || fields.isEmpty()) return;
         
-        List<Tuple> fields = getDataTypes(indexName, ids, cb);
         SchemaRequestBuilder bld = new SchemaRequestBuilder();
         String json = bld.createUpdateSchemaRequest(fields);
         
         Request req = new Request("PUT", "/" + indexName + "/_mapping");
         req.setJsonEntity(json);
-        Response resp = client.performRequest(req);
+        client.performRequest(req);
     }
     
     
-    public static interface MissingDataTypeCallback
-    {
-        public String getDataType(String fieldId);
-    }
-    
-
-    public List<Tuple> getDataTypes(String indexName, Collection<String> ids, 
-            MissingDataTypeCallback cb) throws Exception
+    public DataTypesInfo getDataTypes(String indexName, Collection<String> ids, 
+            boolean stopOnFirstMissing) throws Exception
     {
         if(indexName == null) throw new IllegalArgumentException("Index name is null");
 
-        List<Tuple> results = new ArrayList<>();
-        if(ids == null || ids.isEmpty()) return results;
+        DataTypesInfo dtInfo = new DataTypesInfo();
+        if(ids == null || ids.isEmpty()) return dtInfo;
         
         // Create request
-        indexName = indexName + "-dd";
-        Request req = new Request("GET", "/" + indexName + "/_mget?_source=es_data_type");
+        Request req = new Request("GET", "/" + indexName + "-dd/_mget?_source=es_data_type");
         
         // Create request body
         SchemaRequestBuilder bld = new SchemaRequestBuilder();
@@ -131,24 +128,40 @@ public class SchemaDAO
         {
             if(rec.found)
             {
-                results.add(new Tuple(rec.id, rec.esDataType));
+                dtInfo.newFields.add(new Tuple(rec.id, rec.esDataType));
             }
+            // There is no data type for this field in ES registry-dd index
             else
             {
-                String dataType = cb.getDataType(rec.id);
-                if(dataType == null)
+                // Automatically assign data type for known fields
+                if(rec.id.startsWith("ref_lid_") || rec.id.startsWith("ref_lidvid_") 
+                        || rec.id.endsWith("_Area")) 
                 {
-                    throw new Exception("Could not find datatype for field '" + rec.id + "'.\n" 
-                            + "See 'https://nasa-pds.github.io/pds-registry-app/operate/common-ops.html#Load' for more information.");
+                    dtInfo.newFields.add(new Tuple(rec.id, "keyword"));
+                    continue;
                 }
-                else
-                {
-                    results.add(new Tuple(rec.id, dataType));
-                }
+                
+                if(stopOnFirstMissing) throw new DataTypeNotFoundException(rec.id);
+                
+                // Get field namespace
+                String ns = getFieldNamespace(rec.id);
+                if(ns == null) throw new DataTypeNotFoundException(rec.id);
+                
+                dtInfo.missingNamespaces.add(ns);
+                dtInfo.lastMissingField = rec.id;
             }
         }
         
-        return results;
+        return dtInfo;
     }
     
+    
+    private static String getFieldNamespace(String fieldId)
+    {
+        int idx = fieldId.indexOf(':');
+        if(idx < 1) return null;
+        
+        return fieldId.substring(0, idx);
+    }
+
 }
