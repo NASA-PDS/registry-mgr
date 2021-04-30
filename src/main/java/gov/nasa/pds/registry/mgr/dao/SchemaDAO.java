@@ -15,6 +15,8 @@ import gov.nasa.pds.registry.mgr.util.Tuple;
 
 /**
  * Elasticsearch schema DAO (Data Access Object).
+ * This class provides methods to read and update Elasticsearch schema
+ * and data dictionary. 
  * 
  * @author karpenko
  */
@@ -49,6 +51,10 @@ public class SchemaDAO
     }
     
     
+    /**
+     * Inner private class to parse LDD information response from Elasticsearch.
+     * @author karpenko
+     */
     private static class GetLddDateRespParser extends SearchResponseParser implements SearchResponseParser.Callback
     {
         public Instant date = null;
@@ -69,10 +75,11 @@ public class SchemaDAO
     }
     
     /**
-     * 
-     * @param indexName
-     * @param namespace
-     * @return
+     * Get LDD date from data dictionary index in Elasticsearch.
+     * @param indexName Elasticsearch base index name, e.g., "registry". 
+     * NOTE: don't use full index name, like "registry-dd". 
+     * @param namespace LDD namespace, e.g., "pds", "geom", etc.
+     * @return ISO instant class representing LDD date.
      * @throws Exception
      */
     public Instant getLddDate(String indexName, String namespace) throws Exception
@@ -90,6 +97,12 @@ public class SchemaDAO
     }
     
     
+    /**
+     * Add new fields to Elasticsearch schema.
+     * @param indexName Elasticsearch index to update, e.g., "registry".
+     * @param fields A list of fields to add. Each field tuple has a name and a data type.
+     * @throws Exception
+     */
     public void updateSchema(String indexName, List<Tuple> fields) throws Exception
     {
         if(fields == null || fields.isEmpty()) return;
@@ -103,6 +116,17 @@ public class SchemaDAO
     }
     
     
+    /**
+     * Query Elasticsearch data dictionary to get data types for a list of field ids.
+     * @param indexName Elasticsearch index name, e.g., "registry".
+     * @param ids A list of field IDs, e.g., "pds:Array_3D/pds:axes".
+     * @param stopOnFirstMissing If true, throw DataTypeNotFoundException on first 
+     * field missing from Elasticsearch data dictionary. 
+     * If false, process all missing fields in a batch to create a list of 
+     * missing namespaces. Don't throw DataTypeNotFoundException.  
+     * @return Data types information object
+     * @throws Exception DataTypeNotFoundException, IOException, etc.
+     */
     public DataTypesInfo getDataTypes(String indexName, Collection<String> ids, 
             boolean stopOnFirstMissing) throws Exception
     {
@@ -156,6 +180,11 @@ public class SchemaDAO
     }
     
     
+    /**
+     * Extract class namespace from a field ID.
+     * @param fieldId Standard PDS registry field id "namespace:Class/namespace:field".
+     * @return class namespace
+     */
     private static String getFieldNamespace(String fieldId)
     {
         int idx = fieldId.indexOf(':');
