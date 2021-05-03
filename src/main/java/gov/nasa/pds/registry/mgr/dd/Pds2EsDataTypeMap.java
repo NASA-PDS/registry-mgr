@@ -41,12 +41,12 @@ public class Pds2EsDataTypeMap
      * @param pdsType PDS LDD data type
      * @return Elasticsearch data type
      */
-    public String getEsType(String pdsType)
+    public String getEsDataType(String pdsType)
     {
         String esType = map.get(pdsType);
         if(esType != null) return esType;
         
-        esType = guessType(pdsType);
+        esType = guessEsDataType(pdsType);
         Logger.warn("No PDS to Elasticsearch data type mapping for '" + pdsType 
                 + "'. Will use '" + esType + "'");
 
@@ -55,15 +55,20 @@ public class Pds2EsDataTypeMap
     }
     
     
-    private String guessType(String str)
+    /**
+     * Try to determine Elasticsearch data type from a PDS data type
+     * @param pdsType PDS data type, e.g., "UTF8_Text_Preserved"
+     * @return Elasticsearch data type, e.g., "text".
+     */
+    private String guessEsDataType(String pdsType)
     {
-        str = str.toLowerCase();
-        if(str.contains("_real")) return "double";
-        if(str.contains("_integer")) return "integer";
-        if(str.contains("_string")) return "keyword";
-        if(str.contains("_text")) return "text";
-        if(str.contains("_date")) return "date";
-        if(str.contains("_boolean")) return "boolean";        
+        pdsType = pdsType.toLowerCase();
+        if(pdsType.contains("_real")) return "double";
+        if(pdsType.contains("_integer")) return "integer";
+        if(pdsType.contains("_string")) return "keyword";
+        if(pdsType.contains("_text")) return "text";
+        if(pdsType.contains("_date")) return "date";
+        if(pdsType.contains("_boolean")) return "boolean";        
         
         return "keyword";
     }
@@ -81,7 +86,7 @@ public class Pds2EsDataTypeMap
     {
         if(file == null) return;
         
-        Logger.info("Loading PDS to ES data type mapping from " + file.getAbsolutePath());
+        Logger.debug("Loading PDS to ES data type mapping from " + file.getAbsolutePath());
         
         BufferedReader rd = null;
         
@@ -133,7 +138,7 @@ public class Pds2EsDataTypeMap
     
     
     /**
-     * Prints all mappings
+     * Print all mappings
      */
     public void debug()
     {

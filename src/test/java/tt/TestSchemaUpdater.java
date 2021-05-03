@@ -36,7 +36,7 @@ public class TestSchemaUpdater
             SchemaUpdaterConfig cfg = new SchemaUpdaterConfig("registry", Constants.DEFAULT_LDD_LIST_URL);
             SchemaUpdater updater = new SchemaUpdater(client, lddLoader, cfg);
             Set<String> namespaces = new TreeSet<>();
-            namespaces.add("msn");
+            namespaces.add("rings");
             
             boolean updated = updater.updateLdds(namespaces);
             System.out.println(updated);

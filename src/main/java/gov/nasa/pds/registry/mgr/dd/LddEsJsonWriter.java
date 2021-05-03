@@ -116,7 +116,7 @@ public class LddEsJsonWriter
         ddRec.attrName = dda.attrName;
         
         ddRec.dataType = dda.dataType;
-        ddRec.esDataType = dtMap.getEsType(dda.dataType);
+        ddRec.esDataType = dtMap.getEsDataType(dda.dataType);
         
         ddRec.description = dda.description;
 

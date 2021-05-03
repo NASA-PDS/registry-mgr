@@ -15,6 +15,7 @@ import gov.nasa.pds.registry.mgr.dao.SchemaUpdaterConfig;
 import gov.nasa.pds.registry.mgr.dd.LddLoader;
 import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
+import gov.nasa.pds.registry.mgr.util.Logger;
 
 /**
  * A CLI command to update Elasticsearch schema of the "registry" index.
@@ -25,6 +26,9 @@ import gov.nasa.pds.registry.mgr.util.CloseUtils;
  */
 public class UpdateSchemaCmd implements CliCommand
 {
+    /**
+     * Constructor
+     */
     public UpdateSchemaCmd()
     {
     }
@@ -50,9 +54,8 @@ public class UpdateSchemaCmd implements CliCommand
         String authPath = cmdLine.getOptionValue("auth");
         String lddCfgUrl = cmdLine.getOptionValue("ldd", Constants.DEFAULT_LDD_LIST_URL);
         
-        System.out.println("Elasticsearch URL: " + esUrl);
-        System.out.println("            Index: " + indexName);
-        System.out.println();
+        Logger.info("Elasticsearch URL: " + esUrl);
+        Logger.info("Index: " + indexName);
 
         RestClient client = null;
         
@@ -66,7 +69,7 @@ public class UpdateSchemaCmd implements CliCommand
             SchemaUpdaterConfig suCfg = new SchemaUpdaterConfig(indexName, lddCfgUrl);
             SchemaUpdater su = new SchemaUpdater(client, lddLoader, suCfg);
             su.updateSchema(new File(filePath));
-            System.out.println("Done");
+            Logger.info("Done");
         }
         catch(ResponseException ex)
         {
@@ -79,6 +82,9 @@ public class UpdateSchemaCmd implements CliCommand
     }
 
     
+    /**
+     * Print help screen
+     */
     public void printHelp()
     {
         System.out.println("Usage: registry-manager update-schema <options>");

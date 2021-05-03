@@ -49,7 +49,7 @@ public class AttributeDictionaryParser extends BaseLddParser
     @Override
     protected void parseAttributeDictionary() throws Exception
     {
-        Logger.info("Parsing attribute dictionary from " + ddFile.getAbsolutePath());
+        Logger.debug("Parsing attribute dictionary from " + ddFile.getAbsolutePath());
         
         jsonReader.beginArray();
         

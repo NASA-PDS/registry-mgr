@@ -59,7 +59,7 @@ public class ClassAttrAssociationParser extends BaseLddParser
     @Override
     protected void parseClassDictionary() throws Exception
     {
-        Logger.info("Parsing class and attribute associations from " + ddFile.getAbsolutePath());
+        Logger.debug("Parsing class and attribute associations from " + ddFile.getAbsolutePath());
 
         jsonReader.beginArray();
         

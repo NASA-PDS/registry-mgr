@@ -179,7 +179,11 @@ public class SchemaUpdater
         for(String namespace: namespaces)
         {
             LddInfo remoteLdd = remoteLddMap.get(namespace);
-            if(remoteLdd == null || remoteLdd.date == null) continue;
+            if(remoteLdd == null || remoteLdd.date == null) 
+            {
+                Logger.warn("There is no LDD for namespace '" + namespace + "'");
+                continue;
+            }
 
             // Get local LDD date
             if(!localLddMap.containsKey(namespace))
