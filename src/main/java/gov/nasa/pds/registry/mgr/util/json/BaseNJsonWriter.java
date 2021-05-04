@@ -9,40 +9,69 @@ import java.io.StringWriter;
 import com.google.gson.stream.JsonWriter;
 
 
+/**
+ * Base abstract class to write data records to a new-line-delimited JSON (NJSON) file.
+ * NJSON file has 2 lines per data record: 1 - primary key, 2 - data record.
+ * This is the file format used by Elasticsearch bulk load API.  
+ * 
+ * @author karpenko
+ *
+ * @param <Record> A data record to write.
+ */
 public abstract class BaseNJsonWriter<Record> implements Closeable
 {
     protected FileWriter writer;
     
     
+    /**
+     * Constructor
+     * @param file
+     * @throws Exception
+     */
     public BaseNJsonWriter(File file) throws Exception
     {
         writer = new FileWriter(file);
     }
     
 
-    public abstract void writeRecord(JsonWriter jw, Record data) throws Exception;
+    /**
+     * Overwrite this method to write a data record.
+     * @param jw
+     * @param data
+     * @throws Exception
+     */
+    public abstract void writeDataRecord(JsonWriter jw, Record data) throws Exception;
 
     
-    @Override    
+    /**
+     * Close file.
+     */
+    @Override
     public void close() throws IOException
     {
         writer.close();
     }
     
     
+    /**
+     * Write a primary key and a data record.
+     * @param pk primary key
+     * @param data data record
+     * @throws Exception
+     */
     public void write(String pk, Record data) throws Exception
     {
         // First line: primary key 
         writePK(pk);
         newLine();
         
-        // Second line: main record
+        // Second line: data record
 
         StringWriter sw = new StringWriter();
         JsonWriter jw = new JsonWriter(sw);
         
         jw.beginObject();
-        writeRecord(jw, data);
+        writeDataRecord(jw, data);
         jw.endObject();
         
         jw.close();
@@ -58,6 +87,11 @@ public abstract class BaseNJsonWriter<Record> implements Closeable
     }
 
 
+    /**
+     * Write primary key
+     * @param id
+     * @throws Exception
+     */
     protected void writePK(String id) throws Exception
     {
         if(id == null) throw new Exception("Primary key is null");

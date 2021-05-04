@@ -3,7 +3,7 @@ package gov.nasa.pds.registry.mgr.dd;
 import gov.nasa.pds.registry.mgr.Constants;
 
 /**
- * Data dictionary record in Elasticsearch
+ * Data dictionary record to be stored in Elasticsearch
  * 
  * @author karpenko
  */
@@ -33,6 +33,11 @@ public class DDRecord
     }
     
     
+    /**
+     * Get Elasticsearch field name from individual components
+     * (class_namespace:ClassName/attribute_namespace:AttributeName)
+     * @return
+     */
     public String esFieldNameFromComponents()
     {
         return classNs + Constants.NS_SEPARATOR + className + Constants.ATTR_SEPARATOR 

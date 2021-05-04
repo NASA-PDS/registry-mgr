@@ -8,6 +8,11 @@ import java.util.Base64;
 import java.util.zip.InflaterInputStream;
 
 
+/**
+ * Few methods to export a BLOB to a file.
+ * 
+ * @author karpenko
+ */
 public class EmbeddedBlobExporter
 {
     

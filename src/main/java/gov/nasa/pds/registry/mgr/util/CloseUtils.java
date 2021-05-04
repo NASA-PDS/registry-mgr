@@ -2,8 +2,17 @@ package gov.nasa.pds.registry.mgr.util;
 
 import java.io.Closeable;
 
+/**
+ * Close resources without throwing exceptions.
+ *  
+ * @author karpenko
+ */
 public class CloseUtils
 {
+    /**
+     * Close resources without throwing exceptions.
+     * @param cl
+     */
     public static void close(Closeable cl)
     {
         if(cl == null) return;

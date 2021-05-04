@@ -11,9 +11,21 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 
 
+/**
+ * Helper methods to work with XML DOM API.
+ * 
+ * @author karpenko
+ */
 public class XmlDomUtils
 {
     
+    /**
+     * Read XML from a file into a DOM document.
+     * @param dbf
+     * @param file
+     * @return
+     * @throws Exception
+     */
     public static Document readXml(DocumentBuilderFactory dbf, File file) throws Exception
     {
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -22,6 +34,12 @@ public class XmlDomUtils
     }
 
     
+    /**
+     * Read XML from a file into a DOM document.
+     * @param file
+     * @return
+     * @throws Exception
+     */
     public static Document readXml(File file) throws Exception
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -29,6 +47,14 @@ public class XmlDomUtils
     }
 
 
+    /**
+     * Read XML from a file into a DOM document.
+     * @param xmlFile
+     * @param xsdFile
+     * @param eh
+     * @return
+     * @throws Exception
+     */
     public static Document readXml(File xmlFile, File xsdFile, ErrorHandler eh) throws Exception
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -43,6 +69,12 @@ public class XmlDomUtils
     }
 
 
+    /**
+     * Get node attribute by name.
+     * @param node
+     * @param attributeName
+     * @return
+     */
     public static String getAttribute(Node node, String attributeName)
     {
         if(node == null || node.getAttributes() == null) return null;
@@ -52,6 +84,11 @@ public class XmlDomUtils
     }
 
 
+    /**
+     * Get node attributes.
+     * @param node
+     * @return
+     */
     public static NamedNodeMap getAttributes(Node node)
     {
         if(node == null || node.getAttributes() == null) return null;

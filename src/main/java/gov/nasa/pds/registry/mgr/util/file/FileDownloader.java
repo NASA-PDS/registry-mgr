@@ -48,7 +48,7 @@ public class FileDownloader
    
     
     /**
-     * Download a file from a URL.
+     * Download a file from a URL. Retry several times on error.
      * @param fromUrl Download a file from this URL.
      * @param toFile Save to this file
      * @throws Exception
@@ -82,6 +82,12 @@ public class FileDownloader
     }
     
     
+    /**
+     * Try downloading file once.
+     * @param fromUrl
+     * @param toFile
+     * @throws Exception
+     */
     private void downloadOnce(String fromUrl, File toFile) throws Exception
     {
         InputStream is = null;
@@ -105,6 +111,12 @@ public class FileDownloader
     }
 
 
+    /**
+     * Create HTTP or HTTPS connection
+     * @param url
+     * @return
+     * @throws Exception
+     */
     private HttpURLConnection createConnection(URL url) throws Exception
     {
         HttpURLConnection con = (HttpURLConnection)url.openConnection();

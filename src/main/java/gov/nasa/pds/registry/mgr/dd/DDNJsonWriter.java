@@ -5,16 +5,30 @@ import com.google.gson.stream.JsonWriter;
 import gov.nasa.pds.registry.mgr.util.json.BaseNJsonWriter;
 
 
+/**
+ * NJSON (new-line delimited JSON) writer for data dictionary records.
+ * 
+ * @author karpenko
+ *
+ */
 public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
 {
+    /**
+     * Constructor
+     * @param file
+     * @throws Exception
+     */
     public DDNJsonWriter(File file) throws Exception
     {
         super(file);
     }
 
     
+    /**
+     * Write one data record.
+     */
     @Override
-    public void writeRecord(JsonWriter jw, DDRecord data) throws Exception
+    public void writeDataRecord(JsonWriter jw, DDRecord data) throws Exception
     {
         String fieldName = (data.esFieldName != null) ? data.esFieldName : data.esFieldNameFromComponents();
         if(fieldName == null) throw new Exception("ES field name is null");

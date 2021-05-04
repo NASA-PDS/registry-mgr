@@ -44,6 +44,9 @@ public class EsDocWriter implements Closeable, SearchResponseParser.Callback
     }
 
     
+    /**
+     * Close file
+     */
     @Override
     public void close() throws IOException
     {
@@ -51,6 +54,10 @@ public class EsDocWriter implements Closeable, SearchResponseParser.Callback
     }
 
 
+    /**
+     * Search response parser callback implementation.
+     * This method is called for every record.
+     */
     @Override
     public void onRecord(String id, Object rec) throws IOException
     {
