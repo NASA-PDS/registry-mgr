@@ -10,14 +10,24 @@ import gov.nasa.pds.registry.common.es.client.EsClientFactory;
 import gov.nasa.pds.registry.common.es.client.EsUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.dao.IndexDao;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
-import gov.nasa.pds.registry.mgr.util.es.IndexUtils;
 
 
+/**
+ * A CLI command to delete registry indices (registry, registry-dd, registry-refs)
+ * from Elasticsearch.
+ *  
+ * @author karpenko
+ */
 public class DeleteRegistryCmd implements CliCommand
 {
     private RestClient client;
+    private IndexDao dao;
     
+    /**
+     * Constructor
+     */
     public DeleteRegistryCmd()
     {
     }
@@ -39,6 +49,7 @@ public class DeleteRegistryCmd implements CliCommand
         System.out.println("Elasticsearch URL: " + esUrl);
 
         client = EsClientFactory.createRestClient(esUrl, authPath);
+        dao = new IndexDao(client);
         
         try
         {
@@ -54,13 +65,18 @@ public class DeleteRegistryCmd implements CliCommand
     }
 
     
+    /**
+     * Delete Elasticsearch index by name
+     * @param indexName Elasticsearch index name
+     * @throws Exception
+     */
     private void deleteIndex(String indexName) throws Exception
     {
         try
         {
             System.out.println("Deleting index " + indexName);
             
-            if(!IndexUtils.indexExists(client, indexName)) 
+            if(!dao.indexExists(indexName)) 
             {
                 return;
             }
@@ -79,6 +95,9 @@ public class DeleteRegistryCmd implements CliCommand
     }
     
     
+    /**
+     * Print help screen.
+     */
     public void printHelp()
     {
         System.out.println("Usage: registry-manager delete-registry <options>");

@@ -21,6 +21,12 @@ import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 
 
+/**
+ * A CLI command to delete records from registry index in Elasticsearch.
+ * Records can be deleted by LIDVID, LID, PackageID. All records can also be deleted. 
+ * 
+ * @author karpenko
+ */
 public class DeleteDataCmd implements CliCommand
 {
     private String filterMessage;
@@ -28,6 +34,9 @@ public class DeleteDataCmd implements CliCommand
     private String refsQuery;
 
     
+    /**
+     * Constructor
+     */
     public DeleteDataCmd()
     {
     }
@@ -108,6 +117,12 @@ public class DeleteDataCmd implements CliCommand
     }
     
     
+    /**
+     * Build Elasticsearch query to delete records.
+     * Records can be deleted by LIDVID, LID, PackageID. All records can also be deleted.
+     * @param cmdLine
+     * @throws Exception
+     */
     private void buildEsQuery(CommandLine cmdLine) throws Exception
     {
         // Registry index

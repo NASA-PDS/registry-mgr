@@ -8,9 +8,9 @@ import org.elasticsearch.client.RestClient;
 
 import gov.nasa.pds.registry.common.es.client.EsClientFactory;
 import gov.nasa.pds.registry.mgr.dao.DataTypesInfo;
-import gov.nasa.pds.registry.mgr.dao.SchemaDAO;
+import gov.nasa.pds.registry.mgr.dao.IndexDao;
+import gov.nasa.pds.registry.mgr.dao.SchemaDao;
 import gov.nasa.pds.registry.mgr.util.Tuple;
-import gov.nasa.pds.registry.mgr.util.es.IndexUtils;
 
 
 public class TestSchemaDAO
@@ -27,7 +27,7 @@ public class TestSchemaDAO
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
         
-        SchemaDAO dao = new SchemaDAO(client);
+        SchemaDao dao = new SchemaDao(client);
         Instant date = dao.getLddDate("registry", "test");
         System.out.println(date);
         
@@ -38,8 +38,9 @@ public class TestSchemaDAO
     private static void testIndexExists() throws Exception
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
+        IndexDao dao = new IndexDao(client);
         
-        boolean b = IndexUtils.indexExists(client, "t123");
+        boolean b = dao.indexExists("t123");
         System.out.println(b);
         
         client.close();
@@ -49,7 +50,7 @@ public class TestSchemaDAO
     private static void testGetFieldNames() throws Exception
     {
         RestClient client = EsClientFactory.createRestClient("localhost", null);
-        SchemaDAO dao = new SchemaDAO(client);
+        SchemaDao dao = new SchemaDao(client);
         
         Set<String> names = dao.getFieldNames("t1");
         for(String name: names)
@@ -67,7 +68,7 @@ public class TestSchemaDAO
         
         try
         {
-            SchemaDAO dao = new SchemaDAO(client);
+            SchemaDao dao = new SchemaDao(client);
             
             Set<String> ids = new TreeSet<>();
             ids.add("pds:Property_Map/pds:identifier");

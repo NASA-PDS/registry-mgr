@@ -18,15 +18,29 @@ import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.EmbeddedBlobExporter;
 
 
+/**
+ * CLI command to export a BLOB object from Elasticsearch into a file. 
+ * 
+ * @author karpenko
+ */
 public class ExportFileCmd implements CliCommand
 {
+    /**
+     * Inner class to process search response from Elasticsearch API.
+     * 
+     * @author karpenko
+     */
     private static class ResponseCB implements SearchResponseParser.Callback
     {
         private boolean found = false; 
         private String lidvid;
         private String filePath;
         
-        
+        /**
+         * Constructor
+         * @param lidvid LidVid of a document with BLOB
+         * @param filePath File path to export BLOB to.
+         */
         public ResponseCB(String lidvid, String filePath)
         {
             this.lidvid = lidvid;
@@ -61,6 +75,9 @@ public class ExportFileCmd implements CliCommand
     }
     
     
+    /**
+     * Constructor
+     */
     public ExportFileCmd()
     {
     }
@@ -136,6 +153,9 @@ public class ExportFileCmd implements CliCommand
     }
 
     
+    /**
+     * Print help screen
+     */
     public void printHelp()
     {
         System.out.println("Usage: registry-manager export-file <options>");

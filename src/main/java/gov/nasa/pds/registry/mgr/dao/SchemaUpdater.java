@@ -38,7 +38,7 @@ public class SchemaUpdater
 {
     private static final String WARN_LDD_NA = "Could not load list of LDDs. Automatic data dictionary updates are not available.";
     
-    private SchemaDAO dao;
+    private SchemaDao dao;
 
     private Map<String, LddInfo> remoteLddMap;
     private Map<String, Instant> localLddMap = new TreeMap<>();
@@ -64,7 +64,7 @@ public class SchemaUpdater
     public SchemaUpdater(RestClient client, LddLoader lddLoader, SchemaUpdaterConfig cfg) throws Exception
     {
         this.cfg = cfg;
-        this.dao = new SchemaDAO(client);
+        this.dao = new SchemaDao(client);
         this.lddLoader = lddLoader;
         
         // Get a list of existing field names from Elasticsearch

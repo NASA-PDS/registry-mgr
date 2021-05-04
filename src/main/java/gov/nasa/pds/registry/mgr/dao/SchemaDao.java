@@ -20,7 +20,7 @@ import gov.nasa.pds.registry.mgr.util.Tuple;
  * 
  * @author karpenko
  */
-public class SchemaDAO
+public class SchemaDao
 {
     private RestClient client;
     
@@ -29,7 +29,7 @@ public class SchemaDAO
      * Constructor
      * @param client Elasticsearch client
      */
-    public SchemaDAO(RestClient client)
+    public SchemaDao(RestClient client)
     {
         this.client = client;
     }
