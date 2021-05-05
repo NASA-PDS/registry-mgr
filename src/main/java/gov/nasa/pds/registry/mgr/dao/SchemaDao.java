@@ -145,10 +145,10 @@ public class SchemaDao
         
         // Call ES
         Response resp = client.performRequest(req);
-        MgetParser parser = new MgetParser();
-        List<MgetParser.Record> records = parser.parse(resp.getEntity());
+        GetDataTypesResponseParser parser = new GetDataTypesResponseParser();
+        List<GetDataTypesResponseParser.Record> records = parser.parse(resp.getEntity());
         
-        for(MgetParser.Record rec: records)
+        for(GetDataTypesResponseParser.Record rec: records)
         {
             if(rec.found)
             {

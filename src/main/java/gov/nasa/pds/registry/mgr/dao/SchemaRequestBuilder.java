@@ -51,7 +51,7 @@ public class SchemaRequestBuilder
     /**
      * Create multi get (_mget) request.
      * @param ids
-     * @return
+     * @return JSON
      * @throws IOException
      */
     public String createMgetRequest(Collection<String> ids) throws IOException

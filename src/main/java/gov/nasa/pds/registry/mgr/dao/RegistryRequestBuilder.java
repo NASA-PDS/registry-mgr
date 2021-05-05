@@ -15,17 +15,29 @@ import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.util.es.EsQueryUtils;
 
+/**
+ * A class to build Elasticsearch API JSON requests.
+ * 
+ * @author karpenko
+ */
 public class RegistryRequestBuilder
 {
     private boolean pretty;
 
     
+    /**
+     * Constructor
+     * @param pretty Pretty-format JSON requests
+     */
     public RegistryRequestBuilder(boolean pretty)
     {
         this.pretty = pretty;
     }
 
     
+    /**
+     * Constructor
+     */
     public RegistryRequestBuilder()
     {
         this(false);
@@ -44,6 +56,14 @@ public class RegistryRequestBuilder
     }
 
     
+    /**
+     * Build create index request
+     * @param schemaFile
+     * @param shards
+     * @param replicas
+     * @return JSON
+     * @throws Exception
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public String createCreateIndexRequest(File schemaFile, int shards, int replicas) throws Exception
     {
@@ -89,6 +109,16 @@ public class RegistryRequestBuilder
     }
 
 
+    /**
+     * Build export data request
+     * @param filterField Filter field name, such as "lidvid".
+     * @param filterValue Filter value.
+     * @param sortField Sort field is required to paginate data and use "search_after" field.
+     * @param size Batch / page size
+     * @param searchAfter "search_after" field to perform pagination
+     * @return JSON
+     * @throws IOException
+     */
     public String createExportDataRequest(String filterField, String filterValue, 
             String sortField, int size, String searchAfter) throws IOException
     {
@@ -122,6 +152,14 @@ public class RegistryRequestBuilder
     }
 
     
+    /**
+     * Build export all data request
+     * @param sortField Sort field is required to paginate data and use "search_after" field. 
+     * @param size Batch / page size
+     * @param searchAfter "search_after" field to perform pagination
+     * @return JSON
+     * @throws IOException
+     */
     public String createExportAllDataRequest(String sortField, int size, String searchAfter) throws IOException
     {
         StringWriter out = new StringWriter();
@@ -157,6 +195,12 @@ public class RegistryRequestBuilder
     }
 
     
+    /**
+     * Build get BLOB request 
+     * @param lidvid
+     * @return JSON
+     * @throws IOException
+     */
     public String createGetBlobRequest(String lidvid) throws IOException
     {
         StringWriter out = new StringWriter();
@@ -178,7 +222,14 @@ public class RegistryRequestBuilder
         return out.toString();
     }
 
-    
+
+    /**
+     * Create Elasticsearch filter query
+     * @param field
+     * @param value
+     * @return JSON
+     * @throws IOException
+     */
     public String createFilterQuery(String field, String value) throws IOException
     {
         StringWriter out = new StringWriter();
@@ -193,6 +244,11 @@ public class RegistryRequestBuilder
     }
 
     
+    /**
+     * Build match all query
+     * @return JSON
+     * @throws IOException
+     */
     public String createMatchAllQuery() throws IOException
     {
         StringWriter out = new StringWriter();
@@ -212,6 +268,14 @@ public class RegistryRequestBuilder
     }
 
     
+    /**
+     * Build update label status request
+     * @param status
+     * @param field
+     * @param value
+     * @return JSON
+     * @throws IOException
+     */
     public String createUpdateStatusRequest(String status, String field, String value) throws IOException
     {
         StringWriter out = new StringWriter();
