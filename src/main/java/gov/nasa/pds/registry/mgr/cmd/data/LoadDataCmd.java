@@ -221,7 +221,7 @@ public class LoadDataCmd implements CliCommand
         System.out.println("  -es <url>             Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>         Elasticsearch index name. Default is 'registry'");
         System.out.println("  -updateSchema <y/n>   Update registry schema. Default is 'yes'");
-        System.out.println("  -ldd <url>            PDS LDD configuration url. Default is 'TBD'");
+        System.out.println("  -ldd <url>            PDS LDD configuration URL");
 
         System.out.println();
     }
