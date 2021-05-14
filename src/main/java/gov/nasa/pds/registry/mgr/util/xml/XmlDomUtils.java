@@ -21,10 +21,10 @@ public class XmlDomUtils
     
     /**
      * Read XML from a file into a DOM document.
-     * @param dbf
-     * @param file
-     * @return
-     * @throws Exception
+     * @param dbf document builder factory
+     * @param file XML file
+     * @return XML DOM model
+     * @throws Exception an exception
      */
     public static Document readXml(DocumentBuilderFactory dbf, File file) throws Exception
     {
@@ -36,9 +36,9 @@ public class XmlDomUtils
     
     /**
      * Read XML from a file into a DOM document.
-     * @param file
-     * @return
-     * @throws Exception
+     * @param file XML file
+     * @return XML DOM model
+     * @throws Exception an exception
      */
     public static Document readXml(File file) throws Exception
     {
@@ -49,11 +49,11 @@ public class XmlDomUtils
 
     /**
      * Read XML from a file into a DOM document.
-     * @param xmlFile
-     * @param xsdFile
-     * @param eh
-     * @return
-     * @throws Exception
+     * @param xmlFile XML file
+     * @param xsdFile XSD schema file to validate XML
+     * @param eh custom error handler
+     * @return XML DOM model
+     * @throws Exception an exception
      */
     public static Document readXml(File xmlFile, File xsdFile, ErrorHandler eh) throws Exception
     {
@@ -71,9 +71,9 @@ public class XmlDomUtils
 
     /**
      * Get node attribute by name.
-     * @param node
-     * @param attributeName
-     * @return
+     * @param node a node
+     * @param attributeName attribute name
+     * @return an attribute
      */
     public static String getAttribute(Node node, String attributeName)
     {
@@ -86,8 +86,8 @@ public class XmlDomUtils
 
     /**
      * Get node attributes.
-     * @param node
-     * @return
+     * @param node a node
+     * @return attribute map
      */
     public static NamedNodeMap getAttributes(Node node)
     {

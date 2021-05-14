@@ -13,8 +13,8 @@ public class EsQueryUtils
 {
     /**
      * Append "match_all" object.
-     * @param writer
-     * @throws IOException
+     * @param writer JSON writer
+     * @throws IOException an exception
      */
     public static void appendMatchAll(JsonWriter writer) throws IOException
     {
@@ -26,8 +26,8 @@ public class EsQueryUtils
 
     /**
      * Append match all query.
-     * @param writer
-     * @throws IOException
+     * @param writer JSON writer
+     * @throws IOException an exception
      */
     public static void appendMatchAllQuery(JsonWriter writer) throws IOException
     {
@@ -40,10 +40,10 @@ public class EsQueryUtils
     
     /**
      * Append filter query
-     * @param writer
-     * @param field
-     * @param value
-     * @throws IOException
+     * @param writer JSON writer
+     * @param field field name
+     * @param value field value
+     * @throws IOException an exception
      */
     public static void appendFilterQuery(JsonWriter writer, String field, String value) throws IOException
     {
@@ -62,8 +62,8 @@ public class EsQueryUtils
     
     /**
      * Append must match all criterion
-     * @param writer
-     * @throws IOException
+     * @param writer JSON writer
+     * @throws IOException an exception
      */
     private static void appendMustMatchAll(JsonWriter writer) throws IOException
     {
@@ -76,10 +76,10 @@ public class EsQueryUtils
     
     /**
      * Append term filter
-     * @param writer
-     * @param field
-     * @param value
-     * @throws IOException
+     * @param writer JSON writer
+     * @param field field name
+     * @param value field value
+     * @throws IOException an exception
      */
     private static void appendTermFilter(JsonWriter writer, String field, String value) throws IOException
     {

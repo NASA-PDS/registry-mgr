@@ -15,7 +15,7 @@ public class Logger
     
     /**
      * Set logging level
-     * @param level
+     * @param level level
      */
     public static void setLevel(int level)
     {
@@ -25,7 +25,7 @@ public class Logger
     
     /**
      * Print debug message
-     * @param msg
+     * @param msg a message
      */
     public static void debug(String msg)
     {
@@ -36,7 +36,7 @@ public class Logger
     
     /**
      * Print info message
-     * @param msg
+     * @param msg a message
      */
     public static void info(String msg)
     {
@@ -47,7 +47,7 @@ public class Logger
     
     /**
      * Print warning message
-     * @param msg
+     * @param msg a message
      */
     public static void warn(String msg)
     {
@@ -58,7 +58,7 @@ public class Logger
 
     /**
      * Print error message
-     * @param msg
+     * @param msg a message
      */
     public static void error(String msg)
     {

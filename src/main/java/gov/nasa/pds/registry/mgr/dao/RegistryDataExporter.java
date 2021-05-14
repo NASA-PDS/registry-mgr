@@ -13,9 +13,9 @@ public class RegistryDataExporter extends DataExporter
     
     /**
      * Constructor
-     * @param esUrl
-     * @param indexName
-     * @param authConfigFile
+     * @param esUrl Elasticsearch URL
+     * @param indexName Elasticsearch index name
+     * @param authConfigFile authentication configuration file
      */
     public RegistryDataExporter(String esUrl, String indexName, String authConfigFile)
     {

@@ -13,8 +13,8 @@ public class Tuple
     
     /**
      * Constructor
-     * @param item1
-     * @param item2
+     * @param item1 value 1
+     * @param item2 value 2
      */
     public Tuple(String item1, String item2)
     {

@@ -35,10 +35,10 @@ public class XPathUtils
     
     /**
      * Compile XPath
-     * @param xpf
-     * @param str
-     * @return
-     * @throws Exception
+     * @param xpf XPath factory
+     * @param str String XPath to compile
+     * @return compiled XPath
+     * @throws Exception an exception
      */
     public static XPathExpression compileXPath(XPathFactory xpf, String str) throws Exception
     {
@@ -50,10 +50,10 @@ public class XPathUtils
     
     /**
      * Get a String value of an XPath 
-     * @param doc
-     * @param expr
-     * @return
-     * @throws Exception
+     * @param doc XML DOM model
+     * @param expr an XPath
+     * @return a string value
+     * @throws Exception an exception
      */
     public static String getStringValue(Document doc, XPathExpression expr) throws Exception
     {
@@ -64,10 +64,10 @@ public class XPathUtils
     
     /**
      * Get a list of String values of an XPath
-     * @param obj
-     * @param expr
-     * @return
-     * @throws Exception
+     * @param obj parent node
+     * @param expr an XPath
+     * @return String list
+     * @throws Exception an exception
      */
     public static List<String> getStringList(Object obj, XPathExpression expr) throws Exception
     {
@@ -78,10 +78,10 @@ public class XPathUtils
     
     /**
      * Get a list of String values of an XPath
-     * @param obj
-     * @param xpath
-     * @return
-     * @throws Exception
+     * @param obj parent node
+     * @param xpath an XPath
+     * @return String list
+     * @throws Exception an exception
      */
     public List<String> getStringList(Object obj, String xpath) throws Exception
     {
@@ -92,10 +92,10 @@ public class XPathUtils
     
     /**
      * Get a set of String values of an XPath
-     * @param doc
-     * @param xpath
-     * @return
-     * @throws Exception
+     * @param doc XML DOM model
+     * @param xpath an XPath
+     * @return String set
+     * @throws Exception an exception
      */
     public Set<String> getStringSet(Document doc, String xpath) throws Exception
     {
@@ -112,10 +112,10 @@ public class XPathUtils
     
     /**
      * Get an array of String values of an XPath
-     * @param obj
-     * @param expr
-     * @return
-     * @throws Exception
+     * @param obj parent node
+     * @param expr an XPath
+     * @return String array
+     * @throws Exception an exception
      */
     public static String[] getStringArray(Object obj, XPathExpression expr) throws Exception
     {
@@ -135,10 +135,10 @@ public class XPathUtils
     
     /**
      * Get node list of an XPath
-     * @param item
-     * @param expr
-     * @return
-     * @throws Exception
+     * @param item parent node
+     * @param expr an XPath
+     * @return node list
+     * @throws Exception an exception
      */
     public static NodeList getNodeList(Object item, XPathExpression expr) throws Exception
     {
@@ -151,10 +151,10 @@ public class XPathUtils
     
     /**
      * Get node list of an XPath
-     * @param item
-     * @param xpath
-     * @return
-     * @throws Exception
+     * @param item parent node
+     * @param xpath an XPath
+     * @return node list
+     * @throws Exception an exception
      */
     public NodeList getNodeList(Object item, String xpath) throws Exception
     {
@@ -167,10 +167,10 @@ public class XPathUtils
     
     /**
      * Get node count of an XPath
-     * @param item
-     * @param xpath
-     * @return
-     * @throws Exception
+     * @param item parent node
+     * @param xpath an XPath
+     * @return node count
+     * @throws Exception an exception
      */
     public int getNodeCount(Object item, String xpath) throws Exception
     {
@@ -184,10 +184,10 @@ public class XPathUtils
     
     /**
      * Get first node of an XPath
-     * @param item
-     * @param xpath
-     * @return
-     * @throws Exception
+     * @param item parent node
+     * @param xpath an XPath
+     * @return a node
+     * @throws Exception an exception
      */
     public Node getFirstNode(Object item, String xpath) throws Exception
     {

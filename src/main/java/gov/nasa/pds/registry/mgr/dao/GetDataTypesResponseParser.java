@@ -58,7 +58,7 @@ public class GetDataTypesResponseParser
      * Parse HTTP body of a multi-get response (JSON)
      * @param entity HTTP response
      * @return a list of records
-     * @throws IOException
+     * @throws IOException an exception
      */
     public List<Record> parse(HttpEntity entity) throws IOException
     {
@@ -97,8 +97,8 @@ public class GetDataTypesResponseParser
     
     /**
      * Parse document sub-tree
-     * @return
-     * @throws IOException
+     * @return a record
+     * @throws IOException an exception
      */
     private Record parseDoc() throws IOException
     {
@@ -135,8 +135,8 @@ public class GetDataTypesResponseParser
     
     /**
      * Parse Elasticsearch document "_source" field and extract "es_data_type" value.  
-     * @param rec
-     * @throws IOException
+     * @param rec Update this object
+     * @throws IOException an exception
      */
     protected void parseSource(Record rec) throws IOException
     {

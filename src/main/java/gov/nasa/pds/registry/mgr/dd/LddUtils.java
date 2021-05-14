@@ -29,7 +29,7 @@ public class LddUtils
     /**
      * Get default PDS to Elasticsearch data type mapping configuration file.
      * @return File pointing to default configuration file.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public static File getPds2EsDataTypeCfgFile() throws Exception
     {
@@ -61,8 +61,8 @@ public class LddUtils
     /**
      * Load LDD list from a configuration file
      * @param file LDD configuration file
-     * @return A map, where key = <LDD namespace>, value = <LddInfo object>
-     * @throws Exception
+     * @return A map, where key = &lt;LDD namespace&gt;, value = &lt;LddInfo object&gt;
+     * @throws Exception an exception
      */
     public static Map<String, LddInfo> loadLddList(File file) throws Exception
     {

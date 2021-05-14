@@ -58,11 +58,11 @@ public class RegistryRequestBuilder
     
     /**
      * Build create index request
-     * @param schemaFile
-     * @param shards
-     * @param replicas
+     * @param schemaFile index schema file
+     * @param shards number of shards
+     * @param replicas number of replicas
      * @return JSON
-     * @throws Exception
+     * @throws Exception Generic exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public String createCreateIndexRequest(File schemaFile, int shards, int replicas) throws Exception
@@ -117,7 +117,7 @@ public class RegistryRequestBuilder
      * @param size Batch / page size
      * @param searchAfter "search_after" field to perform pagination
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createExportDataRequest(String filterField, String filterValue, 
             String sortField, int size, String searchAfter) throws IOException
@@ -158,7 +158,7 @@ public class RegistryRequestBuilder
      * @param size Batch / page size
      * @param searchAfter "search_after" field to perform pagination
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createExportAllDataRequest(String sortField, int size, String searchAfter) throws IOException
     {
@@ -197,9 +197,9 @@ public class RegistryRequestBuilder
     
     /**
      * Build get BLOB request 
-     * @param lidvid
+     * @param lidvid a LidVid
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createGetBlobRequest(String lidvid) throws IOException
     {
@@ -225,10 +225,10 @@ public class RegistryRequestBuilder
 
     /**
      * Create Elasticsearch filter query
-     * @param field
-     * @param value
+     * @param field filter field name
+     * @param value filter value
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createFilterQuery(String field, String value) throws IOException
     {
@@ -247,7 +247,7 @@ public class RegistryRequestBuilder
     /**
      * Build match all query
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createMatchAllQuery() throws IOException
     {
@@ -270,11 +270,11 @@ public class RegistryRequestBuilder
     
     /**
      * Build update label status request
-     * @param status
-     * @param field
-     * @param value
+     * @param status new PDS label status
+     * @param field filter field name
+     * @param value filter value
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createUpdateStatusRequest(String status, String field, String value) throws IOException
     {

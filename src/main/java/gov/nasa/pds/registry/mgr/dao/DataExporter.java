@@ -51,16 +51,16 @@ public abstract class DataExporter
      * Create JSON query to pass to "/indexName/_search" Elasticsearch API.
      * @param batchSize batch size
      * @param searchAfter Elasticsearch "search_after" parameter to paginate search results.
-     * @return
-     * @throws Exception
+     * @return JSON 
+     * @throws Exception an exception
      */
     protected abstract String createRequest(int batchSize, String searchAfter) throws Exception;
     
     
     /**
      * Export data from Elasticsearch into a file
-     * @param file
-     * @throws Exception
+     * @param file a file
+     * @throws Exception an exception
      */
     public void export(File file) throws Exception
     {

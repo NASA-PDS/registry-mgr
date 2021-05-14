@@ -27,7 +27,7 @@ public class BaseLddParser
     /**
      * Constructor
      * @param file PDS LDD JSON file to parse
-     * @throws Exception
+     * @throws Exception an exception
      */
     public BaseLddParser(File file) throws Exception
     {
@@ -37,7 +37,7 @@ public class BaseLddParser
 
     /**
      * Returns LDD version
-     * @return
+     * @return LDD version
      */
     public String getLddVersion()
     {
@@ -46,7 +46,7 @@ public class BaseLddParser
     
     /**
      * Returns LDD (creation) date
-     * @return
+     * @return LDD date
      */
     public String getLddDate()
     {
@@ -55,7 +55,7 @@ public class BaseLddParser
     
     /**
      * Parse PDS LDD JSON file
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void parse() throws Exception
     {
@@ -72,7 +72,7 @@ public class BaseLddParser
     
     /**
      * Parse root element
-     * @throws Exception
+     * @throws Exception an exception
      */
     private void parseRoot() throws Exception
     {
@@ -103,8 +103,8 @@ public class BaseLddParser
     
     
     /**
-     * Parse "dataDictionary" -> "classDictionary" subtree
-     * @throws Exception
+     * Parse "dataDictionary" -&gt; "classDictionary" subtree
+     * @throws Exception an exception
      */
     protected void parseClassDictionary() throws Exception
     {
@@ -113,7 +113,7 @@ public class BaseLddParser
     
 
     /**
-     * Parse "dataDictionary" -> "attributeDictionary" subtree
+     * Parse "dataDictionary" -&gt; "attributeDictionary" subtree
      * @throws Exception
      */
     protected void parseAttributeDictionary() throws Exception
@@ -124,7 +124,7 @@ public class BaseLddParser
     
     /**
      * Parse "dataDictionary" subtree
-     * @throws Exception
+     * @throws Exception an exception
      */
     private void parseDataDic() throws Exception
     {

@@ -8,8 +8,8 @@ import gov.nasa.pds.registry.mgr.util.Logger;
 
 /**
  * PDS LDD JSON file parser. 
- * Parses "dataDictionary" -> "classDictionary" subtree and extracts attribute associations 
- * ("class" -> "association" -> "isAttribute" == true).
+ * Parses "dataDictionary" -&gt; "classDictionary" subtree and extracts attribute associations 
+ * ("class" -&gt; "association" -&gt; "isAttribute" == true).
  * For each "attributeId" a callback method is called.
  * 
  * @author karpenko
@@ -24,11 +24,11 @@ public class ClassAttrAssociationParser extends BaseLddParser
     {
         /**
          * This method is called for each "attributeId" from class attribute association
-         * ("class" -> "association" -> "isAttribute" == true).
+         * ("class" -&gt; "association" -&gt; "isAttribute" == true).
          * @param classNs class namespace
          * @param className class name
          * @param attrId attribute ID
-         * @throws Exception
+         * @throws Exception an exception
          */
         public void onAssociation(String classNs, String className, String attrId) throws Exception;
     }
@@ -47,7 +47,7 @@ public class ClassAttrAssociationParser extends BaseLddParser
      * Constructor
      * @param file PDS LDD JSON file
      * @param cb Callback
-     * @throws Exception
+     * @throws Exception an exception
      */
     public ClassAttrAssociationParser(File file, Callback cb) throws Exception
     {

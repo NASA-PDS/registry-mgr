@@ -56,8 +56,8 @@ public class LddLoader
     
     /**
      * Load PDS to Elasticsearch data type map
-     * @param file
-     * @throws Exception
+     * @param file configuration file
+     * @throws Exception an exception
      */
     public void loadPds2EsDataTypeMap(File file) throws Exception
     {
@@ -69,7 +69,7 @@ public class LddLoader
      * Load PDS LDD JSON file into Elasticsearch data dictionary index
      * @param ddFile PDS LDD JSON file
      * @param namespace Namespace filter. Only load classes having this namespace.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void load(File ddFile, String namespace) throws Exception
     {
@@ -91,7 +91,7 @@ public class LddLoader
      * @param ddFile PDS LDD JSON file
      * @param namespace Namespace filter. Only load classes having this namespace.
      * @param esFile Write to this Elasticsearch file
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void createEsDataFile(File ddFile, String namespace, File esFile) throws Exception
     {

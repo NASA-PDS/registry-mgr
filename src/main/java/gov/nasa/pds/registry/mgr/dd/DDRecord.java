@@ -36,7 +36,7 @@ public class DDRecord
     /**
      * Get Elasticsearch field name from individual components
      * (class_namespace:ClassName/attribute_namespace:AttributeName)
-     * @return
+     * @return Elasticsearch field name
      */
     public String esFieldNameFromComponents()
     {

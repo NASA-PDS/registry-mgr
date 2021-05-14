@@ -7,7 +7,7 @@ import gov.nasa.pds.registry.mgr.util.Logger;
 
 /**
  * PDS LDD JSON file parser. 
- * Parses "dataDictionary" -> "attributeDictionary" subtree.
+ * Parses "dataDictionary" -&gt; "attributeDictionary" subtree.
  *  
  * @author karpenko
  */
@@ -21,8 +21,8 @@ public class AttributeDictionaryParser extends BaseLddParser
     {
         /**
          * This method will be called for each attribute in "attributeDictionary". 
-         * @param attr
-         * @throws Exception
+         * @param attr data dictionary attribute
+         * @throws Exception an exception
          */
         public void onAttribute(DDAttribute attr) throws Exception;
     }
@@ -36,8 +36,8 @@ public class AttributeDictionaryParser extends BaseLddParser
     /**
      * Constructor
      * @param file PDS LDD JSON file
-     * @param cb Callback
-     * @throws Exception
+     * @param cb Callback a callback interface implementation
+     * @throws Exception an exception
      */
     public AttributeDictionaryParser(File file, Callback cb) throws Exception
     {

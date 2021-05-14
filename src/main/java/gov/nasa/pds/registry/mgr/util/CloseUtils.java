@@ -11,7 +11,7 @@ public class CloseUtils
 {
     /**
      * Close resources without throwing exceptions.
-     * @param cl
+     * @param cl a closeable object
      */
     public static void close(Closeable cl)
     {
@@ -23,6 +23,7 @@ public class CloseUtils
         }
         catch(Exception ex)
         {
+            // Ignore
         }
     }
 

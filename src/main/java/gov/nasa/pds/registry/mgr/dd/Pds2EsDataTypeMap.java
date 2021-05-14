@@ -11,15 +11,15 @@ import gov.nasa.pds.registry.mgr.util.Logger;
 
 
 /**
- * <p>Mappings between PDS LDD data types such as 'ASCII_LID' 
- * and Elasticsearch data types such as 'keyword'.</p>
+ * Mappings between PDS LDD data types such as 'ASCII_LID' 
+ * and Elasticsearch data types such as 'keyword'.
  * 
  * <p>Mappings are loaded from a configuration file similar to Java properties file.
- * There is one mapping per line:<br/>
- * &lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;</p>
+ * There is one mapping per line:
+ * <p>&lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;
  * 
  * <p>Default configuration file is in 
- * &lt;PROJECT_ROOT&gt;/src/main/resources/elastic/data-dic-types.cfg</p>
+ * &lt;PROJECT_ROOT&gt;/src/main/resources/elastic/data-dic-types.cfg
  * 
  * @author karpenko
  */
@@ -78,9 +78,9 @@ public class Pds2EsDataTypeMap
      * Load data type mappings from a configuration file
      * @param file Configuration file with PDS LDD to Elasticsearch data type mappings.
      * <p>Mappings are loaded from a configuration file similar to Java properties file.
-     * There is one mapping per line:<br/>
-     * &lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;</p>
-     * @throws Exception
+     * There is one mapping per line:
+     * <p>&lt;PDS LDD data type&gt;=&lt;Elasticsearch data type&gt;</p>
+     * @throws Exception an exception
      */
     public void load(File file) throws Exception
     {

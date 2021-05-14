@@ -25,8 +25,8 @@ public abstract class BaseNJsonWriter<Record> implements Closeable
     
     /**
      * Constructor
-     * @param file
-     * @throws Exception
+     * @param file output file
+     * @throws Exception an exception
      */
     public BaseNJsonWriter(File file) throws Exception
     {
@@ -36,9 +36,9 @@ public abstract class BaseNJsonWriter<Record> implements Closeable
 
     /**
      * Overwrite this method to write a data record.
-     * @param jw
-     * @param data
-     * @throws Exception
+     * @param jw JSON writer
+     * @param data a record
+     * @throws Exception an exception
      */
     public abstract void writeDataRecord(JsonWriter jw, Record data) throws Exception;
 
@@ -57,7 +57,7 @@ public abstract class BaseNJsonWriter<Record> implements Closeable
      * Write a primary key and a data record.
      * @param pk primary key
      * @param data data record
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void write(String pk, Record data) throws Exception
     {
@@ -89,8 +89,8 @@ public abstract class BaseNJsonWriter<Record> implements Closeable
 
     /**
      * Write primary key
-     * @param id
-     * @throws Exception
+     * @param id primary key
+     * @throws Exception an exception
      */
     protected void writePK(String id) throws Exception
     {

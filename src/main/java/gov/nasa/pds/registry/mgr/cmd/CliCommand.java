@@ -14,7 +14,7 @@ public interface CliCommand
     /**
      * Run CLI command. 
      * @param cmdLine Command line parameters.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void run(CommandLine cmdLine) throws Exception;
 }

@@ -41,7 +41,7 @@ public class DataLoader
      * @param indexName Elasticsearch index name
      * @param authConfigFile Elasticsearch authentication configuration file 
      * (see Registry Manager documentation for more info)
-     * @throws Exception
+     * @throws Exception an exception
      */
     public DataLoader(String esUrl, String indexName, String authConfigFile) throws Exception
     {
@@ -52,7 +52,7 @@ public class DataLoader
     
     /**
      * Set data batch size
-     * @param size
+     * @param size batch size
      */
     public void setBatchSize(int size)
     {
@@ -64,7 +64,7 @@ public class DataLoader
     /**
      * Load data from an NJSON (new-line-delimited JSON) file into Elasticsearch.
      * @param file NJSON (new-line-delimited JSON) file to load
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void loadFile(File file) throws Exception
     {
@@ -79,7 +79,7 @@ public class DataLoader
      * Load data from a zipped NJSON (new-line-delimited JSON) file into Elasticsearch.
      * @param zipFile Zip file with an NJSON data file.
      * @param fileName NJSON data file name in the Zip file.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void loadZippedFile(File zipFile, String fileName) throws Exception
     {
@@ -107,8 +107,8 @@ public class DataLoader
     
     /**
      * Load NJSON data from a reader.
-     * @param rd
-     * @throws Exception
+     * @param rd reader
+     * @throws Exception an exception
      */
     private void loadData(BufferedReader rd) throws Exception
     {
@@ -142,8 +142,8 @@ public class DataLoader
      * @param fileReader Reader object with NJSON data.
      * @param firstLine NJSON file has 2 lines per record: 1 - primary key, 2 - data record.
      * This is the primary key line.
-     * @return
-     * @throws Exception
+     * @return First line of 2-line NJSON record (line 1: primary key, line 2: data)
+     * @throws Exception an exception
      */
     private String loadBatch(BufferedReader fileReader, String firstLine) throws Exception
     {
@@ -229,8 +229,8 @@ public class DataLoader
     
     /**
      * Get HTTP response code, e.g., 200 (OK)
-     * @param con
-     * @return
+     * @param con HTTP connection
+     * @return HTTP response code, e.g., 200 (OK)
      */
     private static int getResponseCode(HttpURLConnection con)
     {
@@ -250,8 +250,8 @@ public class DataLoader
     /**
      * This method is used to parse multi-line Elasticsearch error responses.
      * JSON error response is on the last line of a message.
-     * @param is
-     * @return
+     * @param is input stream
+     * @return Last line
      */
     private static String getLastLine(InputStream is)
     {
