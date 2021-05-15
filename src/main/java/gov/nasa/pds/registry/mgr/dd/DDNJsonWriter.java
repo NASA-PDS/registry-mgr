@@ -15,8 +15,8 @@ public class DDNJsonWriter extends BaseNJsonWriter<DDRecord>
 {
     /**
      * Constructor
-     * @param file
-     * @throws Exception
+     * @param file output file
+     * @throws Exception an exception
      */
     public DDNJsonWriter(File file) throws Exception
     {

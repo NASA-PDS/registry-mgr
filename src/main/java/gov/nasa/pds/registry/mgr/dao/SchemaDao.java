@@ -39,7 +39,7 @@ public class SchemaDao
      * Call Elasticsearch "mappings" API to get a list of field names.
      * @param indexName Elasticsearch index name
      * @return a collection of field names
-     * @throws Exception
+     * @throws Exception an exception
      */
     public Set<String> getFieldNames(String indexName) throws Exception
     {
@@ -80,7 +80,7 @@ public class SchemaDao
      * NOTE: don't use full index name, like "registry-dd". 
      * @param namespace LDD namespace, e.g., "pds", "geom", etc.
      * @return ISO instant class representing LDD date.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public Instant getLddDate(String indexName, String namespace) throws Exception
     {
@@ -101,7 +101,7 @@ public class SchemaDao
      * Add new fields to Elasticsearch schema.
      * @param indexName Elasticsearch index to update, e.g., "registry".
      * @param fields A list of fields to add. Each field tuple has a name and a data type.
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void updateSchema(String indexName, List<Tuple> fields) throws Exception
     {

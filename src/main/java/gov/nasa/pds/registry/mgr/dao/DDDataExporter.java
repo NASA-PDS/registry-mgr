@@ -9,9 +9,9 @@ public class DDDataExporter extends DataExporter
 {
     /**
      * Constructor
-     * @param esUrl
-     * @param indexName
-     * @param authConfigFile
+     * @param esUrl Elasticsearch URL
+     * @param indexName Elasticsearch index name
+     * @param authConfigFile authentication configuration file
      */
     public DDDataExporter(String esUrl, String indexName, String authConfigFile)
     {

@@ -114,7 +114,7 @@ public class BaseLddParser
 
     /**
      * Parse "dataDictionary" -&gt; "attributeDictionary" subtree
-     * @throws Exception
+     * @throws Exception an exception
      */
     protected void parseAttributeDictionary() throws Exception
     {

@@ -10,8 +10,8 @@ public class ExceptionUtils
 {
     /**
      * Extract original exception message from nested stack trace.
-     * @param ex
-     * @return
+     * @param ex Parent exception
+     * @return original exception message
      */
     public static String getMessage(Exception ex)
     {

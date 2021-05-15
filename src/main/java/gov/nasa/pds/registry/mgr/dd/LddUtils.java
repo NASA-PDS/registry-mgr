@@ -50,6 +50,7 @@ public class LddUtils
      * to ISO Instant format, e.g., "2020-12-23T15:16:28Z".
      * @param lddDate LDD date from PDS LDD JSON file.
      * @return ISO Instant formatted date
+     * @throws Exception an exception
      */
     public static String lddDateToIsoInstant(String lddDate) throws Exception
     {

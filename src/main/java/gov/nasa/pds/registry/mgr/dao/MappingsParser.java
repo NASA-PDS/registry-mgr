@@ -39,7 +39,7 @@ public class MappingsParser
      * Parse Elasticsearch response from "/indexName/_mappings" API.
      * @param entity HTTP response body
      * @return a collection of field names from a given Elasticsearch index.
-     * @throws IOException
+     * @throws IOException an exception
      */
     public Set<String> parse(HttpEntity entity) throws IOException
     {
@@ -75,7 +75,7 @@ public class MappingsParser
 
     /**
      * Parse "mappings" JSON object.
-     * @throws IOException
+     * @throws IOException an exception
      */
     private void parseMappings() throws IOException
     {
@@ -100,7 +100,7 @@ public class MappingsParser
     
     /**
      * Parse "properties" JSON object 
-     * @throws IOException
+     * @throws IOException an exception
      */
     private void parseProps() throws IOException
     {
@@ -124,8 +124,8 @@ public class MappingsParser
 
     
     /**
-     * Parse fields (indexName -> mappings -> properties -> fields)
-     * @throws IOException
+     * Parse fields (indexName -&gt; mappings -&gt; properties -&gt; fields)
+     * @throws IOException an exception
      */
     private void parseFields() throws IOException
     {

@@ -50,9 +50,9 @@ public class SchemaRequestBuilder
     
     /**
      * Create multi get (_mget) request.
-     * @param ids
+     * @param ids list of IDs
      * @return JSON
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createMgetRequest(Collection<String> ids) throws IOException
     {
@@ -80,7 +80,7 @@ public class SchemaRequestBuilder
      * Create update Elasticsearch schema request
      * @param fields A list of fields to add. Each field tuple has a name and a data type.
      * @return Elasticsearch query in JSON format
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createUpdateSchemaRequest(List<Tuple> fields) throws IOException
     {
@@ -111,7 +111,7 @@ public class SchemaRequestBuilder
      * Create get data dictionary (LDD) info request.
      * @param namespace LDD namespace ID, such as 'pds', 'cart', etc.
      * @return Elasticsearch query in JSON format
-     * @throws IOException
+     * @throws IOException an exception
      */
     public String createGetLddInfoRequest(String namespace) throws IOException
     {

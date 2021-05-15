@@ -27,7 +27,7 @@ public class LddEsJsonWriter
      * @param outFile Elasticsearch JSON data file
      * @param dtMap PDS to Elasticsearch data type map
      * @param ddAttrCache LDD attribute cache
-     * @throws Exception
+     * @throws Exception an exception
      */
     public LddEsJsonWriter(File outFile, Pds2EsDataTypeMap dtMap, Map<String, DDAttribute> ddAttrCache) throws Exception
     {
@@ -39,7 +39,7 @@ public class LddEsJsonWriter
     
     /**
      * Set namespace filter. Only process classes having this namespace.
-     * @param filter
+     * @param filter namespace, such as 'pds'
      */
     public void setNamespaceFilter(String filter)
     {
@@ -49,7 +49,7 @@ public class LddEsJsonWriter
     
     /**
      * Close output file
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void close() throws Exception
     {
@@ -62,7 +62,7 @@ public class LddEsJsonWriter
      * @param classNs LDD class namespace
      * @param className LDD class name
      * @param attrId LDD attribute ID
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void writeFieldDefinition(String classNs, String className, String attrId) throws Exception
     {
@@ -86,7 +86,7 @@ public class LddEsJsonWriter
      * @param namespace LDD namespace
      * @param version LDD version
      * @param date LDD date
-     * @throws Exception
+     * @throws Exception an exception
      */
     public void writeDataDictionaryVersion(String namespace, String version, String date) throws Exception
     {

@@ -27,7 +27,7 @@ public class IndexDao
      * Check if Elasticsearch index exists
      * @param indexName Elasticsearch index name
      * @return true if the index exists
-     * @throws Exception
+     * @throws Exception an exception
      */
     public boolean indexExists(String indexName) throws Exception
     {
