@@ -65,7 +65,7 @@ public class LoadDataCmd implements CliCommand
         
         String tmp = cmdLine.getOptionValue("updateSchema", "Y");
         boolean updateSchema = ParamParserUtils.parseYesNo("updateSchema", tmp);
-        boolean fixMissingFDs = cmdLine.hasOption("fixMissingFD");
+        boolean fixMissingFDs = cmdLine.hasOption("force");
         
         RegistryManager.init(cfg);
 
@@ -158,7 +158,7 @@ public class LoadDataCmd implements CliCommand
         System.out.println("  -es <url>             Elasticsearch URL. Default is http://localhost:9200");
         System.out.println("  -index <name>         Elasticsearch index name. Default is 'registry'");
         System.out.println("  -updateSchema <y/n>   Update registry schema. Default is 'yes'");
-        System.out.println("  -fixMissingFD         Use 'keyword' ES datatype for missing field definitions.");
+        System.out.println("  -force                Use 'keyword' ES datatype for missing field definitions.");
 
         System.out.println();
     }
