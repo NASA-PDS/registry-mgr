@@ -49,9 +49,8 @@ public class UpdateSchemaCmd implements CliCommand
         cfg.url = cmdLine.getOptionValue("es", "http://localhost:9200");
         cfg.indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         cfg.authFile = cmdLine.getOptionValue("auth");
-
         boolean fixMissingFDs = cmdLine.hasOption("force");
-        
+
         RegistryManager.init(cfg);
         
         try
