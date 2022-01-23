@@ -81,9 +81,7 @@ public class SetArchiveStatusCmd implements CliCommand
             ProductDao dao = new ProductDao(client, indexName);
             ProductService srv = new ProductService(dao);
             
-            srv.setArchveStatus(lidvid, status);
-            
-            //System.out.format("Updated %.0f document(s)\n", numDeleted);
+            srv.updateArchveStatus(lidvid, status);
         }
         catch(ResponseException ex)
         {
