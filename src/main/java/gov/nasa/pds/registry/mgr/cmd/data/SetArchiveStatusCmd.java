@@ -32,25 +32,10 @@ public class SetArchiveStatusCmd implements CliCommand
     public SetArchiveStatusCmd()
     {
         statusNames = new TreeSet<>();
-
-        statusNames.add("archived");
         statusNames.add("staged");
-        
-        /*
-        statusNames.add("ARCHIVED_ACCUMULATING");
-        statusNames.add("IN_LIEN_RESOLUTION");
-        statusNames.add("IN_LIEN_RESOLUTION_ACCUMULATING");
-        statusNames.add("IN_PEER_REVIEW");
-        statusNames.add("IN_PEER_REVIEW_ACCUMULATING");
-        statusNames.add("IN_QUEUE");
-        statusNames.add("IN_QUEUE_ACCUMULATING");
-        statusNames.add("LOCALLY_ARCHIVED");
-        statusNames.add("LOCALLY_ARCHIVED_ACCUMULATING");
-        statusNames.add("PRE_PEER_REVIEW");
-        statusNames.add("PRE_PEER_REVIEW_ACCUMULATING");
-        statusNames.add("SAFED");        
-        statusNames.add("SUPERSEDED");
-        */
+        statusNames.add("archived");
+        statusNames.add("certified");
+        statusNames.add("restricted");
     }
     
     
