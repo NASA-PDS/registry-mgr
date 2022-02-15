@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.gson.stream.JsonWriter;
 
-import gov.nasa.pds.registry.mgr.dao.BaseRequestBuilder;
+import gov.nasa.pds.registry.common.es.dao.BaseRequestBuilder;
 import gov.nasa.pds.registry.mgr.util.Tuple;
 
 /**

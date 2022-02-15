@@ -9,14 +9,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.nasa.pds.registry.common.dd.LddUtils;
+import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
+import gov.nasa.pds.registry.common.es.dao.dd.LddVersions;
+import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
 import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.common.util.ExceptionUtils;
 import gov.nasa.pds.registry.mgr.cfg.RegistryCfg;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
-import gov.nasa.pds.registry.mgr.dao.dd.DataDictionaryDao;
-import gov.nasa.pds.registry.mgr.dao.dd.LddVersions;
-import gov.nasa.pds.registry.mgr.dd.JsonLddLoader;
-import gov.nasa.pds.registry.mgr.dd.LddUtils;
 import gov.nasa.pds.registry.mgr.util.Tuple;
 import gov.nasa.pds.registry.mgr.util.file.FileDownloader;
 
@@ -58,7 +58,8 @@ public class SchemaUpdater
         
         log = LogManager.getLogger(this.getClass());
         
-        lddLoader = new JsonLddLoader(cfg.url, cfg.indexName, cfg.authFile);
+        DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
+        lddLoader = new JsonLddLoader(ddDao, cfg.url, cfg.indexName, cfg.authFile);
         lddLoader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile());
         
         this.batch = new ArrayList<>();

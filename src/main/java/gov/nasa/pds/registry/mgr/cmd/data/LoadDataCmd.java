@@ -9,10 +9,10 @@ import java.util.function.BiPredicate;
 
 import org.apache.commons.cli.CommandLine;
 
+import gov.nasa.pds.registry.common.es.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cfg.RegistryCfg;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
-import gov.nasa.pds.registry.mgr.dao.DataLoader;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
 import gov.nasa.pds.registry.mgr.dao.schema.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.util.ParamParserUtils;
