@@ -2,9 +2,9 @@ package tt;
 
 import java.io.File;
 
+import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
-import gov.nasa.pds.registry.mgr.cfg.RegistryCfg;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
 
 

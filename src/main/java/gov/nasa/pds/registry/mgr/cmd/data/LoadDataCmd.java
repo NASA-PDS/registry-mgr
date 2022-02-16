@@ -9,12 +9,15 @@ import java.util.function.BiPredicate;
 
 import org.apache.commons.cli.CommandLine;
 
+import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.DataLoader;
+import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
+import gov.nasa.pds.registry.common.es.dao.schema.SchemaDao;
+import gov.nasa.pds.registry.common.es.service.SchemaUpdater;
+
 import gov.nasa.pds.registry.mgr.Constants;
-import gov.nasa.pds.registry.mgr.cfg.RegistryCfg;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
-import gov.nasa.pds.registry.mgr.dao.schema.SchemaUpdater;
 import gov.nasa.pds.registry.mgr.util.ParamParserUtils;
 
 
@@ -74,8 +77,11 @@ public class LoadDataCmd implements CliCommand
             // Update schema
             if(updateSchema)
             {
-                SchemaUpdater su = new SchemaUpdater(cfg, fixMissingFDs);
-                su.updateLddsAndSchema(dir);
+                DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
+                SchemaDao schemaDao = RegistryManager.getInstance().getSchemaDao();
+                
+                SchemaUpdater su = new SchemaUpdater(cfg, ddDao, schemaDao);
+                //su.updateLddsAndSchema(dir);
             }
             
             // Load data

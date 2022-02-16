@@ -23,7 +23,6 @@ import gov.nasa.pds.registry.mgr.cmd.dd.DeleteDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ExportDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ListDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.LoadDDCmd;
-import gov.nasa.pds.registry.mgr.cmd.dd.UpdateSchemaCmd;
 import gov.nasa.pds.registry.mgr.cmd.reg.CreateRegistryCmd;
 import gov.nasa.pds.registry.mgr.cmd.reg.DeleteRegistryCmd;
 import gov.nasa.pds.registry.mgr.util.log.Log4jConfigurator;
@@ -82,7 +81,6 @@ public class RegistryManagerCli
         System.out.println("  load-dd              Load data into data dictionary");
         System.out.println("  delete-dd            Delete data from data dictionary");        
         System.out.println("  export-dd            Export data dictionary");
-        System.out.println("  update-schema        Update registry schema");
 
         System.out.println();
         System.out.println("Other:");
@@ -247,7 +245,6 @@ public class RegistryManagerCli
         commands.put("load-dd", new LoadDDCmd());
         commands.put("delete-dd", new DeleteDDCmd());
         commands.put("export-dd", new ExportDDCmd());
-        commands.put("update-schema", new UpdateSchemaCmd());
         
         // Data
         commands.put("load-data", new LoadDataCmd());

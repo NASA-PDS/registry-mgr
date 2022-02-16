@@ -5,12 +5,12 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.dd.LddUtils;
 import gov.nasa.pds.registry.common.es.dao.DataLoader;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
 import gov.nasa.pds.registry.mgr.Constants;
-import gov.nasa.pds.registry.mgr.cfg.RegistryCfg;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
 import gov.nasa.pds.registry.mgr.dd.CsvLddLoader;
@@ -132,7 +132,7 @@ public class LoadDDCmd implements CliCommand
         // Init LDD loader
         DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
         JsonLddLoader loader = new JsonLddLoader(ddDao, cfg.url, cfg.indexName, cfg.authFile);
-        loader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile());
+        loader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile("REGISTRY_MANAGER_HOME"));
 
         //Load LDD
         File lddFile = new File(path);
