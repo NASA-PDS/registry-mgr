@@ -15,9 +15,7 @@ import gov.nasa.pds.registry.common.util.ExceptionUtils;
 import gov.nasa.pds.registry.common.util.ManifestUtils;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 import gov.nasa.pds.registry.mgr.cmd.data.DeleteDataCmd;
-import gov.nasa.pds.registry.mgr.cmd.data.ExportDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.ExportFileCmd;
-import gov.nasa.pds.registry.mgr.cmd.data.LoadDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.SetArchiveStatusCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.DeleteDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ExportDDCmd;
@@ -64,9 +62,7 @@ public class RegistryManagerCli
         
         System.out.println();
         System.out.println("Data:");
-        System.out.println("  load-data            Load data into registry index");
         System.out.println("  delete-data          Delete data from registry index");
-        System.out.println("  export-data          Export data from registry index");
         System.out.println("  export-file          Export a file from blob storage");
         System.out.println("  set-archive-status   Set product archive status");
         
@@ -247,9 +243,8 @@ public class RegistryManagerCli
         commands.put("export-dd", new ExportDDCmd());
         
         // Data
-        commands.put("load-data", new LoadDataCmd());
         commands.put("delete-data", new DeleteDataCmd());
-        commands.put("export-data", new ExportDataCmd());
+        //commands.put("export-data", new ExportDataCmd());
         commands.put("export-file", new ExportFileCmd());
         commands.put("set-archive-status", new SetArchiveStatusCmd());
     }
