@@ -1,7 +1,7 @@
 package tt;
 
 import java.io.File;
-
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
 import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
@@ -22,7 +22,7 @@ public class TestLddLoader
             RegistryManager.init(cfg);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
-            JsonLddLoader loader = new JsonLddLoader(ddDao, "http://localhost:9200", "t1", null);
+            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.directly("http://localhost:9200").setIndexName("t1"));
             loader.loadPds2EsDataTypeMap(new File("src/main/resources/elastic/data-dic-types.cfg"));
     
             //File ddFile = new File("src/test/data/PDS4_MSN_1B00_1100.JSON");

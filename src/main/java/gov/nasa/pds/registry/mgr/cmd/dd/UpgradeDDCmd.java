@@ -3,9 +3,9 @@ package gov.nasa.pds.registry.mgr.cmd.dd;
 import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
-import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.common.es.client.EsClientFactory;
+import gov.nasa.pds.registry.common.ConnectionFactory;
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
+import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.DataLoader;
 import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.Constants;
@@ -51,7 +51,8 @@ public class UpgradeDDCmd implements CliCommand
         
         try
         {
-            client = EsClientFactory.createRestClient(esUrl, authPath);
+          ConnectionFactory conFact = EstablishConnectionFactory.directly(esUrl, authPath);
+            client = conFact.createRestClient();
             
             if(replace)
             {
@@ -61,7 +62,7 @@ public class UpgradeDDCmd implements CliCommand
             }
             
             // Load data
-            DataLoader dl = new DataLoader(esUrl, indexName + "-dd", authPath);
+            DataLoader dl = new DataLoader(conFact.setIndexName(indexName + "-dd"));
             File zipFile = IndexService.getDataDicFile();
             dl.loadZippedFile(zipFile, "dd.json");
         }

@@ -8,13 +8,12 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.common.es.client.SearchResponseParser;
+import gov.nasa.pds.registry.common.Request;
+import gov.nasa.pds.registry.common.Response;
+import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.BulkResponseParser;
 import gov.nasa.pds.registry.common.util.CloseUtils;
+import gov.nasa.pds.registry.common.util.SearchResponseParser;
 import gov.nasa.pds.registry.mgr.dao.resp.GetAltIdsParser;
 
 /**
@@ -70,7 +69,7 @@ public class RegistryDao
         String reqUrl = "/" + indexName + "/_search";
         if(pretty) reqUrl += "?pretty";
         
-        Request req = new Request("GET", reqUrl);
+        Request req = client.createRequest(Request.Method.GET, reqUrl);
         req.setJsonEntity(jsonReq);
         Response resp = client.performRequest(req);
 
@@ -99,7 +98,7 @@ public class RegistryDao
         log.debug("Request:\n" + json);
         
         String reqUrl = "/" + indexName + "/_bulk"; //?refresh=wait_for";
-        Request req = new Request("POST", reqUrl);
+        Request req = client.createRequest(Request.Method.POST, reqUrl);
         req.setJsonEntity(json);
         
         Response resp = client.performRequest(req);

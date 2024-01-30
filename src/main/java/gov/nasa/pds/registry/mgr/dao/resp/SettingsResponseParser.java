@@ -3,11 +3,9 @@ package gov.nasa.pds.registry.mgr.dao.resp;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.elasticsearch.client.Response;
-
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-
+import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.mgr.dao.IndexSettings;
 
 /**
