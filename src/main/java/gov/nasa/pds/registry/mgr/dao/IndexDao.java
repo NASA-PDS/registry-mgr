@@ -1,9 +1,8 @@
 package gov.nasa.pds.registry.mgr.dao;
 
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-
+import gov.nasa.pds.registry.common.Request;
+import gov.nasa.pds.registry.common.Response;
+import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.mgr.dao.resp.SettingsResponseParser;
 
 
@@ -33,7 +32,7 @@ public class IndexDao
      */
     public boolean indexExists(String indexName) throws Exception
     {
-        Request req = new Request("HEAD", "/" + indexName);
+        Request req = client.createRequest(Request.Method.HEAD, "/" + indexName);
         Response resp = client.performRequest(req);
         return resp.getStatusLine().getStatusCode() == 200;
     }
@@ -47,7 +46,7 @@ public class IndexDao
      */
     public IndexSettings getIndexSettings(String indexName) throws Exception
     {
-        Request req = new Request("GET", "/" + indexName + "/_settings");
+        Request req = client.createRequest(Request.Method.GET, "/" + indexName + "/_settings");
         Response resp = client.performRequest(req);
         
         SettingsResponseParser parser = new SettingsResponseParser();

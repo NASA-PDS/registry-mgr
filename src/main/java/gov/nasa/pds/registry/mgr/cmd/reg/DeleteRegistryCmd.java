@@ -1,9 +1,8 @@
 package gov.nasa.pds.registry.mgr.cmd.reg;
 
 import org.apache.commons.cli.CommandLine;
-import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.common.es.client.EsClientFactory;
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
+import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
@@ -43,7 +42,7 @@ public class DeleteRegistryCmd implements CliCommand
         
         try
         {
-            client = EsClientFactory.createRestClient(esUrl, authPath);
+            client = EstablishConnectionFactory.directly(esUrl, authPath).createRestClient();
             IndexService srv = new IndexService(client);
 
             srv.deleteIndex(indexName);

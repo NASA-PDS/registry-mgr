@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import gov.nasa.pds.registry.common.es.client.SearchResponseParser;
+import gov.nasa.pds.registry.common.util.SearchResponseParser;
 
 
 public class GetAltIdsParser implements SearchResponseParser.Callback

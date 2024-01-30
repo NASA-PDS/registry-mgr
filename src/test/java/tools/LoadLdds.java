@@ -3,7 +3,7 @@ package tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
 import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
@@ -27,7 +27,7 @@ public class LoadLdds
             RegistryManager.init(cfg);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
-            JsonLddLoader loader = new JsonLddLoader(ddDao, "http://localhost:9200", "registry", null);
+            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.directly("http://localhost:9200").setIndexName("registry"));
             loader.loadPds2EsDataTypeMap(new File("src/main/resources/elastic/data-dic-types.cfg"));
     
             File baseDir = new File("/tmp/schema");

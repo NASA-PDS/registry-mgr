@@ -4,11 +4,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.cli.CommandLine;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestClient;
-
-import gov.nasa.pds.registry.common.es.client.EsClientFactory;
-import gov.nasa.pds.registry.common.es.client.EsUtils;
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
+import gov.nasa.pds.registry.common.ResponseException;
+import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.ProductDao;
 import gov.nasa.pds.registry.common.es.service.ProductService;
 import gov.nasa.pds.registry.common.util.CloseUtils;
@@ -62,7 +60,7 @@ public class SetArchiveStatusCmd implements CliCommand
         try
         {
             // Call Elasticsearch
-            client = EsClientFactory.createRestClient(esUrl, authPath);
+            client = EstablishConnectionFactory.directly(esUrl, authPath).createRestClient();
             ProductDao dao = new ProductDao(client, indexName);
             ProductService srv = new ProductService(dao);
             
@@ -70,7 +68,7 @@ public class SetArchiveStatusCmd implements CliCommand
         }
         catch(ResponseException ex)
         {
-            throw new Exception(EsUtils.extractErrorMessage(ex));
+            throw new Exception(ex.extractErrorMessage());
         }
         finally
         {
