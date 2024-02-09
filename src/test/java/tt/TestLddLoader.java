@@ -22,7 +22,7 @@ public class TestLddLoader
             RegistryManager.init(cfg);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
-            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.directly("http://localhost:9200").setIndexName("t1"));
+            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from("http://localhost:9200").setIndexName("t1"));
             loader.loadPds2EsDataTypeMap(new File("src/main/resources/elastic/data-dic-types.cfg"));
     
             //File ddFile = new File("src/test/data/PDS4_MSN_1B00_1100.JSON");

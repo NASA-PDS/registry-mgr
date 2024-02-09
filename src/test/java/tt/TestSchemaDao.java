@@ -24,7 +24,7 @@ public class TestSchemaDao
 
     private static void testIndexExists() throws Exception
     {
-        RestClient client = EstablishConnectionFactory.directly("localhost").createRestClient();
+        RestClient client = EstablishConnectionFactory.from("localhost").createRestClient();
         IndexDao dao = new IndexDao(client);
         
         boolean b = dao.indexExists("t123");
@@ -36,7 +36,7 @@ public class TestSchemaDao
     
     private static void testGetFieldNames() throws Exception
     {
-        RestClient client = EstablishConnectionFactory.directly("localhost").createRestClient();
+        RestClient client = EstablishConnectionFactory.from("localhost").createRestClient();
         SchemaDao dao = new SchemaDao(client, "t1");
         
         Set<String> names = dao.getFieldNames();
@@ -51,7 +51,7 @@ public class TestSchemaDao
     
     private static void testGetDataTypes() throws Exception
     {
-        RestClient client = EstablishConnectionFactory.directly("localhost").createRestClient();
+        RestClient client = EstablishConnectionFactory.from("localhost").createRestClient();
         
         try
         {

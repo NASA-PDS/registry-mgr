@@ -42,7 +42,7 @@ public class DeleteRegistryCmd implements CliCommand
         
         try
         {
-            client = EstablishConnectionFactory.directly(esUrl, authPath).createRestClient();
+            client = EstablishConnectionFactory.from(esUrl, authPath).createRestClient();
             IndexService srv = new IndexService(client);
 
             srv.deleteIndex(indexName);

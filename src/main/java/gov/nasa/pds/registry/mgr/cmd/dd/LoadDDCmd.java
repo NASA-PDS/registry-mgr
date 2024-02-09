@@ -131,7 +131,7 @@ public class LoadDDCmd implements CliCommand
 
         // Init LDD loader
         DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
-        JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.directly(cfg.url, cfg.authFile).setIndexName(cfg.indexName));
+        JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from(cfg.url, cfg.authFile).setIndexName(cfg.indexName));
         loader.loadPds2EsDataTypeMap(LddUtils.getPds2EsDataTypeCfgFile("REGISTRY_MANAGER_HOME"));
 
         //Load LDD
@@ -150,7 +150,7 @@ public class LoadDDCmd implements CliCommand
         Logger log = LogManager.getLogger(this.getClass());
         log.info("Data dump: " + path);
         
-        DataLoader loader = new DataLoader(EstablishConnectionFactory.directly(cfg.url, cfg.authFile).setIndexName( cfg.indexName + "-dd"));
+        DataLoader loader = new DataLoader(EstablishConnectionFactory.from(cfg.url, cfg.authFile).setIndexName( cfg.indexName + "-dd"));
         loader.loadFile(new File(path));
     }
     

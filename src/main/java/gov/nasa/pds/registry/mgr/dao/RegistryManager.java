@@ -34,7 +34,7 @@ public class RegistryManager
     {
         if(cfg.url == null || cfg.url.isEmpty()) throw new IllegalArgumentException("Missing Registry URL");
         
-        client = EstablishConnectionFactory.directly(cfg.url, cfg.authFile).createRestClient();
+        client = EstablishConnectionFactory.from(cfg.url, cfg.authFile).createRestClient();
         
         String indexName = cfg.indexName;
         if(indexName == null || indexName.isEmpty()) 

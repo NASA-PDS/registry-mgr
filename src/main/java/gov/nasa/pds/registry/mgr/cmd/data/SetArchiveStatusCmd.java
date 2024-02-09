@@ -60,7 +60,7 @@ public class SetArchiveStatusCmd implements CliCommand
         try
         {
             // Call Elasticsearch
-            client = EstablishConnectionFactory.directly(esUrl, authPath).createRestClient();
+            client = EstablishConnectionFactory.from(esUrl, authPath).createRestClient();
             ProductDao dao = new ProductDao(client, indexName);
             ProductService srv = new ProductService(dao);
             

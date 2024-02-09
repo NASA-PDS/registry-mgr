@@ -51,7 +51,7 @@ public class UpgradeDDCmd implements CliCommand
         
         try
         {
-          ConnectionFactory conFact = EstablishConnectionFactory.directly(esUrl, authPath);
+          ConnectionFactory conFact = EstablishConnectionFactory.from(esUrl, authPath);
             client = conFact.createRestClient();
             
             if(replace)

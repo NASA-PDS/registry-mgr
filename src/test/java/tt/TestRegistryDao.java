@@ -13,7 +13,7 @@ public class TestRegistryDao
 
     public static void main(String[] args) throws Exception
     {
-        RestClient client = EstablishConnectionFactory.directly("localhost").createRestClient();
+        RestClient client = EstablishConnectionFactory.from("localhost").createRestClient();
         
         try
         {

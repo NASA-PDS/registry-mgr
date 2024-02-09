@@ -50,7 +50,7 @@ public class CreateRegistryCmd implements CliCommand
 
         try
         {
-          ConnectionFactory conFact = EstablishConnectionFactory.directly(esUrl, authPath);
+          ConnectionFactory conFact = EstablishConnectionFactory.from(esUrl, authPath);
             client = conFact.createRestClient();
             IndexService srv = new IndexService(client);
             

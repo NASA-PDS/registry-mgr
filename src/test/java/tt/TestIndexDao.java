@@ -11,7 +11,7 @@ public class TestIndexDao
 
     public static void main(String[] args) throws Exception
     {
-        RestClient client = EstablishConnectionFactory.directly("localhost").createRestClient();
+        RestClient client = EstablishConnectionFactory.from("localhost").createRestClient();
         
         try
         {

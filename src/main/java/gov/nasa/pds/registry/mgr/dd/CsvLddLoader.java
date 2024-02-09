@@ -34,7 +34,7 @@ public class CsvLddLoader
     public CsvLddLoader(String esUrl, String indexName, String authFilePath) throws Exception
     {
         log = LogManager.getLogger(this.getClass());
-        loader = new DataLoader(EstablishConnectionFactory.directly(esUrl, authFilePath).setIndexName(indexName + "-dd"));
+        loader = new DataLoader(EstablishConnectionFactory.from(esUrl, authFilePath).setIndexName(indexName + "-dd"));
     }
     
     
