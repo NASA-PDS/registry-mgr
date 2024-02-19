@@ -73,7 +73,7 @@ public class RegistryManagerCli
         System.out.println("Registry:");
         System.out.println("  create-registry      Create registry and data dictionary indices");
         System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");        
-        
+        System.out.println("  known-registry       List all known registry XML connections contained in this artifact");
         System.out.println();
         System.out.println("Data Dictionary:");
         System.out.println("  list-dd              List data dictionaries");
@@ -239,6 +239,7 @@ public class RegistryManagerCli
         // Registry
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
+        commands.put("known-registry", new KnownRegistryCmd());
 
         // Data dictionary
         commands.put("list-dd", new ListDDCmd());
