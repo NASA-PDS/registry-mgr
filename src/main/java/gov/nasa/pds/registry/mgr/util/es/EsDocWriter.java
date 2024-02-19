@@ -21,7 +21,7 @@ import gov.nasa.pds.registry.common.es.client.SearchResponseParser;
  * </p>
  * <pre>
  * curl -H "Content-Type: application/x-ndjson" \
- *      -XPOST "http://localhost:9200/accounts/_bulk?pretty" \
+ *      -XPOST "app:/connections/direct/localhost.xml/accounts/_bulk?pretty" \
  *      --data-binary @es-docs.json
  * </pre>
  * 

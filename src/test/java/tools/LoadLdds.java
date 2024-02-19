@@ -18,7 +18,7 @@ public class LoadLdds
     public static void main(String[] args) throws Exception
     {
         RegistryCfg cfg = new RegistryCfg();
-        cfg.url = "http://localhost:9200";
+        cfg.url = "app:/connections/direct/localhost.xml";
         cfg.indexName = "registry";
         
         BufferedReader rd = null;
@@ -28,7 +28,7 @@ public class LoadLdds
             RegistryManager.init(cfg);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
-            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from("http://localhost:9200").setIndexName("registry"));
+            JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from("app:/connections/direct/localhost.xml").setIndexName("registry"));
             loader.loadPds2EsDataTypeMap(new File("src/main/resources/elastic/data-dic-types.cfg"));
     
             File baseDir = new File("/tmp/schema");

@@ -41,7 +41,7 @@ public class UpgradeDDCmd implements CliCommand
             return;
         }
 
-        esUrl = cmdLine.getOptionValue("es", "http://localhost:9200");
+        esUrl = cmdLine.getOptionValue("es", "app:/connections/direct/localhost.xml");
         indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         authPath = cmdLine.getOptionValue("auth");
         
@@ -87,7 +87,7 @@ public class UpgradeDDCmd implements CliCommand
         System.out.println("Optional parameters:");
         System.out.println("  -r              Recreate data dictionary index (replace old data dictionary)");
         System.out.println("  -auth <file>    Authentication config file");
-        System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
+        System.out.println("  -es <url>       Elasticsearch URL. Default is app:/connections/direct/localhost.xml");
         System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
         System.out.println();
     }
