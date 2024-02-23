@@ -240,6 +240,7 @@ public class RegistryManagerCli
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
         commands.put("known-registry", new KnownRegistryCmd());
+        commands.put("fetch-registry", new FetchRegistryCmd());
 
         // Data dictionary
         commands.put("list-dd", new ListDDCmd());
