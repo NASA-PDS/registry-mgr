@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -14,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 import gov.nasa.pds.registry.common.util.CloseUtils;
+import gov.nasa.pds.registry.common.util.Tuple;
 import gov.nasa.pds.registry.mgr.Constants;
 import gov.nasa.pds.registry.mgr.util.es.EsQueryUtils;
 
@@ -268,70 +271,21 @@ public class RegistryRequestBuilder
         writer.close();
         return out.toString();
     }
-
-    
-    /**
-     * Build a query to select alternate ids by document primary key
-     * @param ids list of primary keys (lidvids right now)
-     * @return JSON
-     * @throws Exception an exception
-     */
-    public String createGetAlternateIdsRequest(Collection<String> ids) throws Exception
-    {
-        if(ids == null || ids.isEmpty()) throw new Exception("Missing ids");
-            
-        StringWriter out = new StringWriter();
-        JsonWriter writer = createJsonWriter(out);
-
-        // Create ids query
-        writer.beginObject();
-
-        // Exclude source from response
-        writer.name("_source").value("alternate_ids");
-        writer.name("size").value(ids.size());
-
-        writer.name("query");
-        writer.beginObject();
-        writer.name("ids");
-        writer.beginObject();
-        
-        writer.name("values");
-        writer.beginArray();
-        for(String id: ids)
-        {
-            writer.value(id);
-        }
-        writer.endArray();
-        
-        writer.endObject();
-        writer.endObject();
-        writer.endObject();
-
-        writer.close();
-        return out.toString();
-    }
-
-    
-    public String createUpdateAltIdsRequest(Map<String, Set<String>> newIds) throws Exception
+    public List<Tuple> createUpdateAltIdsRequest(Map<String, Set<String>> newIds) throws Exception
     {
         if(newIds == null || newIds.isEmpty()) throw new IllegalArgumentException("Missing ids");
-        
-        StringBuilder bld = new StringBuilder();
-        
+        ArrayList<Tuple> updates = new ArrayList<Tuple>();
         // Build NJSON (new-line delimited JSON)
         for(Map.Entry<String, Set<String>> entry: newIds.entrySet())
         {
-            // Line 1: Elasticsearch document ID
-            bld.append("{ \"update\" : {\"_id\" : \"" + entry.getKey() + "\" } }\n");
-            
-            // Line 2: Data
-            String dataJson = buildUpdateDocJson("alternate_ids", entry.getValue());
-            bld.append(dataJson);
-            bld.append("\n");
+          Tuple statement = new Tuple();
+          // Line 1: Elasticsearch document ID
+          statement.item1 = "{ \"update\" : {\"_id\" : \"" + entry.getKey() + "\" } }";
+          // Line 2: Data
+          statement.item2 = buildUpdateDocJson("alternate_ids", entry.getValue());
+          updates.add(statement);
         }
-        
-        return bld.toString();
-
+        return updates;
     }
     
     

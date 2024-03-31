@@ -6,14 +6,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import gov.nasa.pds.registry.common.Request;
 import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.BulkResponseParser;
 import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.common.util.SearchResponseParser;
+import gov.nasa.pds.registry.common.util.Tuple;
 import gov.nasa.pds.registry.mgr.dao.resp.GetAltIdsParser;
 
 /**
@@ -21,9 +20,7 @@ import gov.nasa.pds.registry.mgr.dao.resp.GetAltIdsParser;
  * @author karpenko
  */
 public class RegistryDao
-{
-    private Logger log;
-    
+{    
     private RestClient client;
     private String indexName;
 
@@ -35,9 +32,7 @@ public class RegistryDao
      * @param indexName Elasticsearch index
      */
     public RegistryDao(RestClient client, String indexName)
-    {
-        log = LogManager.getLogger(this.getClass());
-        
+    {        
         this.client = client;
         this.indexName = indexName;
     }
@@ -62,15 +57,11 @@ public class RegistryDao
     public Map<String, Set<String>> getAlternateIds(Collection<String> ids) throws Exception
     {
         if(ids == null || ids.isEmpty()) return null;
-        
-        RegistryRequestBuilder bld = new RegistryRequestBuilder();
-        String jsonReq = bld.createGetAlternateIdsRequest(ids);
-        
-        String reqUrl = "/" + indexName + "/_search";
-        if(pretty) reqUrl += "?pretty";
-        
-        Request req = client.createRequest(Request.Method.GET, reqUrl);
-        req.setJsonEntity(jsonReq);
+                
+        Request.Search req = client.createSearchRequest()
+            .buildAlternativeIds(ids)
+            .setIndex(this.indexName)
+            .setPretty(pretty);
         Response resp = client.performRequest(req);
 
         //DebugUtils.dumpResponseBody(resp);
@@ -93,14 +84,13 @@ public class RegistryDao
     {
         if(newIds == null || newIds.isEmpty()) return;
         
-        RegistryRequestBuilder bld = new RegistryRequestBuilder();
-        String json = bld.createUpdateAltIdsRequest(newIds);
-        log.debug("Request:\n" + json);
-        
-        String reqUrl = "/" + indexName + "/_bulk"; //?refresh=wait_for";
-        Request req = client.createRequest(Request.Method.POST, reqUrl);
-        req.setJsonEntity(json);
-        
+        RegistryRequestBuilder bld = new RegistryRequestBuilder();        
+        Request.Bulk req = client.createBulkRequest()
+            .setIndex(this.indexName)
+            .setRefresh("wair_for");
+        for (Tuple t : bld.createUpdateAltIdsRequest(newIds)) {
+          req.add(t.item1, t.item2);
+        }
         Response resp = client.performRequest(req);
         
         // Check for Elasticsearch errors.

@@ -32,8 +32,7 @@ public class IndexDao
      */
     public boolean indexExists(String indexName) throws Exception
     {
-        Request req = client.createRequest(Request.Method.HEAD, "/" + indexName);
-        Response resp = client.performRequest(req);
+        Response resp = client.exists (indexName);
         return resp.getStatusLine().getStatusCode() == 200;
     }
 
@@ -46,7 +45,7 @@ public class IndexDao
      */
     public IndexSettings getIndexSettings(String indexName) throws Exception
     {
-        Request req = client.createRequest(Request.Method.GET, "/" + indexName + "/_settings");
+        Request.Setting req = client.createSettingRequest().setIndex(indexName);
         Response resp = client.performRequest(req);
         
         SettingsResponseParser parser = new SettingsResponseParser();

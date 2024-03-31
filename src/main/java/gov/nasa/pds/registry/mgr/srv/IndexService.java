@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gov.nasa.pds.registry.common.Request;
 import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.ResponseException;
 import gov.nasa.pds.registry.common.RestClient;
@@ -60,13 +59,9 @@ public class IndexService
             log.info("Replicas: " + replicas);
             
             // Create request
-            Request req = client.createRequest(Request.Method.PUT, "/" + indexName);
             RegistryRequestBuilder bld = new RegistryRequestBuilder();
-            String jsonReq = bld.createCreateIndexRequest(schemaFile, shards, replicas);
-            req.setJsonEntity(jsonReq);
-
             // Execute request
-            Response resp = client.performRequest(req);
+            Response resp = client.create(indexName, bld.createCreateIndexRequest(schemaFile, shards, replicas));
             resp.printWarnings();
         }
         catch(ResponseException ex)
@@ -163,12 +158,8 @@ public class IndexService
             {
                 return;
             }
-
-            // Create request
-            Request req = client.createRequest(Request.Method.DELETE, "/" + indexName);
-
             // Execute request
-            Response resp = client.performRequest(req);
+            Response resp = client.delete(indexName);
             resp.printWarnings();
         }
         catch(ResponseException ex)
