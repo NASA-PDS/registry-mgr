@@ -1,16 +1,12 @@
 package gov.nasa.pds.registry.mgr.dao;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
 import gov.nasa.pds.registry.common.Request;
 import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.BulkResponseParser;
-import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.common.util.SearchResponseParser;
 import gov.nasa.pds.registry.common.util.Tuple;
 import gov.nasa.pds.registry.mgr.dao.resp.GetAltIdsParser;
@@ -87,28 +83,12 @@ public class RegistryDao
         RegistryRequestBuilder bld = new RegistryRequestBuilder();        
         Request.Bulk req = client.createBulkRequest()
             .setIndex(this.indexName)
-            .setRefresh("wair_for");
+            .setRefresh(Request.Bulk.Refresh.WaitFor);
         for (Tuple t : bld.createUpdateAltIdsRequest(newIds)) {
           req.add(t.item1, t.item2);
         }
-        Response resp = client.performRequest(req);
-        
-        // Check for Elasticsearch errors.
-        InputStream is = null;
-        InputStreamReader rd = null;
-        try
-        {
-            is = resp.getEntity().getContent();
-            rd = new InputStreamReader(is);
-            
-            BulkResponseParser parser = new BulkResponseParser();
-            parser.parse(rd);
-        }
-        finally
-        {
-            CloseUtils.close(rd);
-            CloseUtils.close(is);
-        }
+        Response.Bulk resp = client.performRequest(req);
+        new BulkResponseParser().parse(resp);
     }
 
 }

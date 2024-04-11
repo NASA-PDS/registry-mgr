@@ -3,7 +3,7 @@ package gov.nasa.pds.registry.mgr.dao;
 import gov.nasa.pds.registry.common.Request;
 import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
-import gov.nasa.pds.registry.mgr.dao.resp.SettingsResponseParser;
+import gov.nasa.pds.registry.common.connection.es.SettingsResponseParser;
 
 
 /**
@@ -32,8 +32,7 @@ public class IndexDao
      */
     public boolean indexExists(String indexName) throws Exception
     {
-        Response resp = client.exists (indexName);
-        return resp.getStatusLine().getStatusCode() == 200;
+        return client.exists (indexName);
     }
 
     
@@ -46,8 +45,7 @@ public class IndexDao
     public IndexSettings getIndexSettings(String indexName) throws Exception
     {
         Request.Setting req = client.createSettingRequest().setIndex(indexName);
-        Response resp = client.performRequest(req);
-        
+        return new IndexSettings(client.performRequest(req));
         SettingsResponseParser parser = new SettingsResponseParser();
         return parser.parse(resp);
     }

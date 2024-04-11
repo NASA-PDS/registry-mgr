@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.ResponseException;
 import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.mgr.dao.IndexDao;
@@ -61,8 +60,7 @@ public class IndexService
             // Create request
             RegistryRequestBuilder bld = new RegistryRequestBuilder();
             // Execute request
-            Response resp = client.create(indexName, bld.createCreateIndexRequest(schemaFile, shards, replicas));
-            resp.printWarnings();
+            this.client.create(indexName, bld.createCreateIndexRequest(schemaFile, shards, replicas));
         }
         catch(ResponseException ex)
         {
@@ -159,8 +157,7 @@ public class IndexService
                 return;
             }
             // Execute request
-            Response resp = client.delete(indexName);
-            resp.printWarnings();
+            this.client.delete(indexName);
         }
         catch(ResponseException ex)
         {
