@@ -1,9 +1,7 @@
 package gov.nasa.pds.registry.mgr.dao;
 
 import gov.nasa.pds.registry.common.Request;
-import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
-import gov.nasa.pds.registry.common.connection.es.SettingsResponseParser;
 
 
 /**
@@ -46,7 +44,5 @@ public class IndexDao
     {
         Request.Setting req = client.createSettingRequest().setIndex(indexName);
         return new IndexSettings(client.performRequest(req));
-        SettingsResponseParser parser = new SettingsResponseParser();
-        return parser.parse(resp);
     }
 }

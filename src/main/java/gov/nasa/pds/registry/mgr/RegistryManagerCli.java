@@ -164,6 +164,8 @@ public class RegistryManagerCli
 
     private boolean runCommand()
     {
+      System.setProperty("javax.net.ssl.trustStore", "/home/niessner/Projects/PDS/TestData/OSV2/default.certs");
+      System.setProperty("javax.net.ssl.trustStorePassword", "2Painful!");
         try
         {
             command.run(cmdLine);
@@ -239,8 +241,9 @@ public class RegistryManagerCli
         // Registry
         commands.put("create-registry", new CreateRegistryCmd());
         commands.put("delete-registry", new DeleteRegistryCmd());
-        commands.put("known-registry", new KnownRegistryCmd());
-        commands.put("fetch-registry", new FetchRegistryCmd());
+        // FIXME: enable this again before final commit
+        //commands.put("known-registry", new KnownRegistryCmd());
+        //commands.put("fetch-registry", new FetchRegistryCmd());
 
         // Data dictionary
         commands.put("list-dd", new ListDDCmd());

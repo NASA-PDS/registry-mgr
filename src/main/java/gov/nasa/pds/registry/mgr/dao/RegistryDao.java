@@ -7,9 +7,7 @@ import gov.nasa.pds.registry.common.Request;
 import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.common.es.dao.BulkResponseParser;
-import gov.nasa.pds.registry.common.util.SearchResponseParser;
 import gov.nasa.pds.registry.common.util.Tuple;
-import gov.nasa.pds.registry.mgr.dao.resp.GetAltIdsParser;
 
 /**
  * Data access object
@@ -58,15 +56,7 @@ public class RegistryDao
             .buildAlternativeIds(ids)
             .setIndex(this.indexName)
             .setPretty(pretty);
-        Response resp = client.performRequest(req);
-
-        //DebugUtils.dumpResponseBody(resp);
-        
-        GetAltIdsParser cb = new GetAltIdsParser();
-        SearchResponseParser parser = new SearchResponseParser();
-        parser.parseResponse(resp, cb);
-        
-        return cb.getIdMap();
+        return client.performRequest(req).altIds();
     }
     
     

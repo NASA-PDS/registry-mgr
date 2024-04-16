@@ -39,7 +39,7 @@ public class CreateRegistryCmd implements CliCommand
             return;
         }
 
-        String esUrl = cmdLine.getOptionValue("es", "app:/connections/direct/localhost.xml");
+        String esUrl = cmdLine.getOptionValue("es", "app://connections/direct/localhost.xml");
         String indexName = cmdLine.getOptionValue("index", Constants.DEFAULT_REGISTRY_INDEX);
         String authPath = cmdLine.getOptionValue("auth");
         
@@ -63,7 +63,7 @@ public class CreateRegistryCmd implements CliCommand
             // Data dictionary
             srv.createIndex("elastic/data-dic.json", indexName + "-dd", 1, replicas);
             // Load data
-            DataLoader dl = new DataLoader(conFact.setIndexName(indexName + "-dd"));
+            DataLoader dl = new DataLoader(conFact.clone().setIndexName(indexName + "-dd"));
             File zipFile = IndexService.getDataDicFile();
             dl.loadZippedFile(zipFile, "dd.json");
         }
