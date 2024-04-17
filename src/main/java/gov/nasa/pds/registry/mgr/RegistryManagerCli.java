@@ -73,7 +73,7 @@ public class RegistryManagerCli
         System.out.println("Registry:");
         System.out.println("  create-registry      Create registry and data dictionary indices");
         System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");        
-        System.out.println("  known-registry       List all known registry XML connections contained in this artifact");
+        System.out.println("  known-registries     List all known registry XML connections contained in this artifact");
         System.out.println();
         System.out.println("Data Dictionary:");
         System.out.println("  list-dd              List data dictionaries");
@@ -164,8 +164,6 @@ public class RegistryManagerCli
 
     private boolean runCommand()
     {
-      System.setProperty("javax.net.ssl.trustStore", "/home/niessner/Projects/PDS/TestData/OSV2/default.certs");
-      System.setProperty("javax.net.ssl.trustStorePassword", "2Painful!");
         try
         {
             command.run(cmdLine);
