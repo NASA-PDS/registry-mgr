@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import gov.nasa.pds.registry.common.Request;
-import gov.nasa.pds.registry.common.Response;
 import gov.nasa.pds.registry.common.RestClient;
-import gov.nasa.pds.registry.common.es.dao.BulkResponseParser;
 import gov.nasa.pds.registry.common.util.Tuple;
 
 /**
@@ -77,8 +75,7 @@ public class RegistryDao
         for (Tuple t : bld.createUpdateAltIdsRequest(newIds)) {
           req.add(t.item1, t.item2);
         }
-        Response.Bulk resp = client.performRequest(req);
-        new BulkResponseParser().parse(resp);
+        client.performRequest(req).logErrors();
     }
 
 }
