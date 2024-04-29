@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
-import gov.nasa.pds.registry.common.cfg.RegistryCfg;
-import gov.nasa.pds.registry.common.connection.AuthContent;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
 import gov.nasa.pds.registry.common.util.CloseUtils;
@@ -17,15 +15,14 @@ public class LoadLdds
 
     public static void main(String[] args) throws Exception
     {
-        RegistryCfg cfg = new RegistryCfg();
-        cfg.url = "app:/connections/direct/localhost.xml";
-        cfg.indexName = "registry";
+        String url = "app:/connections/direct/localhost.xml";
+        String indexName = "registry";
         
         BufferedReader rd = null;
         
         try
         {
-            RegistryManager.init(cfg);
+            RegistryManager.init(url, null, indexName);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
             JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from("app:/connections/direct/localhost.xml").setIndexName("registry"));

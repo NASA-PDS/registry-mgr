@@ -2,7 +2,6 @@ package tt;
 
 import java.io.File;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
-import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.es.service.JsonLddLoader;
 import gov.nasa.pds.registry.mgr.dao.RegistryManager;
@@ -13,13 +12,12 @@ public class TestLddLoader
     
     public static void main(String[] args) throws Exception
     {
-        RegistryCfg cfg = new RegistryCfg();
-        cfg.url = "app:/connections/direct/localhost.xml";
-        cfg.indexName = "registry";
+        String url = "app:/connections/direct/localhost.xml";
+        String indexName = "registry";
         
         try
         {
-            RegistryManager.init(cfg);
+            RegistryManager.init(url, null, indexName);
             
             DataDictionaryDao ddDao = RegistryManager.getInstance().getDataDictionaryDao();
             JsonLddLoader loader = new JsonLddLoader(ddDao, EstablishConnectionFactory.from("app:/connections/direct/localhost.xml").setIndexName("t1"));

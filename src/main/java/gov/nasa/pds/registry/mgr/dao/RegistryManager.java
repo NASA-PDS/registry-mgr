@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
 import gov.nasa.pds.registry.common.RestClient;
-import gov.nasa.pds.registry.common.cfg.RegistryCfg;
 import gov.nasa.pds.registry.common.es.dao.dd.DataDictionaryDao;
 import gov.nasa.pds.registry.common.util.CloseUtils;
 import gov.nasa.pds.registry.common.es.dao.schema.SchemaDao;
@@ -30,20 +29,20 @@ public class RegistryManager
      * @param cfg Registry (Elasticsearch) configuration parameters.
      * @throws Exception Generic exception
      */
-    private RegistryManager(RegistryCfg cfg) throws Exception
+    private RegistryManager(String connURL, String authFile, String index) throws Exception
     {
-        if(cfg.url == null || cfg.url.isEmpty()) throw new IllegalArgumentException("Missing Registry URL");
+        if(connURL == null || connURL.isEmpty()) throw new IllegalArgumentException("Missing Registry URL");
         
-        client = EstablishConnectionFactory.from(cfg.url, cfg.authFile).createRestClient();
+        client = EstablishConnectionFactory.from(connURL, authFile).createRestClient();
         
-        String indexName = cfg.indexName;
+        String indexName = index;
         if(indexName == null || indexName.isEmpty()) 
         {
             indexName = "registry";
         }
 
         Logger log = LogManager.getLogger(this.getClass());
-        log.info("Registry URL: " + cfg.url);
+        log.info("Registry URL: " + connURL);
         log.info("Registry index: " + indexName);
         
         schemaDao = new SchemaDao(client, indexName);
@@ -57,9 +56,9 @@ public class RegistryManager
      * @param cfg Registry (Elasticsearch) configuration parameters.
      * @throws Exception Generic exception
      */
-    public static void init(RegistryCfg cfg) throws Exception
+    public static void init(String connURL, String authFile, String index) throws Exception
     {
-        instance = new RegistryManager(cfg);
+        instance = new RegistryManager(connURL, authFile, index);
     }
     
     

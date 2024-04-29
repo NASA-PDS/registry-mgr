@@ -8,7 +8,6 @@ import gov.nasa.pds.registry.common.ResponseException;
 import gov.nasa.pds.registry.common.RestClient;
 import gov.nasa.pds.registry.mgr.dao.IndexDao;
 import gov.nasa.pds.registry.mgr.dao.IndexSettings;
-import gov.nasa.pds.registry.mgr.dao.RegistryRequestBuilder;
 
 /**
  * A service to work with Elasticsearch indices
@@ -57,10 +56,8 @@ public class IndexService
             log.info("Shards: " + shards);
             log.info("Replicas: " + replicas);
             
-            // Create request
-            RegistryRequestBuilder bld = new RegistryRequestBuilder();
-            // Execute request
-            this.client.create(indexName, bld.createCreateIndexRequest(schemaFile, shards, replicas));
+           // Execute request
+            this.client.create(indexName, RestClient.createCreateIndexRequest(schemaFile, shards, replicas));
         }
         catch(ResponseException ex)
         {
