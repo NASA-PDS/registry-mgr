@@ -15,28 +15,25 @@ import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 
 
 /**
- * A CLI command to set PDS label archive status in Elasticsearch registry index.
- * Status can be updated by LidVid or PackageId.
+ * A CLI command to set PDS label archive status in Elasticsearch registry index. Status can be
+ * updated by LidVid or PackageId.
  * 
  * @author karpenko
  */
-public class SetArchiveStatusCmd implements CliCommand
-{
-    private Set<String> statusNames; 
+public class SetArchiveStatusCmd implements CliCommand {
+  private Set<String> statusNames;
 
-    /**
-     * Constructor
-     */
-    public SetArchiveStatusCmd()
-    {
-        statusNames = new TreeSet<>();
-        statusNames.add("staged");
-        statusNames.add("archived");
-        statusNames.add("certified");
-        statusNames.add("restricted");
-    }
-    
-    
+  /**
+   * Constructor
+   */
+  public SetArchiveStatusCmd() {
+    statusNames = new TreeSet<>();
+    statusNames.add("staged");
+    statusNames.add("archived");
+    statusNames.add("certified");
+    statusNames.add("restricted");
+  }
+
     @Override
     public void run(CommandLine cmdLine) throws Exception
     {
@@ -75,58 +72,56 @@ public class SetArchiveStatusCmd implements CliCommand
             CloseUtils.close(client);
         }
     }
+  }
 
-    
-    /**
-     * Get value of "-status" command-line parameter. 
-     * Throw exception if invalid status is passed.
-     * @param cmdLine
-     * @return valid status value
-     * @throws Exception Throw exception if invalid status is passed.
-     */
-    private String getStatus(CommandLine cmdLine) throws Exception
-    {
-        String tmp = cmdLine.getOptionValue("status");
-        if(tmp == null) 
-        {
-            throw new Exception("Missing required parameter '-status'");
-        }
 
-        String status = tmp.toLowerCase();
-        if(!statusNames.contains(status))
-        {
-            throw new Exception("Invalid '-status' parameter value: '" + tmp + "'");
-        }
-        
-        return status;
+  /**
+   * Get value of "-status" command-line parameter. Throw exception if invalid status is passed.
+   * 
+   * @param cmdLine
+   * @return valid status value
+   * @throws Exception Throw exception if invalid status is passed.
+   */
+  private String getStatus(CommandLine cmdLine) throws Exception {
+    String tmp = cmdLine.getOptionValue("status");
+    if (tmp == null) {
+      throw new Exception("Missing required parameter '-status'");
     }
-    
-    
-    /**
-     * Print help screen
-     */
-    public void printHelp()
-    {
-        System.out.println("Usage: registry-manager set-archive-status <options>");
 
-        System.out.println();
-        System.out.println("Set product archive status");
-        System.out.println();
-        System.out.println("Required parameters:");
-        System.out.println("  -status <status>   One of the following values:");
-
-        for(String name: statusNames)
-        {
-            System.out.println("     " + name);
-        }
-        
-        System.out.println("  -lidvid <id>    Update archive status of a document with given LIDVID.");
-        System.out.println("                  For a collection also update primary references from collection inventory.");
-        System.out.println("Optional parameters:");
-        System.out.println("  -auth <file>    Authentication config file");
-        System.out.println("  -es <url>       Elasticsearch URL. Default is app:/connections/direct/localhost.xml");
-        System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
-        System.out.println();
+    String status = tmp.toLowerCase();
+    if (!statusNames.contains(status)) {
+      String authorized_status = String.join(", ", this.statusNames);
+      throw new Exception("Invalid '-status' parameter value: '" + tmp + "'. Authorized values are "
+          + authorized_status + ".");
     }
+    return status;
+  }
+
+
+  /**
+   * Print help screen
+   */
+  public void printHelp() {
+    System.out.println("Usage: registry-manager set-archive-status <options>");
+
+    System.out.println();
+    System.out.println("Set product archive status");
+    System.out.println();
+    System.out.println("Required parameters:");
+    System.out.println("  -status <status>   One of the following values:");
+
+    for (String name : statusNames) {
+      System.out.println("     " + name);
+    }
+
+    System.out.println("  -lidvid <id>    Update archive status of a document with given LIDVID.");
+    System.out.println(
+        "                  For a collection also update primary references from collection inventory.");
+    System.out.println("Optional parameters:");
+    System.out.println("  -auth <file>    Authentication config file");
+    System.out.println("  -es <url>       Elasticsearch URL. Default is http://localhost:9200");
+    System.out.println("  -index <name>   Elasticsearch index name. Default is 'registry'");
+    System.out.println();
+  }
 
 }
