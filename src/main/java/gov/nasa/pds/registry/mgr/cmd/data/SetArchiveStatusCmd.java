@@ -72,7 +72,6 @@ public class SetArchiveStatusCmd implements CliCommand {
             CloseUtils.close(client);
         }
     }
-  }
 
 
   /**
