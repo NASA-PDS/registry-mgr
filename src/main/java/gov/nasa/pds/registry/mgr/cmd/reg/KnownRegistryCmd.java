@@ -6,6 +6,7 @@ import gov.nasa.pds.registry.common.connection.KnownRegistryConnections;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
 
 public class KnownRegistryCmd implements CliCommand {
+  @Override
   public void run(CommandLine cmdLine) throws Exception {
     for (URL known : KnownRegistryConnections.list()) {
       System.out.println(known);
