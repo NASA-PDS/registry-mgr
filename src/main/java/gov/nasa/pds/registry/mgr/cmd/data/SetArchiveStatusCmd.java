@@ -40,9 +40,9 @@ public class SetArchiveStatusCmd implements CliCommand {
         
         String status = getStatus(cmdLine);
 
-        String lidvid = cmdLine.getOptionValue("lidvid");
-        if(lidvid == null) throw new Exception("Missing required parameter '-lidvid'");
-        
+        String lidvid = cmdLine.getOptionValue("lidvid"), pid = cmdLine.getOptionValue("pid");
+        if(lidvid == null && pid == null) throw new Exception("Missing required parameter '-lidvid' or '-packageId");
+        if (lidvid != null && pid != null) throw new Exception("Specify just one of '-lidvid' or '-packageId'");
         RestClient client = null;
         
         try
@@ -53,7 +53,12 @@ public class SetArchiveStatusCmd implements CliCommand {
             ProductDao dao = new ProductDao(client, conFact.getIndexName());
             ProductService srv = new ProductService(dao);
             
-            srv.updateArchveStatus(lidvid, status);
+            if (pid == null) srv.updateArchiveStatus(lidvid, status);
+            if (lidvid ==  null) {
+              srv.updateArchiveStatus (client.performRequest(client.createSearchRequest()
+                  .setIndex(conFact.getIndexName())
+                  .buildTermQuery("_package_id", pid)).lidvids(), status);
+            }
         }
         catch(ResponseException ex)
         {
