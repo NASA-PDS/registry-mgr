@@ -1,5 +1,6 @@
 package gov.nasa.pds.registry.mgr.cmd.data;
 
+import java.util.Arrays;
 import org.apache.commons.cli.CommandLine;
 import gov.nasa.pds.registry.common.ConnectionFactory;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
@@ -57,7 +58,9 @@ public class SetArchiveStatusCmd implements CliCommand {
             if (lidvid ==  null) {
               srv.updateArchiveStatus (client.performRequest(client.createSearchRequest()
                   .setIndex(conFact.getIndexName())
-                  .buildTermQuery("_package_id", pid)).lidvids(), status);
+                  .buildTermQuery("_package_id", pid)
+                  .setReturnedFields(Arrays.asList("lidvid"))
+                  .setSize(1000)).lidvids(), status); // this breaks if really huge need to use scroll
             }
         }
         catch(ResponseException ex)
