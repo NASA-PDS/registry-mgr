@@ -40,7 +40,7 @@ public class SetArchiveStatusCmd implements CliCommand {
         
         String status = getStatus(cmdLine);
 
-        String lidvid = cmdLine.getOptionValue("lidvid"), pid = cmdLine.getOptionValue("pid");
+        String lidvid = cmdLine.getOptionValue("lidvid"), pid = cmdLine.getOptionValue("packageId");
         if(lidvid == null && pid == null) throw new Exception("Missing required parameter '-lidvid' or '-packageId");
         if (lidvid != null && pid != null) throw new Exception("Specify just one of '-lidvid' or '-packageId'");
         RestClient client = null;
