@@ -60,7 +60,7 @@ public class SetArchiveStatusCmd implements CliCommand {
                   .setIndex(conFact.getIndexName())
                   .buildTermQuery("_package_id", pid)
                   .setReturnedFields(Arrays.asList("lidvid"))
-                  .setSize(1000)).lidvids(), status); // this breaks if really huge need to use scroll
+                  .setScroll(1000)).lidvids(), status); // this breaks if really huge need to use scroll
             }
         }
         catch(ResponseException ex)
