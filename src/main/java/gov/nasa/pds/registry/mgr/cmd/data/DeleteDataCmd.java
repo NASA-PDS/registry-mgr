@@ -47,14 +47,16 @@ public class DeleteDataCmd implements CliCommand
         System.out.println();
                 
         ConnectionFactory conFact = EstablishConnectionFactory.from(esUrl, authPath);
+        String refIndex = conFact.getIndexName() + "-refs";
+        String regIndex = conFact.getIndexName();
         try (RestClient client = conFact.createRestClient()) {
-          Request.DeleteByQuery regQuery = client.createDeleteByQuery().setIndex(conFact.getIndexName()),
-                                refQuery = client.createDeleteByQuery().setIndex(conFact.getIndexName() + "-refs");
+          Request.DeleteByQuery regQuery = client.createDeleteByQuery().setIndex(regIndex),
+                                refQuery = client.createDeleteByQuery().setIndex(refIndex);
           buildEsQuery(cmdLine, regQuery, refQuery);
-            // Delete from registry index
-            deleteByQuery(conFact.getIndexName(), client.performRequest(regQuery));
-            // Delete from product references index
-            deleteByQuery(conFact.getIndexName() + "-refs", client.performRequest(refQuery));
+          // Delete from registry index
+          deleteByQuery(regIndex, client.performRequest(regQuery));
+          // Delete from product references index
+          deleteByQuery(refIndex, client.performRequest(refQuery));
         }
         catch(ResponseException ex)
         {
@@ -94,7 +96,6 @@ public class DeleteDataCmd implements CliCommand
             
             return;
         }
-
         throw new Exception("One of the following options is required: -lidvid, -packageId");
     }
     
