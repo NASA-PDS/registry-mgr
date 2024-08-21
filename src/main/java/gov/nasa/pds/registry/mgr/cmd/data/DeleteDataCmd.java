@@ -50,13 +50,22 @@ public class DeleteDataCmd implements CliCommand
         String refIndex = conFact.getIndexName() + "-refs";
         String regIndex = conFact.getIndexName();
         try (RestClient client = conFact.createRestClient()) {
-          Request.DeleteByQuery regQuery = client.createDeleteByQuery().setIndex(regIndex),
-                                refQuery = client.createDeleteByQuery().setIndex(refIndex);
-          buildEsQuery(cmdLine, regQuery, refQuery);
-          // Delete from registry index
-          deleteByQuery(regIndex, client.performRequest(regQuery));
-          // Delete from product references index
-          deleteByQuery(refIndex, client.performRequest(refQuery));
+          long refIter = 0, regIter = 0;
+          long refTotal = 0, regTotal = 0;
+          do {
+            Thread.sleep(1000); // account for lack of refresh on serverless
+            Request.DeleteByQuery regQuery = client.createDeleteByQuery().setIndex(regIndex),
+                refQuery = client.createDeleteByQuery().setIndex(refIndex);
+            buildEsQuery(cmdLine, regQuery, refQuery);
+            // Delete from registry index
+            regIter = client.performRequest(regQuery);
+            regTotal += regIter;
+            // Delete from product references index
+            refIter = client.performRequest(refQuery);
+            refTotal += refIter;
+          } while ((refIter + regIter) > 0);
+          deleteByQuery (regIndex, regTotal);
+          deleteByQuery (refIndex, refTotal);
         }
         catch(ResponseException ex)
         {
