@@ -178,7 +178,7 @@ public class RegistryManagerCli
     }
     
 
-    private boolean check_version() throws Exception {
+    private boolean checkVersion() throws Exception {
       // if create-registry, then return true.
       // check the database for correct versions
       // print if not the correct version and to upgrade to latest tool
@@ -215,7 +215,7 @@ public class RegistryManagerCli
     private boolean runCommand()
     {
         try {
-          if (this.check_version()) {
+          if (this.checkVersion()) {
             command.run(cmdLine);
           } else {
             System.out.println("[INFO] Exiting without executing command because version is too old.");
