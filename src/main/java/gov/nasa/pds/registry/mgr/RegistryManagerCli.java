@@ -1,5 +1,6 @@
 package gov.nasa.pds.registry.mgr;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -10,10 +11,15 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
+import gov.nasa.pds.registry.common.ConnectionFactory;
+import gov.nasa.pds.registry.common.EstablishConnectionFactory;
+import gov.nasa.pds.registry.common.Request;
+import gov.nasa.pds.registry.common.RestClient;
+import gov.nasa.pds.registry.common.Version.Semantic;
 import gov.nasa.pds.registry.common.util.ExceptionUtils;
 import gov.nasa.pds.registry.common.util.ManifestUtils;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
+import gov.nasa.pds.registry.mgr.cmd.Known;
 import gov.nasa.pds.registry.mgr.cmd.data.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.ExportFileCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.SetArchiveStatusCmd;
@@ -39,10 +45,11 @@ import gov.nasa.pds.registry.mgr.util.log.Log4jConfigurator;
  */
 public class RegistryManagerCli
 {
-    private Map<String, CliCommand> commands;
-    private CliCommand command;
-    private Options options;
-    private CommandLine cmdLine;
+  private Map<String, CliCommand> commands;
+  private CliCommand command;
+  private Options options;
+  private CommandLine cmdLine;
+  private String cmdname;
     
     
     /**
@@ -74,9 +81,11 @@ public class RegistryManagerCli
         System.out.println();
         System.out.println("Registry:");
         System.out.println("  create-registry      Create registry and data dictionary indices");
-        System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");        
+        System.out.println("  delete-registry      Delete registry and data dictionary indices and all its data");
+        /* probable dead code now but may come back in this round for better control
         System.out.println("  fetch-registry       Fetch a registry connection URL and output it to stdout");        
         System.out.println("  known-registries     List all known registry XML connections contained in this artifact");
+        */
         System.out.println();
         System.out.println("Data Dictionary:");
         System.out.println("  list-dd              List data dictionaries");
@@ -84,6 +93,11 @@ public class RegistryManagerCli
         System.out.println("  delete-dd            Delete data from data dictionary");        
         System.out.println("  export-dd            Export data dictionary");
         System.out.println("  upgrade-dd           Upgrade data dictionary");
+
+        System.out.println();
+        System.out.println("Global required parameters:");
+        System.out.println("  -auth <file>      Authentication config file");
+        System.out.println("  -registry <url>   File URI to the configuration to connect to the registry. For example, file:///home/user/.pds/mcp.xml. Default is app:/connections/direct/localhost.xml");
 
         System.out.println();
         System.out.println("Other:");
@@ -104,10 +118,9 @@ public class RegistryManagerCli
     /**
      * Print Registry Manager version
      */
-    public static void printVersion()
+    public void printVersion()
     {
-        String version = RegistryManagerCli.class.getPackage().getImplementationVersion();
-        System.out.println("Registry Manager version: " + version);
+        System.out.println("Registry Manager version: " + Version.instance());
         Attributes attrs = ManifestUtils.getAttributes();
         if(attrs != null)
         {
@@ -165,11 +178,48 @@ public class RegistryManagerCli
     }
     
 
+    private boolean check_version() throws Exception {
+      // if create-registry, then return true.
+      // check the database for correct versions
+      // print if not the correct version and to upgrade to latest tool
+      if (this.commands.get("create-registry") == this.command) {
+        return true; // short cut out so that repo can be created
+      }
+      boolean proceed = true;
+      ConnectionFactory conFact = EstablishConnectionFactory.from(
+          CliCommand.getUsersRegistry(cmdLine),
+          cmdLine.getOptionValue("auth"));
+      RestClient client = conFact.setIndexName(conFact.getIndexName() + "-versions").createRestClient();
+      Request.Search fetchRequiredVersions = client.createSearchRequest()
+          .buildTheseIds(Arrays.asList("registry-common", "registry-manager-" + this.cmdname))
+          .setReturnedFields(Arrays.asList("tool.name", "tool.version.major","tool.version.minor","tool.version.patch"));
+      for (Map<String,Object> document : client.performRequest(fetchRequiredVersions).documents()) {
+        @SuppressWarnings("unchecked")
+        Map<String,Object> tool = (Map<String,Object>)document.get("tool");
+        @SuppressWarnings("unchecked")
+        Semantic needed = Version.instance().value((Map<String,Integer>)tool.get("version"));
+        String name = tool.get("name").toString();
+        gov.nasa.pds.registry.common.Version v = "registry-common".equals(name) ? 
+            gov.nasa.pds.registry.common.Version.instance() : Version.instance();
+        boolean ok = v.check(needed);
+        if (!ok) {
+          System.out.println("[ERROR] Your version of " + name +
+              " needs to be updated because your version is " + v.value() + " which is less than " + needed);
+        }
+        proceed &= ok;
+      }
+      client.close();
+      return proceed;
+    }
+
     private boolean runCommand()
     {
-        try
-        {
+        try {
+          if (this.check_version()) {
             command.run(cmdLine);
+          } else {
+            System.out.println("[INFO] Exiting without executing command because version is too old.");
+          }
         }
         catch(Exception ex)
         {
@@ -215,7 +265,8 @@ public class RegistryManagerCli
             initCommands();
             
             // Lookup command by name
-            this.command = commands.get(args[0]);
+            this.cmdname = args[0];
+            this.command = commands.get(this.cmdname);
             if(this.command == null)
             {
                 System.out.println("[ERROR] " + "Invalid command: " + args[0]);
@@ -257,6 +308,7 @@ public class RegistryManagerCli
         commands.put("export-file", new ExportFileCmd());
         commands.put("set-archive-status", new SetArchiveStatusCmd());
         commands.put("update-alt-ids", new UpdateAltIdsCmd());
+        Known.set(commands.keySet());
     }
     
     
@@ -272,8 +324,6 @@ public class RegistryManagerCli
         bld = Option.builder("help");
         options.addOption(bld.build());
         
-        bld = Option.builder("es").hasArg().argName("url");
-        options.addOption(bld.build());
         bld = Option.builder("registry").hasArg().argName("url");
         options.addOption(bld.build());
 
@@ -350,7 +400,6 @@ public class RegistryManagerCli
 
         bld = Option.builder("r");
         options.addOption(bld.build());
-    }
-    
+    }    
 }
 

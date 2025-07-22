@@ -174,26 +174,36 @@ POSSIBILITY OF SUCH DAMAGE.
                     <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
             </plugin>
-      <!-- Add maven source for maven central deployment -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.3.1</version>
-        <executions>
-          <execution>
-            <id>make-source-jar</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-              <goal>test-jar-no-fork</goal>
-            </goals>
-            <configuration>
-              <excludeResources>true</excludeResources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+            <!-- Add maven source for maven central deployment -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>3.3.1</version>
+              <executions>
+                <execution>
+                  <id>make-source-jar</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                    <goal>jar-no-fork</goal>
+                    <goal>test-jar-no-fork</goal>
+                  </goals>
+                  <configuration>
+                    <excludeResources>true</excludeResources>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
         </plugins>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>false</filtering>
+          </resource>
+          <resource>
+            <directory>src/main/resources/app</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
     </build>
     <scm>
         <url>https://github.com/NASA-PDS/registry-mgr/tree/master</url>
