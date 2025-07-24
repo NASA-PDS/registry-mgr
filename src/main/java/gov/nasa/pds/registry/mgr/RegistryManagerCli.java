@@ -204,7 +204,7 @@ public class RegistryManagerCli
         boolean ok = v.check(needed);
         if (!ok) {
           System.out.println("[ERROR] Your version of " + name +
-              " needs to be updated because your version is " + v.value() + " which is less than " + needed);
+              " needs to be updated because your version " + v.value() + " which is less than " + needed);
         }
         proceed &= ok;
       }
