@@ -20,6 +20,7 @@ import gov.nasa.pds.registry.mgr.cmd.data.DeleteDataCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.ExportFileCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.SetArchiveStatusCmd;
 import gov.nasa.pds.registry.mgr.cmd.data.UpdateAltIdsCmd;
+import gov.nasa.pds.registry.mgr.cmd.data.UpdateToolVersionCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.DeleteDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ExportDDCmd;
 import gov.nasa.pds.registry.mgr.cmd.dd.ListDDCmd;
@@ -73,6 +74,7 @@ public class RegistryManagerCli
         System.out.println("  export-file          Export a file from blob storage");
         System.out.println("  set-archive-status   Set product archive status");
         System.out.println("  update-alt-ids       Update alternate IDs");
+        System.out.println("  update-tool-ver      Update tool minimum version in semantic form ex: harvest=4.1.0");
         
         System.out.println();
         System.out.println("Registry:");
@@ -231,7 +233,7 @@ public class RegistryManagerCli
                 return false;
             }
 
-            if(args.length > 1)
+            if(args.length > 1 && !args[0].equals("update-tool-ver"))
             {
                 System.out.println("[ERROR] " + "Invalid command: " + String.join(" ", args)); 
                 return false;
@@ -284,6 +286,7 @@ public class RegistryManagerCli
         commands.put("export-file", new ExportFileCmd());
         commands.put("set-archive-status", new SetArchiveStatusCmd());
         commands.put("update-alt-ids", new UpdateAltIdsCmd());
+        commands.put("update-tool-ver", new UpdateToolVersionCmd());
         Known.set(commands.keySet());
     }
     
