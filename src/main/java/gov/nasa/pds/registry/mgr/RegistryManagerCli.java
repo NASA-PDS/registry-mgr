@@ -11,11 +11,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import gov.nasa.pds.registry.common.ConnectionFactory;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
-import gov.nasa.pds.registry.common.Request;
-import gov.nasa.pds.registry.common.RestClient;
-import gov.nasa.pds.registry.common.Version.Semantic;
 import gov.nasa.pds.registry.common.util.ExceptionUtils;
 import gov.nasa.pds.registry.common.util.ManifestUtils;
 import gov.nasa.pds.registry.mgr.cmd.CliCommand;
@@ -185,40 +181,11 @@ public class RegistryManagerCli
       if (this.commands.get("create-registry") == this.command) {
         return true; // short cut out so that repo can be created
       }
-      boolean proceed = true;
-      ConnectionFactory conFact = EstablishConnectionFactory.from(
-          CliCommand.getUsersRegistry(cmdLine),
-          cmdLine.getOptionValue("auth"));
-      HashMap<String,Boolean> found = new HashMap<String,Boolean>(Map.of(
-          "registry-common", Boolean.FALSE,
-          "registry-manager-" + this.cmdname, Boolean.FALSE));
-      RestClient client = conFact.setIndexName(conFact.getIndexName() + "-versions").createRestClient();
-      Request.Search fetchRequiredVersions = client.createSearchRequest()
-          .buildTheseIds(Arrays.asList("registry-common", "registry-manager-" + this.cmdname))
-          .setReturnedFields(Arrays.asList("tool.name", "tool.version.major","tool.version.minor","tool.version.patch"));
-      for (Map<String,Object> document : client.performRequest(fetchRequiredVersions).documents()) {
-        @SuppressWarnings("unchecked")
-        Map<String,Object> tool = (Map<String,Object>)document.get("tool");
-        @SuppressWarnings("unchecked")
-        Semantic needed = Version.instance().value((Map<String,Integer>)tool.get("version"));
-        String name = tool.get("name").toString();
-        gov.nasa.pds.registry.common.Version v = "registry-common".equals(name) ? 
-            gov.nasa.pds.registry.common.Version.instance() : Version.instance();
-        boolean ok = v.check(needed);
-        if (!ok) {
-          System.out.println("[ERROR] Your version of " + name +
-              " needs to be updated because your version " + v.value() + " which is less than " + needed);
-        }
-        proceed &= ok;
-      }
-      for (Map.Entry<String,Boolean> item : found.entrySet()) {
-        if (!item.getValue().booleanValue()) {
-          System.out.println("[ERROR] The tool \"" + item.getKey() + "\" is not registered with this registry and cannot be used.");
-          proceed = false;
-        }
-      }
-      client.close();
-      return proceed;
+      return Version.instance().checkVersion(
+          EstablishConnectionFactory.from(
+              CliCommand.getUsersRegistry(cmdLine),
+              cmdLine.getOptionValue("auth")),
+          Arrays.asList(gov.nasa.pds.registry.common.Version.instance(), Version.instance().subcommand(this.cmdname)));
     }
 
     private boolean runCommand()
