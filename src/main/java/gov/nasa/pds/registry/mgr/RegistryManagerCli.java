@@ -189,6 +189,9 @@ public class RegistryManagerCli
       ConnectionFactory conFact = EstablishConnectionFactory.from(
           CliCommand.getUsersRegistry(cmdLine),
           cmdLine.getOptionValue("auth"));
+      HashMap<String,Boolean> found = new HashMap<String,Boolean>(Map.of(
+          "registry-common", Boolean.FALSE,
+          "registry-manager-" + this.cmdname, Boolean.FALSE));
       RestClient client = conFact.setIndexName(conFact.getIndexName() + "-versions").createRestClient();
       Request.Search fetchRequiredVersions = client.createSearchRequest()
           .buildTheseIds(Arrays.asList("registry-common", "registry-manager-" + this.cmdname))
@@ -207,6 +210,12 @@ public class RegistryManagerCli
               " needs to be updated because your version " + v.value() + " which is less than " + needed);
         }
         proceed &= ok;
+      }
+      for (Map.Entry<String,Boolean> item : found.entrySet()) {
+        if (!item.getValue().booleanValue()) {
+          System.out.println("[ERROR] The tool \"" + item.getKey() + "\" is not registered with this registry and cannot be used.");
+          proceed = false;
+        }
       }
       client.close();
       return proceed;
