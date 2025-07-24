@@ -66,10 +66,13 @@ public class CreateRegistryCmd implements CliCommand
           Bulk upload = client.createBulkRequest().setIndex(indexName + "-versions");
           String create = "{\"create\": { \"_index\": \"INDEX\", \"_id\": \"ID\" }}"
               .replace("INDEX", indexName + "-versions");
-          upload.add(create.replace("ID", "registry-common"), version2doc ("registry-common", gov.nasa.pds.registry.common.Version.instance()));
+          gov.nasa.pds.registry.common.Version v = gov.nasa.pds.registry.common.Version.instance();
+          upload.add(create.replace("ID", v.getName()), version2doc (v));
+          v = Version.instance();
+          upload.add(create.replace("ID", v.getName()), version2doc (v));
           for (String subcommand : Known.get()) {
-            String cmd = "registry-manager-" + subcommand;
-            upload.add(create.replace("ID", cmd), version2doc (cmd, Version.instance()));
+            v = Version.instance().subcommand (subcommand);
+            upload.add(create.replace("ID", v.getName()), version2doc (v));
           }
           client.performRequest(upload).logErrors();
           // Data dictionary
@@ -83,10 +86,10 @@ public class CreateRegistryCmd implements CliCommand
         }
     }
 
-    private String version2doc (String name, gov.nasa.pds.registry.common.Version version) {
+    private String version2doc (gov.nasa.pds.registry.common.Version version) {
       Semantic v = version.value();
       return "{\"tool\": { \"name\": \"NAME\", \"version\": { \"major\": MAJOR, \"minor\": MINOR, \"patch\": PATCH }}}"
-          .replace("NAME", name)
+          .replace("NAME", version.getName())
           .replace("MAJOR", Integer.toString(v.major))
           .replace("MINOR", Integer.toString(v.minor))
           .replace("PATCH", Integer.toString(v.patch));
