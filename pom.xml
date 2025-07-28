@@ -122,7 +122,7 @@ POSSIBILITY OF SUCH DAMAGE.
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.5.4</version>
                 <configuration>
                     <mainClass>gov.nasa.pds.registry.mgr.RegistryManagerMain</mainClass>
                     <layout>JAR</layout>
