@@ -62,7 +62,8 @@
             "ref_lid_instrument":{"type":"keyword"},
             "ref_lid_instrument_host":{"type":"keyword"},
             "ref_lid_investigation":{"type":"keyword"},
-            "ref_lid_target":{"type":"keyword"}
+            "ref_lid_target":{"type":"keyword"},
+            "bbox_polygon":{"type": "geo_shape"}
         }
     }
 }
