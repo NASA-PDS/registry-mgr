@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
     
     <groupId>gov.nasa.pds</groupId>
     <artifactId>registry-manager</artifactId>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>PDS Registry Manager</name>
@@ -79,7 +79,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <dependency>
             <groupId>gov.nasa.pds</groupId>
             <artifactId>registry-common</artifactId>
-            <version>2.0.5</version>
+            <version>2.3.0</version>
         </dependency>
         <!-- JSON parser -->
         <dependency>
@@ -103,6 +103,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <build>
         <plugins>
+	          <plugin>
+        <!-- See https://central.sonatype.org/publish/publish-portal-maven/ for more details -->
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.9.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
+          <waitMaxTime>5400</waitMaxTime>
+		  <pollTimeoutSeconds>7200</pollTimeoutSeconds>
+        </configuration>
+      </plugin>
             <!-- Add POM version to JAR's manifest -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
