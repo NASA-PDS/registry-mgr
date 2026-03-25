@@ -43,7 +43,7 @@ public class DeleteDataCmd implements CliCommand
         String authPath = cmdLine.getOptionValue("auth");
 
 
-        log.info("Elasticsearch URL: " + esUrl);
+        log.info("Elasticsearch URL: {}", esUrl);
                 
         ConnectionFactory conFact = EstablishConnectionFactory.from(esUrl, authPath);
         String refIndex = conFact.getIndexName() + "-refs";
@@ -68,23 +68,23 @@ public class DeleteDataCmd implements CliCommand
         }
         catch(ResponseException ex)
         {
-            throw new Exception(ex.extractErrorMessage());
+            throw ex;
         }
     }
 
     
-    private void deleteByQuery(String indexName, long numDeleted) throws Exception
+    private void deleteByQuery(String indexName, long numDeleted)
     {
-        log.info(String.format("Deleted %d document(s) from %s index", numDeleted, indexName));
+        log.info("Deleted {} document(s) from {} index", numDeleted, indexName);
     }
     
     /**
      * Build Elasticsearch query to delete records.
      * Records can be deleted by LIDVID, LID, PackageID. All records can also be deleted.
      * @param cmdLine
-     * @throws Exception
+     * @throws IllegalArgumentException when neither -lidvid nor -packageId options are provided
      */
-    private void buildEsQuery(CommandLine cmdLine, Request.DeleteByQuery regQuery, Request.DeleteByQuery refsQuery) throws Exception
+    private void buildEsQuery(CommandLine cmdLine, Request.DeleteByQuery regQuery, Request.DeleteByQuery refsQuery)
     {       
         String id = cmdLine.getOptionValue("lidvid");
         if(id != null)
@@ -102,7 +102,7 @@ public class DeleteDataCmd implements CliCommand
             
             return;
         }
-        throw new Exception("One of the following options is required: -lidvid, -packageId");
+        throw new IllegalArgumentException("One of the following options is required: -lidvid, -packageId");
     }
     
     
