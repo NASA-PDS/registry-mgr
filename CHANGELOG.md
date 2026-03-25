@@ -1,12 +1,20 @@
 # Changelog
 
-## [release/6.0.0](https://github.com/NASA-PDS/registry-mgr/tree/release/6.0.0) (2025-11-19)
+## [5.0.6](https://github.com/NASA-PDS/registry-mgr/tree/5.0.6) (2026-03-25)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v5.0.6...release/6.0.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v6.0.0...5.0.6)
 
 **Defects:**
 
+- `set-archive-status` says it updates more products than are in the bundle [\#170](https://github.com/NASA-PDS/registry-mgr/issues/170) [[s.high](https://github.com/NASA-PDS/registry-mgr/labels/s.high)]
 - set-archive-status is changing the status of more products than are in the bundle [\#137](https://github.com/NASA-PDS/registry-mgr/issues/137) [[s.high](https://github.com/NASA-PDS/registry-mgr/labels/s.high)]
+
+## [v6.0.0](https://github.com/NASA-PDS/registry-mgr/tree/v6.0.0) (2025-11-19)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v5.0.6...v6.0.0)
+
+**Defects:**
+
 - registry-manager is incorrectly changing the archive\_status of collection versions not in the bundle version [\#134](https://github.com/NASA-PDS/registry-mgr/issues/134) [[s.high](https://github.com/NASA-PDS/registry-mgr/labels/s.high)]
 
 ## [v5.0.6](https://github.com/NASA-PDS/registry-mgr/tree/v5.0.6) (2025-04-21)
