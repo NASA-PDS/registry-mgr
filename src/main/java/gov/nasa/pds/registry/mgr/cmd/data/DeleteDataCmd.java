@@ -2,6 +2,8 @@ package gov.nasa.pds.registry.mgr.cmd.data;
 
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import gov.nasa.pds.registry.common.ConnectionFactory;
 import gov.nasa.pds.registry.common.EstablishConnectionFactory;
 import gov.nasa.pds.registry.common.Request;
@@ -18,6 +20,8 @@ import gov.nasa.pds.registry.mgr.cmd.CliCommand;
  */
 public class DeleteDataCmd implements CliCommand
 {
+    private static final Logger log = LogManager.getLogger(DeleteDataCmd.class);
+
     /**
      * Constructor
      */
@@ -39,8 +43,7 @@ public class DeleteDataCmd implements CliCommand
         String authPath = cmdLine.getOptionValue("auth");
 
 
-        System.out.println("Elasticsearch URL: " + esUrl);
-        System.out.println();
+        log.info("Elasticsearch URL: " + esUrl);
                 
         ConnectionFactory conFact = EstablishConnectionFactory.from(esUrl, authPath);
         String refIndex = conFact.getIndexName() + "-refs";
@@ -70,9 +73,9 @@ public class DeleteDataCmd implements CliCommand
     }
 
     
-    private static void deleteByQuery(String indexName, long numDeleted) throws Exception
+    private void deleteByQuery(String indexName, long numDeleted) throws Exception
     {
-        System.out.format("Deleted %d document(s) from %s index\n", numDeleted, indexName);
+        log.info(String.format("Deleted %d document(s) from %s index", numDeleted, indexName));
     }
     
     /**
