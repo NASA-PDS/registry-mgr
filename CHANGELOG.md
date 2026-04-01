@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-mgr/tree/«unknown») (2026-03-26)
+## [«unknown»](https://github.com/NASA-PDS/registry-mgr/tree/«unknown») (2026-04-01)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v6.0.0...«unknown»)
 
@@ -9,6 +9,7 @@
 - `set-archive-status` says it updates more products than are in the bundle [\#170](https://github.com/NASA-PDS/registry-mgr/issues/170) [[s.high](https://github.com/NASA-PDS/registry-mgr/labels/s.high)]
 - set-archive-status is changing the status of more products than are in the bundle [\#137](https://github.com/NASA-PDS/registry-mgr/issues/137) [[s.high](https://github.com/NASA-PDS/registry-mgr/labels/s.high)]
 - Output does not always say if `set-archive-status` has failed [\#135](https://github.com/NASA-PDS/registry-mgr/issues/135) [[s.medium](https://github.com/NASA-PDS/registry-mgr/labels/s.medium)]
+- When delete-data command is used, log file specified is empty [\#72](https://github.com/NASA-PDS/registry-mgr/issues/72) [[s.medium](https://github.com/NASA-PDS/registry-mgr/labels/s.medium)]
 
 ## [v6.0.0](https://github.com/NASA-PDS/registry-mgr/tree/v6.0.0) (2025-11-19)
 
