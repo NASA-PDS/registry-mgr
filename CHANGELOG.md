@@ -1,8 +1,8 @@
 # Changelog
 
-## [v6.1.0](https://github.com/NASA-PDS/registry-mgr/tree/v6.1.0) (2026-05-15)
+## [«unknown»](https://github.com/NASA-PDS/registry-mgr/tree/«unknown») (2026-05-17)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v6.0.0...v6.1.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-mgr/compare/v6.0.0...«unknown»)
 
 **Defects:**
 
