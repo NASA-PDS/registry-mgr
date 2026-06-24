@@ -1,6 +1,7 @@
 package gov.nasa.pds.registry.mgr.dao;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,13 +75,14 @@ public abstract class DataExporter
           Request.Search req = client.createSearchRequest().setIndex(conFact.getIndexName());
           req = createRequest(req, BATCH_SIZE, searchAfter);
           Response.Search resp = client.performRequest(req);
-          thisBatchSize = resp.batch().size();
-          numDocs += resp.batch().size();
-          searchAfter = ""; // FIXME: needs to be the last ID from the batch()
+          List<Object> batch = resp.batch();
+          thisBatchSize = batch.size();
+          numDocs += thisBatchSize;
+          searchAfter = resp.lastSortValue();
           if (numDocs % PRINT_STATUS_SIZE == 0) {
             log.info("Exported " + numDocs + " document(s)");
           }
-        } while (thisBatchSize == BATCH_SIZE);
+        } while (thisBatchSize == BATCH_SIZE && searchAfter != null);
         if (numDocs == 0) {
           log.info("No documents found");
         } else {

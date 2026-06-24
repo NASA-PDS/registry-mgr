@@ -10,18 +10,25 @@ import gov.nasa.pds.registry.mgr.dao.DataExporter;
  */
 public class DDDataExporter extends DataExporter
 {
+    private final String namespace;
+
     /**
      * Constructor
      * @param esUrl Elasticsearch URL
-     * @param indexName Elasticsearch index name
      * @param authConfigFile authentication configuration file
+     * @param namespace optional namespace filter (e.g. "lro"); null exports all
      */
-    public DDDataExporter(String esUrl, String authConfigFile)
+    public DDDataExporter(String esUrl, String authConfigFile, String namespace)
     {
         super(esUrl, "-dd", authConfigFile);
+        this.namespace = namespace;
     }
+
     @Override
     protected Search createRequest(Search req, int batchSize, String searchAfter) {
+      if (namespace != null && !namespace.isBlank()) {
+        return req.all("attr_ns", namespace, "es_field_name", batchSize, searchAfter);
+      }
       return req.all("es_field_name", batchSize, searchAfter);
     }
 
