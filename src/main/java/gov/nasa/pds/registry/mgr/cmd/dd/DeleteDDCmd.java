@@ -87,7 +87,7 @@ public class DeleteDDCmd implements CliCommand
           long numDeleted = client.performRequest(request); 
             
             // (2) Delete by attribute namespace
-          request = client.createDeleteByQuery().setIndex(this.conFact.getIndexName() + "-dd").setRefresh(true).createFilterQuery("class_ns", ns);
+          request = client.createDeleteByQuery().setIndex(this.conFact.getIndexName() + "-dd").setRefresh(true).createFilterQuery("attr_ns", ns);
           numDeleted += client.performRequest(request);
           System.out.format("Deleted %d document(s)\n", numDeleted);
         }
