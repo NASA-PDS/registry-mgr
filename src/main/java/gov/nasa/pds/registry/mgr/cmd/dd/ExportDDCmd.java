@@ -41,11 +41,12 @@ public class ExportDDCmd implements CliCommand
         
         String esUrl = CliCommand.getUsersRegistry(cmdLine);
         String authPath = cmdLine.getOptionValue("auth");
+        String namespace = cmdLine.getOptionValue("ns");
 
         System.out.println("Elasticsearch URL: " + esUrl);
         System.out.println();
-        
-        DDDataExporter exp = new DDDataExporter(esUrl, authPath);
+
+        DDDataExporter exp = new DDDataExporter(esUrl, authPath, namespace);
         exp.export(new File(filePath));
     }
 
@@ -61,10 +62,11 @@ public class ExportDDCmd implements CliCommand
         System.out.println("Export data from registry data dictionary");
         System.out.println();
         System.out.println("Required parameters:");
-        System.out.println("  -file <path>      Output file path");        
+        System.out.println("  -file <path>      Output file path");
         System.out.println("Optional parameters:");
         System.out.println("  -auth <file>      Authentication config file");
         System.out.println("  -es <url>         (deprecated) File URI to the configuration to connect to the registry. For example, file:///home/user/.pds/mcp.xml. Default is app:/connections/direct/localhost.xml");
+        System.out.println("  -ns <namespace>   Filter export to a specific LDD namespace (e.g. 'lro'). Exports all namespaces if not specified.");
         System.out.println("  -registry <url>   File URI to the configuration to connect to the registry. For example, file:///home/user/.pds/mcp.xml. Default is app:/connections/direct/localhost.xml");
         System.out.println();
     }
